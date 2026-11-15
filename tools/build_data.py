@@ -78,6 +78,9 @@ SLOT_TYPE = {'head': 1, 'neck': 2, 'shoulder': 3, 'back': 4, 'chest': 5, 'wrist'
              'feet': 10, 'finger1': 11, 'finger2': 11, 'trinket1': 12, 'trinket2': 12, 'main_hand': 13, 'off_hand': 13,
              'ranged': 14}
 
+# Reputation a vendor asks for that the game files do not carry (the Wowhead tooltip names it).
+VENDOR_REP = {19325: 'Reputation: Frostwolf Clan Exalted'}
+
 
 def sources(it):
     out, kinds = [], set()
@@ -113,6 +116,8 @@ def sources(it):
             kinds.add('craft')
         elif k == 'pvp':
             kinds.add('bg')
+    if it['id'] in VENDOR_REP:
+        out.insert(1, VENDOR_REP[it['id']])  # second, so the card's two source lines show it
     out = list(dict.fromkeys(out))
     if not out:
         if it.get('randomSuffixOptions'):

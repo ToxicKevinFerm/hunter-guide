@@ -173,11 +173,12 @@ each slot's best alternatives was checked at the end. Every enchant was simmed a
 </ul>
 <h3>Max and Cheap</h3>
 <p><b>Max</b> is everything outside raids. <b>Cheap</b> leaves out exalted reputation (Darkspear Raiders, Theramore),
-battleground quartermaster gear, epic crafts (Dawn Armor, Outlaw's Collar, Timbermaw Tunic), Arcanite Reaper,
+battleground quartermaster gear, epic crafts (Dawn Armor, Timbermaw Tunic), Arcanite Reaper,
 Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones. Black
 Dragonscale Helm, the Devilsaur set, Legionite Glaive and the Hyper Deluxe Sniper Rifle count as cheap crafts, and the
 Korrak quest weapons (Bloodseeker, Ice Barbed Spear) as cheap. Neither tier takes Warsong Gulch or Alterac Valley gear
-that needs Exalted. Max is a superset: every cheap item was simmed in it too.</p>
+that needs Exalted, except Don Julio's Band, which is in Max. Crafts that need a material from Mount Hyjal
+(Outlaw's Collar, Mourning Handguards) are in neither. Max is a superset: every cheap item was simmed in it too.</p>
 <h3>Limits</h3>
 <p>The sim models what the game files and combat logs show; a few trinket effects are missing (see How to gear). New
 Forever items without a source in the game files are listed as such.</p>
