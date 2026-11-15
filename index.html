@@ -189,6 +189,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   <div class="wrap">
     <div class="group"><label>Playstyle</label><div class="seg" id="ps"></div></div>
     <div class="group"><label>Budget</label><div class="seg" id="tier"></div></div>
+    <div class="group" id="repgroup"><label>Exalted rep</label><div class="seg" id="rep"></div></div>
     <div class="group"><label>Options</label>
       <select id="topn"><option value="3">Top 3</option><option value="4" selected>Top 4</option><option value="6">Top 6</option></select>
     </div>
@@ -213,7 +214,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=772ceb1295"></script>
+<script src="data.js?v=6b468abd1a"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -228,18 +229,21 @@ const WEAPONS = ['main_hand', 'off_hand', 'ranged'];
 const SOURCE_KINDS = [['dungeon', 'Dungeon'], ['quest', 'Quest'], ['craft', 'Crafted'], ['vendor', 'Vendor'], ['rep', 'Reputation'],
   ['bg', 'Battleground'], ['world', 'World drop'], ['unknown', 'Unknown']];
 
-const state = { ps: 'weave', tier: 'max', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
+const state = { ps: 'weave', tier: 'max', rep: 'av', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
 const fromHash = () => {
   const p = new URLSearchParams(location.hash.slice(1));
   if (G.playstyles.some(x => x.id === p.get('ps'))) state.ps = p.get('ps');
   if (['max', 'cheap'].includes(p.get('tier'))) state.tier = p.get('tier');
+  if (['darkspear', 'av'].includes(p.get('rep'))) state.rep = p.get('rep');
   if (['gear', 'all', 'howto', 'method'].includes(p.get('tab'))) state.tab = p.get('tab');
 };
-const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}&tier=${state.tier}`);
+const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}&tier=${state.tier}&rep=${state.rep}`);
 
 const item = id => G.items[id];
 const qcls = it => `color: var(--q${it ? it.q : 1})`;
-const loadout = () => G.loadouts[`${state.ps}-${state.tier}`];
+// Max comes in two sets, one per exalted reputation: Darkspear Raiders (<ps>-max) or Alterac Valley (<ps>-max-av).
+const loadout = () => G.loadouts[`${state.ps}-${state.tier}${state.tier === 'max' && state.rep === 'av' ? '-av' : ''}`];
+const tierLabel = () => state.tier === 'cheap' ? 'Cheap' : `Max · ${state.rep === 'av' ? 'AV' : 'Darkspear'}`;
 
 function itemName(spec) {
   const it = item(spec[0]);
@@ -291,7 +295,7 @@ function renderDoll() {
   document.getElementById('doll').innerHTML = `
     <div class="col">${LEFT.map(slot).join('')}</div>
     <div class="center">
-      <h2>${esc(P.name)} · ${state.tier === 'max' ? 'Max' : 'Cheap'}</h2>
+      <h2>${esc(P.name)} · ${tierLabel()}</h2>
       <div class="dps"><b>${L.dps.toFixed(0)}</b> <span>DPS in the sim</span></div>
       <dl class="facts">
         <dt>Build</dt><dd>${esc(L.build)}</dd>
@@ -402,12 +406,16 @@ function renderStatic() {
   document.getElementById('foot').innerHTML = G.meta.footer;
   document.getElementById('ps').innerHTML = G.playstyles.map(p => `<button data-ps="${p.id}">${esc(p.short)}</button>`).join('');
   document.getElementById('tier').innerHTML = '<button data-tier="max">Max</button><button data-tier="cheap">Cheap</button>';
+  document.getElementById('rep').innerHTML = '<button data-rep="darkspear" title="Darkspear Raiders (Alliance: Theramore)">Darkspear</button>' +
+    '<button data-rep="av" title="Frostwolf Clan (Alliance: Stormpike Guard)">AV</button>';
   document.getElementById('srcs').innerHTML = SOURCE_KINDS.map(([k, n]) => `<button class="chip" data-src="${k}" aria-pressed="true">${n}</button>`).join('');
 }
 
 function render() {
   document.querySelectorAll('[data-ps]').forEach(b => b.setAttribute('aria-pressed', b.dataset.ps === state.ps));
   document.querySelectorAll('[data-tier]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tier === state.tier));
+  document.querySelectorAll('[data-rep]').forEach(b => b.setAttribute('aria-pressed', b.dataset.rep === state.rep));
+  document.getElementById('repgroup').style.display = state.tier === 'max' ? '' : 'none';
   document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === state.tab));
   document.querySelectorAll('section[data-panel]').forEach(s => s.hidden = s.dataset.panel !== state.tab);
   document.querySelector('.bar').style.display = state.tab === 'gear' ? '' : 'none';
@@ -421,6 +429,7 @@ document.addEventListener('click', e => {
   if (!t) return;
   if (t.dataset.ps) state.ps = t.dataset.ps;
   else if (t.dataset.tier) state.tier = t.dataset.tier;
+  else if (t.dataset.rep) state.rep = t.dataset.rep;
   else if (t.dataset.tab) state.tab = t.dataset.tab;
   else if (t.dataset.src) { state.srcs.has(t.dataset.src) ? state.srcs.delete(t.dataset.src) : state.srcs.add(t.dataset.src); t.setAttribute('aria-pressed', state.srcs.has(t.dataset.src)); }
   else if (t.dataset.go) {

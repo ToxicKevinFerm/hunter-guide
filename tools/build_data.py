@@ -256,7 +256,8 @@ def spec_with_label(slot, v):
     return [v[0], v[1], v[2], enchant_label(v[1], slot) if v[1] else '']
 
 
-IDS = ['weave-max', 'weave-cheap', 'turret-max', 'turret-cheap', 'melee-max', 'melee-cheap']
+IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'melee-max', 'melee-max-av',
+       'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(a.runs, f'{i}.guide.json'))]
 GROUP_ORDER = ['weapons_ranged', 'weapons', 'ranged', 'head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist',
                'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2']

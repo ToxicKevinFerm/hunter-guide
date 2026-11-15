@@ -12,7 +12,10 @@ R = sys.argv[1]
 db = json.load(open(os.path.join(sys.argv[2], 'assets/database/db.json')))
 NAME = {it['id']: it['name'] for it in db['items']}
 SPEED = {it['id']: it.get('weaponSpeed', 0) for it in db['items']}
-IDS = ['weave-max', 'weave-cheap', 'turret-max', 'turret-cheap', 'melee-max', 'melee-cheap']
+# <playstyle>-max is the Max set for a player exalted with Darkspear Raiders (Theramore), <playstyle>-max-av the one for a
+# player exalted with Frostwolf Clan (Stormpike Guard) in Alterac Valley.
+IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'melee-max', 'melee-max-av',
+       'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(R, f'{i}.guide.json'))]
 runs = {i: json.load(open(os.path.join(R, f'{i}.guide.json'))) for i in IDS}
 hit = json.load(open(os.path.join(R, 'hit.json')))
@@ -35,12 +38,12 @@ if os.path.exists(os.path.join(R, 'links.txt')):
     LINKS = dict(line.split(None, 1) for line in open(os.path.join(R, 'links.txt')).read().split('\n') if line.strip())
 loadouts = {}
 for i in IDS:
-    ps, tier = i.split('-')
+    ps, tier, *av = i.split('-')
     other = f"{ps}-{'cheap' if tier == 'max' else 'max'}"
     diff = dps[i] - dps.get(other, dps[i])
     b = BUILDS[ps]
     loadouts[i] = {
-        'title': f"{TITLES[ps]} · {tier.title()}", 'build': b[0], 'talents': b[1], 'rotation': b[2], 'dps': round(dps[i], 1),
+        'title': f"{TITLES[ps]} · {('Max · AV' if av else 'Max · Darkspear') if tier == 'max' else 'Cheap'}", 'build': b[0], 'talents': b[1], 'rotation': b[2], 'dps': round(dps[i], 1),
         'hit': f"{hit[i][0]:g}% melee, {hit[i][1]:g}% ranged (cap 8%)",
         'vsOther': f"{'Cheap' if tier == 'max' else 'Max'} {dps.get(other, 0):.0f} ({diff:+.0f})",
         'talentLink': f"https://www.wowhead.com/forever/talent-calc/hunter/{WOWHEAD_HASH_VERSION}{b[1]}",
@@ -156,7 +159,8 @@ stats: Arcanite Dragonling, Heart of Wyrmthalak, Scented Runewood Brooch, the De
 pair (Teachings of the Furbolgs), Devilsaur Eye's use, and Scalding Flamehoof's run speed.</p>
 """
 
-method = """
+gap = {ps: dps[f"{ps}-max"] - dps[f"{ps}-max-av"] for ps in TITLES if f"{ps}-max-av" in dps}
+method = f"""
 <h2>How these were found</h2>
 <p>Every number comes from WoWSims Forever: a 180 s fight against one level 63 dragonkin boss in a Forest/Grassland area, as in Mount
 Hyjal, so area-bound bonuses count; an Orc hunter with the full raid buffs and consumables of the sim's hunter
@@ -166,19 +170,22 @@ sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Mele
 <li>Every Phase 1 item a hunter can wear was a candidate, except raid loot, raid reputation (The Watchers) and honor
 rank gear. Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
 Guard Captain) have the same stats.</li>
-<li>Each slot's candidates were screened at 3,000 iterations and the best confirmed at 20,000 against the finished set
-on another seed. Δ DPS is that confirmed gap, ± its 95% margin.</li>
+<li>Each slot's candidates were screened at 3,000 iterations and the best confirmed at 10,000 against the finished set
+on another seed; slots changed after that (the rings and the AV sets' shoulders and gloves) at 3,000 both times. Δ DPS is that confirmed gap, ± its 95% margin.</li>
 <li>Set bonuses were tried as whole sets, the weave's two-hander and bow as one pair, and every two-slot combination of
 each slot's best alternatives was checked at the end. Every enchant was simmed against the others.</li>
 </ul>
 <h3>Max and Cheap</h3>
-<p><b>Max</b> is everything outside raids. <b>Cheap</b> leaves out exalted reputation (Darkspear Raiders, Theramore),
-battleground quartermaster gear, epic crafts (Dawn Armor, Timbermaw Tunic), Arcanite Reaper,
+<p><b>Max</b> is everything outside raids, with Exalted reputation from the one faction you pick: <b>Darkspear</b>
+(Darkspear Raiders, Theramore for the Alliance) or <b>AV</b> (Frostwolf Clan, Stormpike Guard for the Alliance). The
+Darkspear sets wear Darkspear Epaulets, and the weave set Raider Gloves too. The AV sets wear Don Julio's Band in their
+place and lose {min(gap.values()):.0f}–{max(gap.values()):.0f} DPS. Items that need Exalted with any other faction (The Defilers, Timbermaw Hold, the other
+Warsong Gulch and Alterac Valley rewards) are in neither. <b>Cheap</b> leaves out exalted reputation, battleground
+quartermaster gear, epic crafts (Dawn Armor, Timbermaw Tunic), Arcanite Reaper,
 Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones. Black
 Dragonscale Helm, the Devilsaur set, Legionite Glaive and the Hyper Deluxe Sniper Rifle count as cheap crafts, and the
-Korrak quest weapons (Bloodseeker, Ice Barbed Spear) as cheap. Neither tier takes Warsong Gulch or Alterac Valley gear
-that needs Exalted, except Don Julio's Band, which is in Max. Crafts that need a material from Mount Hyjal
-(Outlaw's Collar, Mourning Handguards) are in neither. Max is a superset: every cheap item was simmed in it too.</p>
+Korrak quest weapons (Bloodseeker, Ice Barbed Spear) as cheap. Crafts that need a material from Mount Hyjal
+(Outlaw's Collar, Mourning Handguards) are in no set. Max is a superset: every cheap item was simmed in it too.</p>
 <h3>Limits</h3>
 <p>The sim models what the game files and combat logs show; a few trinket effects are missing (see How to gear). New
 Forever items without a source in the game files are listed as such.</p>
