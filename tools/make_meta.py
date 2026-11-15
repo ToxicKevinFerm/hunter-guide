@@ -25,6 +25,10 @@ BUILDS = {
     'melee': ('SV Melee', '53200005001-004-530200230050022151', 'Melee'),
 }
 TITLES = {'weave': 'Weave', 'turret': 'Turret', 'melee': 'Melee'}
+# Wowhead's Forever talent calculator reads a build as its hash version followed by the points per talent, trees in
+# row and column order like the sim's. The version is "hashVersion" in nether.wowhead.com/forever/data/talents-classic;
+# Wowhead converts links stamped with an older version when its trees change.
+WOWHEAD_HASH_VERSION = 'vkndmh'
 # WoWSims share links per loadout (aplkit link on each set's setup), when RUNS_DIR/links.txt has them: "<id> <url>".
 LINKS = {}
 if os.path.exists(os.path.join(R, 'links.txt')):
@@ -39,7 +43,7 @@ for i in IDS:
         'title': f"{TITLES[ps]} · {tier.title()}", 'build': b[0], 'talents': b[1], 'rotation': b[2], 'dps': round(dps[i], 1),
         'hit': f"{hit[i][0]:g}% melee, {hit[i][1]:g}% ranged (cap 8%)",
         'vsOther': f"{'Cheap' if tier == 'max' else 'Max'} {dps.get(other, 0):.0f} ({diff:+.0f})",
-        'talentLink': f"https://www.wowhead.com/forever/talent-calc/hunter/{b[1]}",
+        'talentLink': f"https://www.wowhead.com/forever/talent-calc/hunter/{WOWHEAD_HASH_VERSION}{b[1]}",
         'simLink': LINKS.get(i, '').strip(),
     }
 
