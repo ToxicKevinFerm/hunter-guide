@@ -70,10 +70,12 @@ pair_rows = tr([wname(best_pair['main_hand'][0]), wname(best_pair['ranged'][0]),
 
 ep_html = ''
 if ep:
-    stats = ['Agility', 'Strength', 'Attack Power', 'Ranged Attack Power', 'Crit rating', 'Hit rating (under the cap)', 'Haste rating']
+    stats = ['Agility', 'Strength', 'Intellect', 'Attack Power', 'Ranged Attack Power', 'Crit rating', 'Hit rating (under the cap)', 'Haste rating', 'MP5']
     ep_html = ('<h3>What a point of each stat is worth</h3><p>Paired sims on each playstyle\'s Max set, in Ranged Attack '
                'Power for weave and turret and in Attack Power for melee. Item crit rating is 14 per 1%, hit and haste '
-               'rating 10 per 1%.</p><table><thead><tr><th>Stat</th><th>Weave</th><th>Turret</th><th>Melee</th></tr></thead><tbody>'
+               'rating 10 per 1%. Intellect counts twice: Careful Aim turns each point into Attack Power and Ranged '
+               'Attack Power, and it is mana. MP5 is worth little in a three minute fight with full consumables and '
+               'more in a long one: about 2.5 Ranged Attack Power a point on the turret at five minutes.</p><table><thead><tr><th>Stat</th><th>Weave</th><th>Turret</th><th>Melee</th></tr></thead><tbody>'
                + ''.join(tr([s] + [f"{ep.get(p, {}).get(s, 0):.2f}" for p in ('weave', 'turret', 'melee')]) for s in stats)
                + '</tbody></table>')
 
@@ -81,7 +83,7 @@ howto = f"""
 <div class="kpis">
   <div class="kpi"><b>8% hit</b><span>The cap against a level 63 boss, melee and ranged. Surefooted counts.</span></div>
   <div class="kpi"><b>Agility</b><span>The best stat for every playstyle; weave values it most.</span></div>
-  <div class="kpi"><b>Slow + slow</b><span>Weave: a slow two-hander wants a slow bow (Arcanite Reaper + Bloodseeker).</span></div>
+  <div class="kpi"><b>Slow + slow</b><span>Weave: a slow two-hander wants a slow bow (Arcanite Reaper + Deep Jungle Rifle or Bloodseeker).</span></div>
   <div class="kpi"><b>Fast bow</b><span>Turret: Eaglehorn or a fast Agility bow. Pick a turret rotation.</span></div>
 </div>
 
@@ -115,8 +117,8 @@ Agility by about 3; the off hand keeps +15 Agility.</p>
 <h3>Dual wield while weaving</h3>
 <p>If you weave with two one-handers, play Melee Weave (Normal): it walks in only when your shots are on cooldown and
 stays for the melee cooldowns, which lets the off hand swing. Teebu's Blazing Longsword (or Dal'Rend's Sacred Charge)
-with Bagh Nakh and Bloodseeker gives 1172 (1169), against 1114 for the best dual wield on the max weave. A two-hander
-on the max weave is still 68 higher.</p>
+with Bagh Nakh and Bloodseeker gives about 59 more than the best dual wield on the max weave. A two-hander on the max
+weave is still about 68 higher.</p>
 
 <h2>Enchants</h2>
 <table><thead><tr><th>Slot</th><th>Enchant</th><th>Where</th></tr></thead><tbody>
@@ -137,8 +139,8 @@ speed already covers it and only the highest speed effect counts. Sniper Scope l
 <h2>Trinkets</h2>
 <p>Blackhand's Breadth and Highborne Research Tablet top almost every list. Rune of the Guard Captain (Cleansed
 Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, where it takes
-the second slot for turret, melee and Weave Max (a tie with Highborne Research Tablet there, so the Rune) and falls
-2 DPS behind on Weave Cheap; in Onyxia's Lair, a cavern, it keeps only its 14 Attack Power
+a trinket slot in every set. On both weave sets it ties with Highborne Research Tablet, and the guide picks the Rune
+because it is the easier one to get. In Onyxia's Lair, a cavern, it keeps only its 14 Attack Power
 and 0.7% hit and falls 5–12 DPS behind. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
 stats: Arcanite Dragonling, Heart of Wyrmthalak, Scented Runewood Brooch, the Defender of the Timbermaw and Barkskin
 pair (Teachings of the Furbolgs), Devilsaur Eye's use, and Scalding Flamehoof's run speed.</p>
