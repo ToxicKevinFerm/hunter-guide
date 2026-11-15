@@ -288,7 +288,7 @@ for lid in IDS:
         if spec[2]:
             used_suffixes.setdefault(spec[0], set()).add(spec[2])
     loadouts[lid] = {'title': m['title'], 'build': m['build'], 'talents': m['talents'], 'rotation': m['rotation'],
-                     'dps': m['dps'], 'hit': m['hit'], 'vsOther': m['vsOther'], 'gear': full, 'groups': groups}
+                     'dps': m['dps'], 'hit': m['hit'], 'vsOther': m['vsOther'], 'talentLink': m['talentLink'], 'simLink': m['simLink'], 'gear': full, 'groups': groups}
 
 data = {
     'meta': meta['meta'],

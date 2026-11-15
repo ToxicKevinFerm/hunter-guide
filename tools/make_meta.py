@@ -25,6 +25,10 @@ BUILDS = {
     'melee': ('SV Melee', '53200005001-004-530200230050022151', 'Melee'),
 }
 TITLES = {'weave': 'Weave', 'turret': 'Turret', 'melee': 'Melee'}
+# WoWSims share links per loadout (aplkit link on each set's setup), when RUNS_DIR/links.txt has them: "<id> <url>".
+LINKS = {}
+if os.path.exists(os.path.join(R, 'links.txt')):
+    LINKS = dict(line.split(None, 1) for line in open(os.path.join(R, 'links.txt')).read().split('\n') if line.strip())
 loadouts = {}
 for i in IDS:
     ps, tier = i.split('-')
@@ -35,6 +39,8 @@ for i in IDS:
         'title': f"{TITLES[ps]} · {tier.title()}", 'build': b[0], 'talents': b[1], 'rotation': b[2], 'dps': round(dps[i], 1),
         'hit': f"{hit[i][0]:g}% melee, {hit[i][1]:g}% ranged (cap 8%)",
         'vsOther': f"{'Cheap' if tier == 'max' else 'Max'} {dps.get(other, 0):.0f} ({diff:+.0f})",
+        'talentLink': f"https://www.wowhead.com/forever/talent-calc/hunter/{b[1]}",
+        'simLink': LINKS.get(i, '').strip(),
     }
 
 playstyles = [

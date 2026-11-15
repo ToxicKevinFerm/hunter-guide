@@ -101,6 +101,10 @@ td.item { min-width: 0; }
 .it .names { min-width: 0; }
 .it .n { font-weight: 600; }
 .ally { opacity: .8; }
+.simlink { display: inline-block; margin: 2px 0 10px; padding: 6px 12px; border: 1px solid var(--gold, #c9a227); border-radius: 6px;
+  color: var(--gold, #c9a227); font-weight: 600; text-decoration: none; }
+.simlink:hover { background: rgba(201, 162, 39, .12); }
+.facts a code { text-decoration: underline dotted; }
 .it .e { color: var(--good); font-size: 11.5px; }
 .plus { color: var(--muted); margin: 0 2px; }
 td.delta { white-space: nowrap; width: 120px; }
@@ -291,11 +295,12 @@ function renderDoll() {
       <div class="dps"><b>${L.dps.toFixed(0)}</b> <span>DPS in the sim</span></div>
       <dl class="facts">
         <dt>Build</dt><dd>${esc(L.build)}</dd>
-        <dt>Talents</dt><dd><code>${esc(L.talents)}</code></dd>
+        <dt>Talents</dt><dd><a href="${esc(L.talentLink)}" target="_blank" rel="noopener" title="Open in the Wowhead talent calculator"><code>${esc(L.talents)}</code></a></dd>
         <dt>Rotation</dt><dd>${esc(L.rotation)}</dd>
         <dt>Hit</dt><dd>${esc(L.hit)}</dd>
         <dt>vs other budget</dt><dd>${esc(L.vsOther)}</dd>
       </dl>
+      ${L.simLink ? `<a class="simlink" href="${esc(L.simLink)}" target="_blank" rel="noopener">Open this set in WoWSims</a>` : ''}
       <div class="callout">${P.blurb}</div>
     </div>
     <div class="col right">${RIGHT.map(slot).join('')}</div>
