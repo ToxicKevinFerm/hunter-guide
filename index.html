@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forever Hunter · Pre-Raid BiS</title>
+<link rel="icon" href="https://wow.zamimg.com/images/wow/icons/medium/classicon_hunter.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0c0d0b;
+  --panel: #15170f;
+  --panel-2: #1c1f15;
+  --line: #2f3322;
+  --line-2: #3f4530;
+  --gold: #d9b45f;
+  --gold-dim: #9a8250;
+  --text: #ebe7da;
+  --muted: #a29d8c;
+  --hunter: #a9d271;
+  --good: #8fdc8a;
+  --warn: #e2b54a;
+  --bad: #e0705f;
+  --q0: #9d9d9d; --q1: #ffffff; --q2: #1eff00; --q3: #0070dd; --q4: #a335ee; --q5: #ff8000;
+  --display: "Cinzel", Georgia, serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 130px; }
+body { margin: 0; background: radial-gradient(1200px 600px at 50% -200px, #23281a 0%, var(--bg) 60%) fixed; color: var(--text); font: 14px/1.5 var(--body); }
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+
+header.top { padding: 28px 0 8px; }
+.brand { display: flex; align-items: center; gap: 16px; }
+.brand img { width: 52px; height: 52px; border-radius: 8px; border: 1px solid var(--gold-dim); box-shadow: 0 0 24px #a9d27133; }
+h1 { font-family: var(--display); font-weight: 700; font-size: 30px; letter-spacing: .5px; margin: 0; color: var(--gold); }
+.sub { color: var(--muted); margin: 2px 0 0; }
+nav.tabs { display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--line); }
+nav.tabs button { background: none; border: 0; color: var(--muted); font: 600 14px var(--body); padding: 10px 14px; cursor: pointer; border-bottom: 2px solid transparent; }
+nav.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--gold); }
+
+.bar { position: sticky; top: 0; z-index: 20; background: #0c0d0bf0; backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.bar .wrap { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; padding-top: 10px; padding-bottom: 10px; }
+.group { display: flex; align-items: center; gap: 8px; }
+.group > label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .6px; }
+.seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; }
+.seg button { background: var(--panel); color: var(--muted); border: 0; padding: 7px 13px; font: 600 13px var(--body); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line-2); }
+.seg button[aria-pressed="true"] { background: #2b3220; color: var(--hunter); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line-2); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 4px 10px; font: 500 12px var(--body); cursor: pointer; }
+.chip[aria-pressed="true"] { color: var(--text); border-color: var(--gold-dim); background: #2a2616; }
+input[type="search"], select { background: var(--panel); border: 1px solid var(--line-2); color: var(--text); border-radius: 8px; padding: 7px 10px; font: 13px var(--body); }
+input[type="search"] { width: 220px; }
+
+main { padding: 18px 0 60px; }
+section[hidden] { display: none; }
+
+/* The character window: eight slots down each side, the weapons below, the build in the middle. */
+.doll { display: grid; grid-template-columns: minmax(230px, 1fr) minmax(260px, 1.1fr) minmax(230px, 1fr); gap: 14px; background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line-2); border-radius: 14px; padding: 16px; box-shadow: inset 0 0 0 1px #00000055, 0 10px 40px #00000066; }
+.col { display: flex; flex-direction: column; gap: 6px; }
+.col.right .slot { flex-direction: row-reverse; text-align: right; }
+.weapons { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; border-top: 1px solid var(--line); padding-top: 12px; }
+.slot { display: flex; align-items: center; gap: 10px; padding: 5px 7px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; min-height: 50px; }
+.slot:hover { background: #ffffff08; border-color: var(--line-2); }
+.slot .meta { min-width: 0; }
+.slot .nm { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot .en { color: var(--good); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot .lbl { color: var(--muted); font-size: 11px; }
+.slot.empty .nm { color: var(--muted); font-weight: 500; }
+.icon { width: 40px; height: 40px; border-radius: 6px; border: 1px solid #000; box-shadow: 0 0 0 1px var(--line-2); flex: none; background: #111 center/cover; }
+.icon.sm { width: 28px; height: 28px; border-radius: 5px; }
+.center { display: flex; flex-direction: column; gap: 10px; align-items: stretch; justify-content: flex-start; padding: 6px 4px; }
+.center h2 { font-family: var(--display); margin: 0; color: var(--gold); font-size: 22px; text-align: center; }
+.dps { text-align: center; }
+.dps b { font-size: 34px; color: var(--hunter); font-family: var(--display); }
+.dps span { color: var(--muted); }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 13px; background: #00000033; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.callout { font-size: 12.5px; color: var(--muted); border-left: 3px solid var(--gold-dim); padding: 4px 10px; background: #00000022; border-radius: 0 8px 8px 0; }
+
+/* Slot cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 14px; margin-top: 18px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.card.flash { box-shadow: 0 0 0 2px var(--gold); }
+.card h3 { margin: 0; padding: 10px 14px; font: 700 15px var(--display); color: var(--gold); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; background: #00000022; }
+.card h3 small { font: 500 12px var(--body); color: var(--muted); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 7px 10px; text-align: left; vertical-align: middle; }
+th { font: 600 11px var(--body); text-transform: uppercase; letter-spacing: .5px; color: var(--muted); border-bottom: 1px solid var(--line); }
+tbody tr + tr td { border-top: 1px solid #ffffff0a; }
+tr.best td { background: #a9d27110; }
+td.rank { width: 28px; color: var(--muted); font-weight: 700; }
+td.item { min-width: 0; }
+.it { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.it .names { min-width: 0; }
+.it .n { font-weight: 600; }
+.it .e { color: var(--good); font-size: 11.5px; }
+.plus { color: var(--muted); margin: 0 2px; }
+td.delta { white-space: nowrap; width: 120px; }
+.dv { font-weight: 700; }
+.dv.zero { color: var(--hunter); }
+.dv.neg { color: #e9c58a; }
+.dm { color: var(--muted); font-size: 11px; }
+.bar-bg { height: 4px; background: #ffffff10; border-radius: 3px; margin-top: 3px; overflow: hidden; }
+.bar-fg { height: 100%; background: linear-gradient(90deg, #e0705f, #e2b54a); }
+td.src { font-size: 12.5px; color: var(--muted); }
+td.src .s + .s { margin-top: 2px; }
+.badge { display: inline-block; font: 700 10px var(--body); text-transform: uppercase; letter-spacing: .5px; padding: 2px 7px; border-radius: 999px; border: 1px solid; vertical-align: middle; }
+.badge.cheap { color: #9fe39a; border-color: #4f7d4b; background: #13240f; }
+.badge.max { color: #e8c46d; border-color: #7a6331; background: #2a2210; }
+.empty-note { color: var(--muted); padding: 12px 14px; font-size: 13px; }
+
+/* All loadouts */
+.matrix { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.matrix table th { position: sticky; top: 0; background: var(--panel-2); }
+.matrix td { border-top: 1px solid #ffffff0a; font-size: 12.5px; }
+.matrix td.sl { color: var(--muted); font-weight: 600; white-space: nowrap; }
+.matrix tr.same td:not(.sl) { background: #8fdc8a0f; }
+.matrix td.odd { box-shadow: inset 0 0 0 1px #e2b54a66; }
+.matrix .it .n { font-weight: 500; }
+
+/* Prose */
+.prose { max-width: 900px; }
+.prose h2 { font-family: var(--display); color: var(--gold); margin: 28px 0 8px; font-size: 21px; }
+.prose h3 { margin: 18px 0 6px; font-size: 15px; }
+.prose p, .prose li { color: #d9d4c4; }
+.prose table { margin: 8px 0 14px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
+.prose td, .prose th { border-top: 1px solid #ffffff0a; font-size: 13px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 12px 0; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.kpi b { display: block; font-size: 20px; color: var(--hunter); font-family: var(--display); }
+.kpi span { color: var(--muted); font-size: 12px; }
+
+/* The game's item tooltip */
+#tip { position: fixed; z-index: 50; pointer-events: none; max-width: 330px; background: #070b14f2; border: 1px solid #5a6a8a; border-radius: 6px; padding: 9px 11px; font-size: 13px; line-height: 1.45; box-shadow: 0 8px 30px #000a; }
+#tip .t { font-weight: 700; font-size: 14px; }
+#tip .w { color: #fff; }
+#tip .g { color: #1eff00; }
+#tip .y { color: #ffd100; }
+#tip .m { color: #9d9d9d; }
+#tip .row { display: flex; justify-content: space-between; gap: 16px; }
+footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding: 18px 0 40px; }
+
+@media (max-width: 980px) {
+  .doll { grid-template-columns: 1fr 1fr; }
+  .center { grid-column: 1 / -1; order: -1; }
+  .weapons { grid-template-columns: 1fr; }
+  .cards { grid-template-columns: 1fr; }
+  input[type="search"] { width: 100%; }
+}
+@media (max-width: 600px) {
+  .bar { position: static; }
+  h1 { font-size: 22px; }
+  .doll { grid-template-columns: 1fr; }
+  .col.right .slot { flex-direction: row; text-align: left; }
+  td.src { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <div class="brand">
+    <img alt="" src="https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg">
+    <div>
+      <h1>Forever Hunter · Pre-Raid Best in Slot</h1>
+      <p class="sub" id="lede"></p>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="gear" aria-selected="true">Gear by slot</button>
+    <button role="tab" data-tab="all">All loadouts</button>
+    <button role="tab" data-tab="howto">How to gear</button>
+    <button role="tab" data-tab="method">Method</button>
+  </nav>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="group"><label>Playstyle</label><div class="seg" id="ps"></div></div>
+    <div class="group"><label>Budget</label><div class="seg" id="tier"></div></div>
+    <div class="group"><label>Options</label>
+      <select id="topn"><option value="3">Top 3</option><option value="4" selected>Top 4</option><option value="6">Top 6</option></select>
+    </div>
+    <div class="group"><input type="search" id="q" placeholder="Search item, boss, zone, quest…"></div>
+    <div class="group"><label>Sources</label><div class="chips" id="srcs"></div></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section data-panel="gear">
+    <div class="doll" id="doll"></div>
+    <div class="cards" id="cards"></div>
+  </section>
+  <section data-panel="all" hidden>
+    <p class="sub">Every loadout side by side. A green row means all six loadouts wear the same item; an outlined cell differs from the most common pick.</p>
+    <div class="matrix" id="matrix"></div>
+  </section>
+  <section data-panel="howto" hidden><div class="prose" id="howto"></div></section>
+  <section data-panel="method" hidden><div class="prose" id="method"></div></section>
+</main>
+
+<footer class="wrap" id="foot"></footer>
+<div id="tip" hidden></div>
+
+<script src="data.js"></script>
+<script>
+const G = window.GUIDE;
+const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
+const WH = id => `https://www.wowhead.com/forever/item=${id}`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const SLOT_LABEL = { head: 'Head', neck: 'Neck', shoulder: 'Shoulder', back: 'Back', chest: 'Chest', wrist: 'Wrist', hands: 'Hands',
+  waist: 'Waist', legs: 'Legs', feet: 'Feet', finger1: 'Ring 1', finger2: 'Ring 2', trinket1: 'Trinket 1', trinket2: 'Trinket 2',
+  main_hand: 'Main hand', off_hand: 'Off hand', ranged: 'Ranged', weapons: 'Weapons', weapons_ranged: 'Weapons + ranged (as a pair)' };
+const LEFT = ['head', 'neck', 'shoulder', 'back', 'chest', 'wrist'];
+const RIGHT = ['hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2'];
+const WEAPONS = ['main_hand', 'off_hand', 'ranged'];
+const SOURCE_KINDS = [['dungeon', 'Dungeon'], ['quest', 'Quest'], ['craft', 'Crafted'], ['vendor', 'Vendor'], ['rep', 'Reputation'],
+  ['bg', 'Battleground'], ['world', 'World drop'], ['unknown', 'Unknown']];
+
+const state = { ps: 'weave', tier: 'max', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
+const fromHash = () => {
+  const p = new URLSearchParams(location.hash.slice(1));
+  if (G.playstyles.some(x => x.id === p.get('ps'))) state.ps = p.get('ps');
+  if (['max', 'cheap'].includes(p.get('tier'))) state.tier = p.get('tier');
+  if (['gear', 'all', 'howto', 'method'].includes(p.get('tab'))) state.tab = p.get('tab');
+};
+const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}&tier=${state.tier}`);
+
+const item = id => G.items[id];
+const qcls = it => `color: var(--q${it ? it.q : 1})`;
+const loadout = () => G.loadouts[`${state.ps}-${state.tier}`];
+
+function itemName(spec) {
+  const it = item(spec[0]);
+  if (!it) return '—';
+  return it.name + (spec[2] ? ' ' + (G.suffixes[spec[2]] || '') : '');
+}
+function enchantName(spec) {
+  return spec[3] || (spec[1] ? 'Enchant ' + spec[1] : '');
+}
+function itemHTML(spec, small) {
+  const it = item(spec[0]);
+  if (!it) return '<span class="dm">empty</span>';
+  const en = enchantName(spec);
+  return `<span class="it" data-tip="${spec[0]}" data-sfx="${spec[2] || 0}">
+      <a href="${WH(spec[0])}" target="_blank" rel="noopener"><img class="icon${small ? ' sm' : ''}" loading="lazy" src="${ICON(it.icon)}" alt=""></a>
+      <span class="names"><a class="n" style="${qcls(it)}" href="${WH(spec[0])}" target="_blank" rel="noopener">${esc(itemName(spec))}</a>
+      ${en && !small ? `<div class="e">${esc(en)}</div>` : ''}</span></span>`;
+}
+const moveSpecs = move => Object.entries(move).filter(([, v]) => v && v[0]).sort((a, b) => order(a[0]) - order(b[0]));
+const ORDER = ['head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2', 'main_hand', 'off_hand', 'ranged'];
+const order = s => ORDER.indexOf(s);
+
+function rowPasses(specs) {
+  const q = state.q.trim().toLowerCase();
+  return specs.every(([, spec]) => {
+    const it = item(spec[0]);
+    if (!it) return true;
+    if (!it.kinds.some(k => state.srcs.has(k))) return false;
+    if (state.tier === 'cheap' && it.tier !== 'cheap') return false;
+    return true;
+  }) && (!q || specs.some(([, spec]) => {
+    const it = item(spec[0]);
+    return it && (itemName(spec).toLowerCase().includes(q) || it.sources.join(' ').toLowerCase().includes(q));
+  }));
+}
+
+function renderDoll() {
+  const L = loadout();
+  const slot = s => {
+    const spec = L.gear[s];
+    if (!spec || !spec[0]) return `<div class="slot empty" data-go="${s}"><div class="icon"></div><div class="meta"><div class="lbl">${SLOT_LABEL[s]}</div><div class="nm">Empty</div></div></div>`;
+    const it = item(spec[0]);
+    return `<div class="slot" data-go="${s}" data-tip="${spec[0]}" data-sfx="${spec[2] || 0}">
+      <img class="icon" src="${ICON(it.icon)}" alt=""><div class="meta"><div class="lbl">${SLOT_LABEL[s]}</div>
+      <div class="nm" style="${qcls(it)}">${esc(itemName(spec))}</div><div class="en">${esc(enchantName(spec)) || '&nbsp;'}</div></div></div>`;
+  };
+  const P = G.playstyles.find(p => p.id === state.ps);
+  document.getElementById('doll').innerHTML = `
+    <div class="col">${LEFT.map(slot).join('')}</div>
+    <div class="center">
+      <h2>${esc(P.name)} · ${state.tier === 'max' ? 'Max' : 'Cheap'}</h2>
+      <div class="dps"><b>${L.dps.toFixed(0)}</b> <span>DPS in the sim</span></div>
+      <dl class="facts">
+        <dt>Build</dt><dd>${esc(L.build)}</dd>
+        <dt>Talents</dt><dd><code>${esc(L.talents)}</code></dd>
+        <dt>Rotation</dt><dd>${esc(L.rotation)}</dd>
+        <dt>Hit</dt><dd>${esc(L.hit)}</dd>
+        <dt>vs other budget</dt><dd>${esc(L.vsOther)}</dd>
+      </dl>
+      <div class="callout">${P.blurb}</div>
+    </div>
+    <div class="col right">${RIGHT.map(slot).join('')}</div>
+    <div class="weapons">${WEAPONS.map(slot).join('')}</div>`;
+}
+
+function renderCards() {
+  const L = loadout();
+  const out = [];
+  for (const g of L.groups) {
+    const rows = [{ move: g.best, d: 0, m: 0, best: true }, ...g.rows];
+    const shown = rows.filter(r => rowPasses(moveSpecs(r.move))).slice(0, state.topn);
+    const maxLoss = Math.max(1, ...rows.slice(0, state.topn + 2).map(r => -r.d));
+    const tr = shown.map((r, i) => {
+      const specs = moveSpecs(r.move);
+      const items = specs.map(([s, spec]) => itemHTML(spec)).join('<span class="plus">+</span>');
+      const tiers = [...new Set(specs.map(([, spec]) => (item(spec[0]) || {}).tier).filter(Boolean))];
+      const srcs = specs.map(([, spec]) => (item(spec[0]) || { sources: [] }).sources.slice(0, 2).map(s => `<div class="s">${esc(s)}</div>`).join('')).join('');
+      const pct = L.dps ? (r.d / L.dps * 100) : 0;
+      const tie = !r.best && Math.abs(r.d) <= r.m;
+      const delta = r.best ? '<span class="dv zero">BiS</span>' :
+        `<span class="dv ${tie ? 'zero' : 'neg'}">${r.d > 0 ? '+' : ''}${r.d.toFixed(1)}</span> <span class="dm">±${r.m.toFixed(1)} · ${tie ? 'tie' : pct.toFixed(1) + '%'}</span>
+         <div class="bar-bg"><div class="bar-fg" style="width:${Math.max(0, Math.min(100, -r.d / maxLoss * 100))}%"></div></div>`;
+      return `<tr class="${r.best ? 'best' : ''}"><td class="rank">${i + 1}</td><td class="item">${items}</td>
+        <td class="delta">${delta}</td><td>${tiers.map(t => `<span class="badge ${t}">${t}</span>`).join(' ')}</td><td class="src">${srcs}</td></tr>`;
+    }).join('');
+    const hiddenBest = !rowPasses(moveSpecs(g.best));
+    out.push(`<div class="card" id="card-${g.id}"><h3>${esc(SLOT_LABEL[g.id] || g.id)} <small>${g.note ? esc(g.note) : ''}</small></h3>
+      ${shown.length ? `<table><thead><tr><th>#</th><th>Item</th><th>Δ DPS</th><th>Tier</th><th>Where</th></tr></thead><tbody>${tr}</tbody></table>` : ''}
+      ${hiddenBest ? '<div class="empty-note">The best item for this slot is hidden by your filters.</div>' : ''}
+      ${!shown.length ? '<div class="empty-note">Nothing in this slot passes the filters.</div>' : ''}</div>`);
+  }
+  document.getElementById('cards').innerHTML = out.join('');
+}
+
+// Rings and trinkets have no order: each loadout's pair is listed with the item more loadouts wear first, so the same
+// two items in swapped slots do not read as a difference.
+function pairedGear(ids) {
+  const out = Object.fromEntries(ids.map(id => [id, { ...G.loadouts[id].gear }]));
+  for (const [a, b] of [['finger1', 'finger2'], ['trinket1', 'trinket2']]) {
+    const count = {};
+    ids.forEach(id => [a, b].forEach(s => { const v = out[id][s]; if (v && v[0]) count[v[0]] = (count[v[0]] || 0) + 1; }));
+    ids.forEach(id => {
+      const x = out[id][a], y = out[id][b];
+      if (x && y && (count[y[0]] || 0) > (count[x[0]] || 0)) { out[id][a] = y; out[id][b] = x; }
+    });
+  }
+  return out;
+}
+
+function renderMatrix() {
+  const ids = Object.keys(G.loadouts);
+  const gear = pairedGear(ids);
+  const head = ids.map(id => { const L = G.loadouts[id]; return `<th>${esc(L.title)}<div class="dm">${L.dps.toFixed(0)} DPS</div></th>`; }).join('');
+  const rows = ORDER.map(s => {
+    const cells = ids.map(id => gear[id][s] || [0, 0, 0]);
+    const keys = cells.map(c => c[0] + ':' + c[2]);
+    const counts = {};
+    keys.forEach(k => counts[k] = (counts[k] || 0) + 1);
+    const common = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    const same = keys.every(k => k === keys[0]);
+    if (cells.every(c => !c[0])) return '';
+    return `<tr class="${same ? 'same' : ''}"><td class="sl">${SLOT_LABEL[s]}</td>${cells.map((c, i) =>
+      `<td class="${!same && keys[i] !== common ? 'odd' : ''}">${c[0] ? itemHTML(c, true) : '<span class="dm">—</span>'}</td>`).join('')}</tr>`;
+  }).join('');
+  document.getElementById('matrix').innerHTML = `<table><thead><tr><th>Slot</th>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function statLines(it) {
+  const L = [];
+  if (it.weapon) {
+    L.push(`<div class="row"><span class="w">${it.weapon.min}–${it.weapon.max} Damage</span><span class="w">Speed ${it.weapon.speed.toFixed(2)}</span></div>`);
+    L.push(`<div class="w">(${it.weapon.dps.toFixed(1)} damage per second)</div>`);
+  }
+  if (it.armor) L.push(`<div class="w">${it.armor} Armor</div>`);
+  for (const [k, v] of it.white) L.push(`<div class="w">+${v} ${k}</div>`);
+  for (const line of it.green) L.push(`<div class="g">${esc(line)}</div>`);
+  return L.join('');
+}
+function tipHTML(id, sfx) {
+  const it = item(id);
+  if (!it) return '';
+  const sx = sfx && it.suffixStats && it.suffixStats[sfx];
+  return `<div class="t" style="${qcls(it)}">${esc(it.name)}${sfx ? ' ' + esc(G.suffixes[sfx] || '') : ''}</div>
+    ${it.unique ? '<div class="w">Unique</div>' : ''}
+    <div class="row"><span class="w">${esc(it.slot)}</span><span class="w">${esc(it.kind || '')}</span></div>
+    ${statLines(it)}${sx ? sx.map(([k, v]) => `<div class="w">+${v} ${k}</div>`).join('') : ''}
+    ${it.set ? `<div class="y">${esc(it.set)}</div>` : ''}
+    <div class="m">Item level ${it.ilvl}${it.side ? ' · ' + it.side + ' only' : ''}</div>
+    <div style="margin-top:6px">${it.sources.map(s => `<div class="y">${esc(s)}</div>`).join('') || '<div class="m">No source in the game files</div>'}</div>
+    <div style="margin-top:6px"><span class="badge ${it.tier}">${it.tier}</span></div>`;
+}
+
+function renderStatic() {
+  document.getElementById('lede').textContent = G.meta.lede;
+  document.getElementById('howto').innerHTML = G.howto;
+  document.getElementById('method').innerHTML = G.method;
+  document.getElementById('foot').innerHTML = G.meta.footer;
+  document.getElementById('ps').innerHTML = G.playstyles.map(p => `<button data-ps="${p.id}">${esc(p.short)}</button>`).join('');
+  document.getElementById('tier').innerHTML = '<button data-tier="max">Max</button><button data-tier="cheap">Cheap</button>';
+  document.getElementById('srcs').innerHTML = SOURCE_KINDS.map(([k, n]) => `<button class="chip" data-src="${k}" aria-pressed="true">${n}</button>`).join('');
+}
+
+function render() {
+  document.querySelectorAll('[data-ps]').forEach(b => b.setAttribute('aria-pressed', b.dataset.ps === state.ps));
+  document.querySelectorAll('[data-tier]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tier === state.tier));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === state.tab));
+  document.querySelectorAll('section[data-panel]').forEach(s => s.hidden = s.dataset.panel !== state.tab);
+  document.querySelector('.bar').style.display = state.tab === 'gear' ? '' : 'none';
+  if (state.tab === 'gear') { renderDoll(); renderCards(); }
+  if (state.tab === 'all') renderMatrix();
+  toHash();
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('button,[data-go]');
+  if (!t) return;
+  if (t.dataset.ps) state.ps = t.dataset.ps;
+  else if (t.dataset.tier) state.tier = t.dataset.tier;
+  else if (t.dataset.tab) state.tab = t.dataset.tab;
+  else if (t.dataset.src) { state.srcs.has(t.dataset.src) ? state.srcs.delete(t.dataset.src) : state.srcs.add(t.dataset.src); t.setAttribute('aria-pressed', state.srcs.has(t.dataset.src)); }
+  else if (t.dataset.go) {
+    const L = loadout();
+    const g = L.groups.find(g => Object.keys(g.best).includes(t.dataset.go)) || L.groups.find(g => g.id === t.dataset.go);
+    const card = g && document.getElementById('card-' + g.id);
+    if (card) { card.scrollIntoView({ block: 'start' }); card.classList.add('flash'); setTimeout(() => card.classList.remove('flash'), 1200); }
+    return;
+  } else return;
+  render();
+});
+document.getElementById('q').addEventListener('input', e => { state.q = e.target.value; renderCards(); });
+document.getElementById('topn').addEventListener('change', e => { state.topn = +e.target.value; renderCards(); });
+
+const tip = document.getElementById('tip');
+document.addEventListener('mousemove', e => {
+  const t = e.target.closest('[data-tip]');
+  if (!t) { tip.hidden = true; return; }
+  tip.innerHTML = tipHTML(+t.dataset.tip, +t.dataset.sfx);
+  tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + 16, y = e.clientY + 16;
+  if (x + w > innerWidth - 8) x = e.clientX - w - 16;
+  if (y + h > innerHeight - 8) y = Math.max(8, innerHeight - h - 8);
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+});
+
+fromHash();
+renderStatic();
+render();
+</script>
+</body>
+</html>
