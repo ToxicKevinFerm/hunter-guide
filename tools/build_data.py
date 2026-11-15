@@ -6,6 +6,7 @@
 RUNS_DIR holds, per loadout (weave-max, weave-cheap, turret-max, turret-cheap, melee-max, melee-cheap):
   <id>.gear.json   the loadout's gear: {"head": [id, enchant, suffix], ...}
   <id>.guide.json  the per-slot runs: {group: {"base": dps, "rows": [{"move": {...}, "d": .., "m": ..}]}}
+  <id>.cond.json   optional, the flipped-condition runs: {group: {"best": {"cond", "d"}, "rows": [{"move", "cond", "d", "m"}]}}
 and meta.json: {"loadouts": {id: {"build", "talents", "rotation", "hit"}}, "ep": {...}, "dw": [...], ...}.
 """
 import argparse, json, os, re, urllib.request
@@ -77,6 +78,12 @@ RANGED = {1: 'Bow', 2: 'Crossbow', 3: 'Gun', 4: 'Thrown'}
 SLOT_TYPE = {'head': 1, 'neck': 2, 'shoulder': 3, 'back': 4, 'chest': 5, 'wrist': 6, 'hands': 7, 'waist': 8, 'legs': 9,
              'feet': 10, 'finger1': 11, 'finger2': 11, 'trinket1': 12, 'trinket2': 12, 'main_hand': 13, 'off_hand': 13,
              'ranged': 14}
+
+MOB = {1: 'Beasts', 2: 'Demons', 3: 'Dragonkin', 4: 'Elementals', 5: 'Giants', 6: 'Humanoids', 7: 'Mechanicals', 8: 'Undead'}
+# <id>.cond.json holds, for the items whose bonus needs an area or a creature type, their Δ DPS with that condition
+# flipped against the same set: a row's item with it, or the worn item's own loss without it.
+COND_LABEL = {'forest': 'Outside Forest/Grassland', 'dragonkin': 'Not against Dragonkin', 'demon': 'Against Demons',
+              'beast': 'Against Beasts', 'elemental': 'Against Elementals'}
 
 # Reputation a vendor asks for that the game files do not carry (the Wowhead tooltip names it).
 VENDOR_REP = {19325: 'Reputation: Frostwolf Clan Exalted'}
@@ -205,6 +212,11 @@ def item_data(iid, used_suffixes):
         ast = {int(k): v for k, v in area.get('stats', {}).items()}
         if ast.get(14):
             green.append(f"In {AREA.get(area.get('areaType'), 'some')} areas: +{ast[14]} Attack Power.")
+    for mob in so.get('mobTypeStats', []):
+        mst = {int(k): v for k, v in mob.get('stats', {}).items()}
+        if mst.get(14):
+            names = ' and '.join(MOB.get(t, 'some creatures') for t in mob.get('mobTypes', []))
+            green.append(f"Equip: +{mst[14]} Attack Power when fighting {names}.")
     if it.get('itemEffects'):
         green.append('Has an equip, proc or use effect (see Wowhead).')
     t = it.get('type')
@@ -269,6 +281,8 @@ loadouts = {}
 for lid in IDS:
     gear = json.load(open(os.path.join(a.runs, f'{lid}.gear.json')))
     runs = json.load(open(os.path.join(a.runs, f'{lid}.guide.json')))
+    cond_path = os.path.join(a.runs, f'{lid}.cond.json')
+    cond = json.load(open(cond_path)) if os.path.exists(cond_path) else {}
     m = meta['loadouts'][lid]
     groups = []
     for g in GROUP_ORDER:
@@ -276,18 +290,25 @@ for lid in IDS:
             continue
         slots = [s for s in {'weapons_ranged': ['main_hand', 'off_hand', 'ranged'], 'weapons': ['main_hand', 'off_hand']}.get(g, [g])]
         best = {s: spec_with_label(s, gear.get(s, [0, 0, 0])) for s in slots if gear.get(s, [0])[0]}
+        flipped = {json.dumps(c['move'], sort_keys=True): c for c in cond.get(g, {}).get('rows', [])}
         rows = []
         for r in runs[g]['rows']:
             move = {s: spec_with_label(s, v) for s, v in r['move'].items() if v and v[0]}
             if not move:
                 continue
-            rows.append({'move': move, 'd': round(r['d'], 2), 'm': round(r['m'], 2)})
+            row = {'move': move, 'd': round(r['d'], 2), 'm': round(r['m'], 2)}
+            if (c := flipped.get(json.dumps(r['move'], sort_keys=True))):
+                row['alt'] = {'when': COND_LABEL[c['cond']], 'd': c['d'], 'm': c['m']}
+            rows.append(row)
         for spec in list(best.values()) + [v for r in rows for v in r['move'].values()]:
             used_items.add(spec[0])
             if spec[2]:
                 used_suffixes.setdefault(spec[0], set()).add(spec[2])
         rows.sort(key=lambda r: -r['d'])
-        groups.append({'id': g, 'best': best, 'rows': rows, 'note': NOTES.get(g, '')})
+        group = {'id': g, 'best': best, 'rows': rows, 'note': NOTES.get(g, '')}
+        if (c := cond.get(g, {}).get('best')):
+            group['bestAlt'] = {'when': COND_LABEL[c['cond']], 'd': c['d']}
+        groups.append(group)
     full = {s: spec_with_label(s, v) for s, v in gear.items() if v and v[0]}
     for s, spec in full.items():
         used_items.add(spec[0])

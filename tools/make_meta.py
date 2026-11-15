@@ -21,6 +21,13 @@ runs = {i: json.load(open(os.path.join(R, f'{i}.guide.json'))) for i in IDS}
 hit = json.load(open(os.path.join(R, 'hit.json')))
 ep = json.load(open(os.path.join(R, 'ep.json'))) if os.path.exists(os.path.join(R, 'ep.json')) else {}
 dps = {i: statistics.median(g['base'] for g in runs[i].values()) for i in IDS}
+cond = {i: json.load(open(os.path.join(R, f'{i}.cond.json'))) for i in IDS if os.path.exists(os.path.join(R, f'{i}.cond.json'))}
+# Rune of the Guard Captain outside Forest/Grassland: each set's loss, and the best other trinket 2's gap to it there.
+rune_out = {i: c['trinket2']['best']['d'] for i, c in cond.items() if c.get('trinket2', {}).get('best')}
+rune_next = {i: max(r['d'] for r in runs[i]['trinket2']['rows']) - rune_out[i] for i in rune_out}
+rune_swap = [i for i in rune_out if not i.startswith('turret')]
+rune_keep = [i for i in rune_out if i.startswith('turret')]
+assert all(rune_next[i] > 0 for i in rune_swap) and all(rune_next[i] < 0 for i in rune_keep), rune_next
 
 BUILDS = {
     'weave': ('SV Weave', '-00530501114-530200230050220151', 'Melee Weave (Max)'),
@@ -151,10 +158,13 @@ speed already covers it and only the highest speed effect counts. Sniper Scope l
 
 <h2>Trinkets</h2>
 <p>Blackhand's Breadth and Highborne Research Tablet top almost every list. Rune of the Guard Captain (Cleansed
-Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, where it takes
-a trinket slot in every set. On both weave sets it ties with Highborne Research Tablet, and the guide picks the Rune
-because it is the easier one to get. In Onyxia's Lair, a cavern, it keeps only its 14 Attack Power
-and 0.7% hit and falls 5–12 DPS behind. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
+Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, and there it
+takes a trinket slot in every set but Weave Cheap, where it ties with Highborne Research Tablet and the Tablet wins the
+tie (see Method). Anywhere else, in Onyxia's Lair for example, it keeps only its 14 Attack Power and 0.7% hit, and the
+sets that wear it lose {-max(rune_out.values()):.0f}–{-min(rune_out.values()):.0f} DPS. The weave and melee sets then do
+{min(rune_next[i] for i in rune_swap):.0f}–{max(rune_next[i] for i in rune_swap):.0f} DPS more with their next trinket,
+and the turret sets still keep the Rune, by {-max(rune_next[i] for i in rune_keep):.0f}–{-min(rune_next[i] for i in rune_keep):.0f}.
+Each trinket card shows the Rune's figure outside the area. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
 stats: Arcanite Dragonling, Heart of Wyrmthalak, Scented Runewood Brooch, the Defender of the Timbermaw and Barkskin
 pair (Teachings of the Furbolgs), Devilsaur Eye's use, and Scalding Flamehoof's run speed.</p>
 """
@@ -166,12 +176,21 @@ method = f"""
 Hyjal, so area-bound bonuses count; an Orc hunter with the full raid buffs and consumables of the sim's hunter
 defaults; and a 150–350 ms reaction time. Each loadout uses the
 sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Melee for melee.</p>
+<p>A few items have a bonus that needs an area or a creature type. Rune of the Guard Captain's counts only in
+Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count in these numbers; those of Royal Seal of
+Eldre'Thalas (Demons), King Mosh's Tooth (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a
+second figure under its Δ DPS: the same comparison against the same set, with its condition the other way round. When
+one of them ties with an item whose bonus always counts, the set wears the other item: Shadowcraft Spaulders or
+Stratholme Militia Shoulderguard over Wyrmhide Spaulders, and Highborne Research Tablet over the Rune on Weave
+Cheap.</p>
 <ul>
 <li>Every Phase 1 item a hunter can wear was a candidate, except raid loot, raid reputation (The Watchers) and honor
 rank gear. Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
 Guard Captain) have the same stats.</li>
 <li>Each slot's candidates were screened at 3,000 iterations and the best confirmed at 10,000 against the finished set
-on another seed; slots changed after that (the rings and the AV sets' shoulders and gloves) at 3,000 both times. Δ DPS is that confirmed gap, ± its 95% margin.</li>
+on another seed; slots changed after that (the rings, the AV sets' shoulders and gloves, the trinket 2 slot of every set that wears
+Rune of the Guard Captain and the slots the tie rule above changed) at 3,000 both times. The other slots of a set
+that changed keep their gaps from before the change. Δ DPS is that confirmed gap, ± its 95% margin.</li>
 <li>Set bonuses were tried as whole sets, the weave's two-hander and bow as one pair, and every two-slot combination of
 each slot's best alternatives was checked at the end. Every enchant was simmed against the others.</li>
 </ul>

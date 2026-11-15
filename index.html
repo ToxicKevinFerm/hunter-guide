@@ -112,6 +112,8 @@ td.delta { white-space: nowrap; width: 120px; }
 .dv.zero { color: var(--hunter); }
 .dv.neg { color: #e9c58a; }
 .dm { color: var(--muted); font-size: 11px; }
+.alt { color: var(--muted); font-size: 11px; white-space: normal; margin-top: 3px; line-height: 1.3; }
+.alt b { color: #e9c58a; }
 .bar-bg { height: 4px; background: #ffffff10; border-radius: 3px; margin-top: 3px; overflow: hidden; }
 .bar-fg { height: 100%; background: linear-gradient(90deg, #e0705f, #e2b54a); }
 td.src { font-size: 12.5px; color: var(--muted); }
@@ -214,7 +216,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=6b468abd1a"></script>
+<script src="data.js?v=e63c775b16"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -315,7 +317,7 @@ function renderCards() {
   const L = loadout();
   const out = [];
   for (const g of L.groups) {
-    const rows = [{ move: g.best, d: 0, m: 0, best: true }, ...g.rows];
+    const rows = [{ move: g.best, d: 0, m: 0, best: true, alt: g.bestAlt }, ...g.rows];
     const shown = rows.filter(r => rowPasses(moveSpecs(r.move))).slice(0, state.topn);
     const maxLoss = Math.max(1, ...rows.slice(0, state.topn + 2).map(r => -r.d));
     const tr = shown.map((r, i) => {
@@ -328,8 +330,10 @@ function renderCards() {
       const delta = r.best ? '<span class="dv zero">BiS</span>' :
         `<span class="dv ${tie ? 'zero' : 'neg'}">${r.d > 0 ? '+' : ''}${r.d.toFixed(1)}</span> <span class="dm">±${r.m.toFixed(1)} · ${tie ? 'tie' : pct.toFixed(1) + '%'}</span>
          <div class="bar-bg"><div class="bar-fg" style="width:${Math.max(0, Math.min(100, -r.d / maxLoss * 100))}%"></div></div>`;
+      // An area or creature bonus's other case, against the same set as the Δ above it.
+      const alt = r.alt ? `<div class="alt" title="Δ DPS against the same set when this item's area or creature bonus is the other way round">${esc(r.alt.when)}: <b>${r.alt.d > 0 ? '+' : ''}${r.alt.d.toFixed(1)}</b>${r.alt.m != null ? ` <span class="dm">±${r.alt.m.toFixed(1)}</span>` : ''}</div>` : '';
       return `<tr class="${r.best ? 'best' : ''}"><td class="rank">${i + 1}</td><td class="item">${items}</td>
-        <td class="delta">${delta}</td><td>${tiers.map(t => `<span class="badge ${t}">${t}</span>`).join(' ')}</td><td class="src">${srcs}</td></tr>`;
+        <td class="delta">${delta}${alt}</td><td>${tiers.map(t => `<span class="badge ${t}">${t}</span>`).join(' ')}</td><td class="src">${srcs}</td></tr>`;
     }).join('');
     const hiddenBest = !rowPasses(moveSpecs(g.best));
     out.push(`<div class="card" id="card-${g.id}"><h3>${esc(SLOT_LABEL[g.id] || g.id)} <small>${g.note ? esc(g.note) : ''}</small></h3>
