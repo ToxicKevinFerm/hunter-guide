@@ -100,6 +100,7 @@ td.item { min-width: 0; }
 .it { display: flex; align-items: center; gap: 9px; min-width: 0; }
 .it .names { min-width: 0; }
 .it .n { font-weight: 600; }
+.ally { opacity: .8; }
 .it .e { color: var(--good); font-size: 11.5px; }
 .plus { color: var(--muted); margin: 0 2px; }
 td.delta { white-space: nowrap; width: 120px; }
@@ -250,7 +251,7 @@ function itemHTML(spec, small) {
   const en = enchantName(spec);
   return `<span class="it" data-tip="${spec[0]}" data-sfx="${spec[2] || 0}">
       <a href="${WH(spec[0])}" target="_blank" rel="noopener"><img class="icon${small ? ' sm' : ''}" loading="lazy" src="${ICON(it.icon)}" alt=""></a>
-      <span class="names"><a class="n" style="${qcls(it)}" href="${WH(spec[0])}" target="_blank" rel="noopener">${esc(itemName(spec))}</a>
+      <span class="names"><a class="n" style="${qcls(it)}" href="${WH(spec[0])}" target="_blank" rel="noopener">${esc(itemName(spec))}</a>${it.alliance ? `<span class="ally"> / <a class="n" style="${qcls(it)}" href="${WH(it.alliance.id)}" target="_blank" rel="noopener" title="Alliance version, identical">${esc(it.alliance.name)}</a></span>` : ''}
       ${en && !small ? `<div class="e">${esc(en)}</div>` : ''}</span></span>`;
 }
 const moveSpecs = move => Object.entries(move).filter(([, v]) => v && v[0]).sort((a, b) => order(a[0]) - order(b[0]));
@@ -267,7 +268,8 @@ function rowPasses(specs) {
     return true;
   }) && (!q || specs.some(([, spec]) => {
     const it = item(spec[0]);
-    return it && (itemName(spec).toLowerCase().includes(q) || it.sources.join(' ').toLowerCase().includes(q));
+    return it && (itemName(spec).toLowerCase().includes(q) || (it.alliance && it.alliance.name.toLowerCase().includes(q)) ||
+      it.sources.join(' ').toLowerCase().includes(q));
   }));
 }
 
@@ -279,7 +281,7 @@ function renderDoll() {
     const it = item(spec[0]);
     return `<div class="slot" data-go="${s}" data-tip="${spec[0]}" data-sfx="${spec[2] || 0}">
       <img class="icon" src="${ICON(it.icon)}" alt=""><div class="meta"><div class="lbl">${SLOT_LABEL[s]}</div>
-      <div class="nm" style="${qcls(it)}">${esc(itemName(spec))}</div><div class="en">${esc(enchantName(spec)) || '&nbsp;'}</div></div></div>`;
+      <div class="nm" style="${qcls(it)}">${esc(itemName(spec))}${it.alliance ? `<span class="ally"> / ${esc(it.alliance.name)}</span>` : ''}</div><div class="en">${esc(enchantName(spec)) || '&nbsp;'}</div></div></div>`;
   };
   const P = G.playstyles.find(p => p.id === state.ps);
   document.getElementById('doll').innerHTML = `
@@ -383,6 +385,7 @@ function tipHTML(id, sfx) {
     ${statLines(it)}${sx ? sx.map(([k, v]) => `<div class="w">+${v} ${k}</div>`).join('') : ''}
     ${it.set ? `<div class="y">${esc(it.set)}</div>` : ''}
     <div class="m">Item level ${it.ilvl}${it.side ? ' · ' + it.side + ' only' : ''}</div>
+    ${it.alliance ? `<div class="m">Alliance: ${esc(it.alliance.name)}, identical</div>` : ''}
     <div style="margin-top:6px">${it.sources.map(s => `<div class="y">${esc(s)}</div>`).join('') || '<div class="m">No source in the game files</div>'}</div>
     <div style="margin-top:6px"><span class="badge ${it.tier}">${it.tier}</span></div>`;
 }

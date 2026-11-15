@@ -18,6 +18,37 @@ a = ap.parse_args()
 
 db = json.load(open(os.path.join(a.forever, 'assets/database/db.json')))
 items = {it['id']: it for it in db['items']}
+
+
+def side_of(it):
+    """1 Alliance, 2 Horde, 0 both: the item's faction, or else the one faction all its sources name. A source that
+    names no faction is open to both."""
+    if it.get('factionRestriction'):
+        return it['factionRestriction']
+    fs = {v.get('faction') or v.get('factionId') or 0 for src in it.get('sources') or [] for v in src.values() if v}
+    return fs.pop() if len(fs) == 1 else 0
+
+
+def twin_sig(it):
+    return (it.get('type'), it.get('armorType'), it.get('weaponType'), it.get('rangedWeaponType'), it.get('handType'),
+            it.get('weaponSpeed'), it.get('quality'), json.dumps(it.get('scalingOptions'), sort_keys=True))
+
+
+# The Alliance copy of a Horde item has the same stats, slot and quality under another name (Darkspear and Theramore,
+# Defiler's and Highlander's, Scout's and Sentinel's). Cleansed Vilebranch Medallion names no faction and no source.
+ALLIANCE_BY_HAND = {19120: 270275}
+_by_sig = {}
+for _it in db['items']:
+    _by_sig.setdefault(twin_sig(_it), []).append(_it)
+
+
+def alliance_twin(it):
+    if it['id'] in ALLIANCE_BY_HAND:
+        return items[ALLIANCE_BY_HAND[it['id']]]
+    if side_of(it) != 2:
+        return None
+    twins = [o for o in _by_sig[twin_sig(it)] if side_of(o) == 1]
+    return twins[0] if len(twins) == 1 else None
 zones = {z['id']: z['name'] for z in db['zones']}
 npcs = {n['id']: n for n in db['npcs']}
 facs = {f['id']: f['name'] for f in db['factions']}
@@ -194,7 +225,8 @@ def item_data(iid, used_suffixes):
     return {'name': it['name'], 'q': it.get('quality', 1), 'ilvl': so.get('ilvl', 0), 'icon': icon(it), 'slot': slot,
             'kind': kind, 'armor': st.get(27, 0), 'white': white, 'green': green, 'weapon': weapon,
             'set': it.get('setName', ''), 'unique': bool(it.get('unique')),
-            'side': {1: 'Alliance', 2: 'Horde'}.get(it.get('factionRestriction'), ''), 'sources': srcs, 'kinds': kinds,
+            'side': {1: 'Alliance', 2: 'Horde'}.get(side_of(it), ''), 'sources': srcs, 'kinds': kinds,
+            'alliance': {'id': tw['id'], 'name': tw['name']} if (tw := alliance_twin(it)) else None,
             'tier': tier(it), 'suffixStats': sfx}
 
 
