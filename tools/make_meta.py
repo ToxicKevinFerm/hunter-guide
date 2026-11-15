@@ -88,7 +88,7 @@ howto = f"""
 <h2>Hit first</h2>
 <p>Against a level 63 boss you miss 8% of your attacks, melee and ranged, until hit takes it away; past that hit is
 worth nothing. Surefooted gives 3% and the Devilsaur two-piece another 2%, so the Survival sets need only about 3–5%
-from gear. Every set here lands between 7.5% and 9.5%; the dual wield sets keep a little extra, since white swings with two weapons miss far more often. An Orc swinging an axe (Arcanite Reaper, Annihilator) needs only
+from gear. Every set here lands between {min(min(v) for v in hit.values()):g}% and {max(max(v) for v in hit.values()):g}%; the dual wield sets keep a little extra, since white swings with two weapons miss far more often. An Orc swinging an axe (Arcanite Reaper, Annihilator) needs only
 6% in melee, but the bow still needs 8%.</p>
 {ep_html}
 
@@ -135,16 +135,19 @@ on the max weave is still 68 higher.</p>
 speed already covers it and only the highest speed effect counts. Sniper Scope loses to SAF-T by 8–11.</p>
 
 <h2>Trinkets</h2>
-<p>Blackhand's Breadth and Highborne Research Tablet top almost every list; Hand of Justice is within about 1 DPS of the
-melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
+<p>Blackhand's Breadth and Highborne Research Tablet top almost every list. Rune of the Guard Captain (Cleansed
+Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, where it takes
+the second slot for turret and melee and ties for weave; in Onyxia's Lair, a cavern, it keeps only its 14 Attack Power
+and 0.7% hit and falls 5–12 DPS behind. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
 stats: Arcanite Dragonling, Heart of Wyrmthalak, Scented Runewood Brooch, the Defender of the Timbermaw and Barkskin
 pair (Teachings of the Furbolgs), Devilsaur Eye's use, and Scalding Flamehoof's run speed.</p>
 """
 
 method = """
 <h2>How these were found</h2>
-<p>Every number comes from WoWSims Forever: a 180 s fight against one level 63 dragonkin boss, an Orc hunter with the
-full raid buffs and consumables of the sim's hunter defaults, and a 150–350 ms reaction time. Each loadout uses the
+<p>Every number comes from WoWSims Forever: a 180 s fight against one level 63 dragonkin boss in a Forest/Grassland area, as in Mount
+Hyjal, so area-bound bonuses count; an Orc hunter with the full raid buffs and consumables of the sim's hunter
+defaults; and a 150–350 ms reaction time. Each loadout uses the
 sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Melee for melee.</p>
 <ul>
 <li>Every Phase 1 item a hunter can wear was a candidate, except raid loot, raid reputation (The Watchers) and honor

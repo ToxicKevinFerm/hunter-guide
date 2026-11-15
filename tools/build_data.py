@@ -163,6 +163,12 @@ def item_data(iid, used_suffixes):
         green.append(f"Equip: Improves your chance to get a critical strike by {pct(st[18], 14)}.")
     if st.get(19):
         green.append(f"Equip: Improves your attack speed by {pct(st[19], 10)}.")
+    AREA = {1: 'Forest/Grassland', 2: 'Mountainous', 3: 'Snowy', 4: 'Desert', 5: 'Swamp', 6: 'Wasteland', 7: 'Haunted',
+            8: 'Cavernous', 9: 'Volcanic', 10: 'Stronghold and city'}
+    for area in so.get('areaStats', []):
+        ast = {int(k): v for k, v in area.get('stats', {}).items()}
+        if ast.get(14):
+            green.append(f"In {AREA.get(area.get('areaType'), 'some')} areas: +{ast[14]} Attack Power.")
     if it.get('itemEffects'):
         green.append('Has an equip, proc or use effect (see Wowhead).')
     t = it.get('type')
