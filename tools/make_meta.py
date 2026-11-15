@@ -137,7 +137,8 @@ speed already covers it and only the highest speed effect counts. Sniper Scope l
 <h2>Trinkets</h2>
 <p>Blackhand's Breadth and Highborne Research Tablet top almost every list. Rune of the Guard Captain (Cleansed
 Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, where it takes
-the second slot for turret and melee and ties for weave; in Onyxia's Lair, a cavern, it keeps only its 14 Attack Power
+the second slot for turret, melee and Weave Max (a tie with Highborne Research Tablet there, so the Rune) and falls
+2 DPS behind on Weave Cheap; in Onyxia's Lair, a cavern, it keeps only its 14 Attack Power
 and 0.7% hit and falls 5–12 DPS behind. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
 stats: Arcanite Dragonling, Heart of Wyrmthalak, Scented Runewood Brooch, the Defender of the Timbermaw and Barkskin
 pair (Teachings of the Furbolgs), Devilsaur Eye's use, and Scalding Flamehoof's run speed.</p>
