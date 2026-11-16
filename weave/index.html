@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to weave · Forever Hunter</title>
+<meta name="description" content="Melee weaving for WoW Forever hunters, shown on real cycles from the sim: when to walk in, when to walk out, and what to press.">
+<link rel="icon" href="https://wow.zamimg.com/images/wow/icons/medium/classicon_hunter.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<link rel="stylesheet" href="viewer.css">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0c0d0b;
+  --panel: #15170f;
+  --panel-2: #1c1f15;
+  --line: #2f3322;
+  --line-2: #3f4530;
+  --gold: #d9b45f;
+  --gold-dim: #9a8250;
+  --text: #ebe7da;
+  --muted: #a29d8c;
+  --hunter: #a9d271;
+  --bad: #e0705f;
+  --display: "Source Serif 4", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", sans-serif;
+  --wv-field-h: 420px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(1200px 600px at 60% -200px, #23281a 0%, var(--bg) 60%) fixed; color: var(--text); font: 15px/1.5 var(--body); }
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 22px 24px 30px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.brand img { width: 26px; height: 26px; border-radius: 5px; border: 1px solid var(--gold-dim); }
+h1 { font: 700 34px var(--display); color: var(--gold); margin: 10px 0 4px; }
+h4 { font-family: var(--display); }
+.sub { color: var(--muted); margin: 0 0 12px; max-width: 980px; }
+.dm { color: var(--muted); font-size: 12px; }
+.panel { background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line-2); border-radius: 14px; padding: 16px 18px; box-shadow: 0 10px 40px #00000066; }
+footer { color: var(--muted); font-size: 12.5px; padding-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img alt="" src="https://wow.zamimg.com/images/wow/icons/medium/classicon_hunter.jpg">Forever Hunter · Survival</div>
+  <h1>How to weave</h1>
+  <p class="sub">A few real weave cycles from the sim, looped. The first time, it stops at every action and tells you what happened and why; after that it loops. Slow it down and watch the two timers on the right: you walk in when your bow has just fired, and you walk out when your two-hander has swung.</p>
+
+  <div class="panel">
+    <div class="wv-top">
+      <div class="wv-seg"><button data-wv="max">Max weave</button><button data-wv="normal">Normal weave</button></div>
+      <span class="dm" id="wv-source"></span>
+    </div>
+    <div class="wv-grid">
+      <div class="wv-left">
+        <div class="wv-fieldbox"><canvas id="wv-field" role="img" aria-label="You and the boss from above, with melee range and the dead zone"></canvas>
+          <div class="wv-pop" id="wv-pop" role="dialog" aria-live="polite" hidden>
+            <div class="wv-pop-step" id="wv-pop-step"></div>
+            <h4 id="wv-pop-title"></h4>
+            <div class="wv-pop-text" id="wv-pop-text"></div>
+            <div class="wv-pop-btns"><button id="wv-pop-next" class="wv-btn">Continue ▶</button><button id="wv-pop-skip" class="wv-link">Skip the tour</button></div>
+          </div></div>
+        <div class="actionbar" id="wv-bar" aria-label="Your action bar: what you press, with cooldowns"></div>
+      </div>
+      <div class="wv-side">
+        <div class="wv-timer"><div class="wv-th"><span>Bow · Auto Shot</span><em id="wv-bow-label"></em></div><div class="wv-track"><div id="wv-bow" class="wv-fill bow"></div></div></div>
+        <div class="wv-timer"><div class="wv-th"><span>Two-hander · swing</span><em id="wv-melee-label"></em></div><div class="wv-track"><div id="wv-melee" class="wv-fill melee"></div></div></div>
+        <ol class="wv-steps" id="wv-steps"></ol>
+        <h4>What just happened</h4>
+        <ul class="wv-feed" id="wv-feed"></ul>
+      </div>
+    </div>
+    <div class="wv-controls">
+      <button id="wv-play" class="wv-btn">Play</button>
+      <button id="wv-tour" class="wv-tourbtn" aria-pressed="false">Step by step</button>
+      <div class="wv-seg" id="wv-speeds"></div>
+      <span id="wv-time" class="wv-time"></span>
+      <span id="wv-zone" class="wv-zone"></span>
+    </div>
+    <canvas id="wv-strip" aria-hidden="true"></canvas>
+    <p class="dm wv-legend">The strip is your distance over the loop, with the dead zone shaded. Blue marks on top: an Auto Shot goes off. Orange marks below: your two-hander swings. Click or drag it to jump.</p>
+  </div>
+
+  <footer>From WoWSims Forever (2026-11-16): the SV Weave preset (Survival 31 / Marksmanship 20, Lone Wolf, pre-raid best in slot) with each weave rotation, one fight each; the loop is a steady stretch of that fight. Cooldowns from the game's spell data. · <a href="../">Pre-raid best in slot</a></footer>
+</div>
+<script src="data.js"></script>
+<script src="viewer.js"></script>
+<script>
+  // Opens on max weave, or on normal weave with ?v=normal.
+  window.weaveViewer.open(new URLSearchParams(location.search).get('v') === 'normal' ? 'normal' : 'max');
+</script>
+</body>
+</html>
