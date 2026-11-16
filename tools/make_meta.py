@@ -25,9 +25,7 @@ cond = {i: json.load(open(os.path.join(R, f'{i}.cond.json'))) for i in IDS if os
 # Rune of the Guard Captain outside Forest/Grassland: each set's loss, and the best other trinket 2's gap to it there.
 rune_out = {i: c['trinket2']['best']['d'] for i, c in cond.items() if c.get('trinket2', {}).get('best')}
 rune_next = {i: max(r['d'] for r in runs[i]['trinket2']['rows']) - rune_out[i] for i in rune_out}
-rune_swap = [i for i in rune_out if not i.startswith('turret')]
-rune_keep = [i for i in rune_out if i.startswith('turret')]
-assert all(rune_next[i] > 2 for i in rune_swap) and all(abs(rune_next[i]) < 1.5 for i in rune_keep), rune_next
+assert all(v > 2 for v in rune_next.values()), rune_next
 
 BUILDS = {
     'weave': ('SV Weave', '-00530501114-530200230050220151', 'Melee Weave (Max)'),
@@ -131,8 +129,8 @@ two-hander is only a stat stick. The Auto rotation weaves with any two-hander, a
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
 <h3>Melee: dual wield, Crusader on the main hand</h3>
-<p>Survival melee dual wields: Annihilator (Max) or Dal'Rend's Sacred Charge (Cheap) in the main hand, with Bonescraper. Crusader on the main hand beats
-Agility by about 3; the off hand keeps +15 Agility.</p>
+<p>Survival melee dual wields: Annihilator (Max) or Dal'Rend's Sacred Charge (Cheap) in the main hand, with Bonescraper. Crusader on the main hand edges
+out Agility (about 2 on Max, a tie on Cheap); the off hand keeps +15 Agility.</p>
 
 <h3>Dual wield while weaving</h3>
 <p>If you weave with two one-handers, play Melee Weave (Normal): it walks in only when your shots are on cooldown and
@@ -157,15 +155,15 @@ weave is still about 68 higher.</p>
 speed already covers it and only the highest speed effect counts. Sniper Scope loses to SAF-T by 8–11.</p>
 
 <h2>Trinkets</h2>
-<p>Blackhand's Breadth and Highborne Research Tablet top almost every list. Rune of the Guard Captain (Cleansed
+<p>Heart of Wyrmthalak tops the weave and melee lists: its Flame Lash procs about twice a minute from melee and ranged
+hits. Blackhand's Breadth is next on weave and the best on turret, and Highborne Research Tablet is next on melee. Rune of the Guard Captain (Cleansed
 Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, and there it
-takes a trinket slot in every set but Weave Cheap, where it ties with Highborne Research Tablet and the Tablet wins the
+takes a trinket slot in every set but Weave Cheap, where it ties with Blackhand's Breadth and Blackhand's wins the
 tie (see Method). Anywhere else, in Onyxia's Lair for example, it keeps only its 14 Attack Power and 0.7% hit, and the
-sets that wear it lose {-max(rune_out.values()):.0f}–{-min(rune_out.values()):.0f} DPS. The weave and melee sets then do
-{min(rune_next[i] for i in rune_swap):.0f}–{max(rune_next[i] for i in rune_swap):.0f} DPS more with their next trinket,
-while on the turret sets the Rune and the next trinket stay within about 1 DPS of each other.
+sets that wear it lose {-max(rune_out.values()):.0f}–{-min(rune_out.values()):.0f} DPS. Every one of them then does
+{min(rune_next.values()):.0f}–{max(rune_next.values()):.0f} DPS more with its next trinket (Heart of Wyrmthalak on turret).
 Each trinket card shows the Rune's figure outside the area. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
-stats: Arcanite Dragonling, Heart of Wyrmthalak, Scented Runewood Brooch, the Defender of the Timbermaw and Barkskin
+stats: Arcanite Dragonling, Scented Runewood Brooch, the Defender of the Timbermaw and Barkskin
 pair (Teachings of the Furbolgs), Devilsaur Eye's use, and Scalding Flamehoof's run speed.</p>
 """
 
@@ -180,7 +178,7 @@ sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Mele
 Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count in these numbers; those of Royal Seal of
 Eldre'Thalas (Demons), King Mosh's Tooth (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a
 second figure under its Δ DPS: the same comparison against the same set, with its condition the other way round. When
-one of them ties with an item whose bonus always counts, the set wears the other item: Highborne Research Tablet over
+one of them ties with an item whose bonus always counts, the set wears the other item: Blackhand's Breadth over
 the Rune on Weave Cheap, and Shadowcraft Spaulders or Stratholme Militia Shoulderguard over Wyrmhide Spaulders. Turret
 Cheap wears Truestrike Shoulders: Wyrmhide is 1.7 DPS ahead of it against Dragonkin and 3.7 behind against anything
 else, and Truestrike ties with the other shoulders while keeping Wyrmhide's 1.5% hit, so the set stays at the hit
@@ -189,13 +187,14 @@ cap.</p>
 <li>Every Phase 1 item a hunter can wear was a candidate, except raid loot, raid reputation (The Watchers) and honor
 rank gear. Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
 Guard Captain) have the same stats.</li>
-<li>Each slot's candidates were screened at 3,000 iterations and the best confirmed at 10,000 against the finished set
-on another seed; slots changed after that (the rings, the AV sets' shoulders and gloves, the trinket 2 slot of every set that wears
-Rune of the Guard Captain, the slots the tie rule above changed, and every slot of Turret Cheap on its six best
-items) at 3,000 both times. The other slots of a set
-that changed keep their gaps from before the change. Δ DPS is that confirmed gap, ± its 95% margin.</li>
-<li>Set bonuses were tried as whole sets, the weave's two-hander and bow as one pair, and every two-slot combination of
-each slot's best alternatives was checked at the end. Every enchant was simmed against the others.</li>
+<li>Each slot's candidates were screened at 3,000 iterations and the best six confirmed at 3,000 against the finished
+set on another seed. Where that run found a better item (Heart of Wyrmthalak in the weave and melee sets, Bracers of
+the Eclipse on AV weave), the trinkets were simmed as pairs, and the changed slots were rerun the same way on the new
+set; the other slots of those sets keep their gaps from before the change. Δ DPS is the confirmed gap, ± its 95%
+margin.</li>
+<li>When the sets were first built, set bonuses were tried as whole sets, the weave's two-hander and bow as one pair,
+and every two-slot combination of each slot's best alternatives was checked at the end. Every enchant was simmed
+against the others.</li>
 </ul>
 <h3>Max and Cheap</h3>
 <p><b>Max</b> is everything outside raids, with Exalted reputation from the one faction you pick: <b>Darkspear</b>
@@ -215,7 +214,7 @@ Forever items without a source in the game files are listed as such.</p>
 
 meta = {
     'meta': {'lede': 'WoW Forever · Phase 1 · simmed pre-raid gear for weave, turret and melee hunters',
-             'footer': 'Simmed with WoWSims Forever on 2026-11-15. Item data from the game files; links go to Wowhead.'},
+             'footer': 'Simmed with WoWSims Forever on 2026-11-16. Item data from the game files; links go to Wowhead.'},
     'playstyles': playstyles, 'loadouts': loadouts, 'howto': howto, 'method': method,
 }
 json.dump(meta, open(os.path.join(R, 'meta.json'), 'w'), indent=1)
