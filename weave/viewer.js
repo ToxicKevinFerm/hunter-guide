@@ -62,7 +62,7 @@
     'Rapid Fire': 'Rapid Fire, out at range.',
   };
 
-  const view = { v: 'max', t: 0, playing: false, speed: 0.5, frame: 0, last: null, open: false };
+  const view = { v: 'normal', t: 0, playing: false, speed: 0.5, frame: 0, last: null, open: false };
   const icons = new Map();
   const icon = name => {
     if (!icons.has(name)) {
@@ -567,5 +567,5 @@
       cancelAnimationFrame(view.frame);
     },
   };
-  setVariant('max');
+  setVariant('normal');
 })();

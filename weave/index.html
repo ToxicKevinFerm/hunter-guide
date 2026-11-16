@@ -51,7 +51,7 @@ footer { color: var(--muted); font-size: 12.5px; padding-top: 14px; }
 
   <div class="panel">
     <div class="wv-top">
-      <div class="wv-seg"><button data-wv="max">Max weave</button><button data-wv="normal">Normal weave</button></div>
+      <div class="wv-seg"><button data-wv="normal">Normal weave</button><button data-wv="max">Max weave</button></div>
       <span class="dm" id="wv-source"></span>
     </div>
     <div class="wv-grid">
@@ -89,8 +89,8 @@ footer { color: var(--muted); font-size: 12.5px; padding-top: 14px; }
 <script src="data.js"></script>
 <script src="viewer.js"></script>
 <script>
-  // Opens on max weave, or on normal weave with ?v=normal.
-  window.weaveViewer.open(new URLSearchParams(location.search).get('v') === 'normal' ? 'normal' : 'max');
+  // Opens on normal weave, or on max weave with ?v=max.
+  window.weaveViewer.open(new URLSearchParams(location.search).get('v') === 'max' ? 'max' : 'normal');
 </script>
 </body>
 </html>
