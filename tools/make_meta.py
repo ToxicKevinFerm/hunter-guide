@@ -176,7 +176,7 @@ defaults; and a 150–350 ms reaction time. Each loadout uses the
 sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Melee for melee.</p>
 <p>A few items have a bonus that needs an area or a creature type. Rune of the Guard Captain's counts only in
 Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count in these numbers; those of Royal Seal of
-Eldre'Thalas (Demons), King Mosh's Tooth (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a
+Eldre'Thalas (Demons), King Mosh's Tooth and Huntsman's Harpoon (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a
 second figure under its Δ DPS: the same comparison against the same set, with its condition the other way round. When
 one of them ties with an item whose bonus always counts, the set wears the other item: Blackhand's Breadth over
 the Rune on Weave Cheap, and Shadowcraft Spaulders or Stratholme Militia Shoulderguard over Wyrmhide Spaulders. Turret
@@ -185,7 +185,9 @@ else, and Truestrike ties with the other shoulders while keeping Wyrmhide's 1.5%
 cap.</p>
 <ul>
 <li>Every Phase 1 item a hunter can wear was a candidate, except raid loot, raid reputation (The Watchers) and honor
-rank gear. Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
+rank gear. Huntsman's Harpoon, Belt of the Trickster and Pendant of Celerity are in the game's own hotfix cache but
+not in the copy the sim's item database was built from, so they were simmed afterwards against the finished sets, on
+the same seed as the other rows. Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
 Guard Captain) have the same stats.</li>
 <li>Each slot's candidates were screened at 3,000 iterations and the best six confirmed at 3,000 against the finished
 set on another seed. Where that run found a better item (Heart of Wyrmthalak in the weave and melee sets, Bracers of
