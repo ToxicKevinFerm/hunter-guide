@@ -71,7 +71,7 @@ window.GUIDE = {
       talents: '5-0053452511522051-5', pet: null, difficulty: 'Easy',
       dps: { 90: 1179.9, 180: 1142.0, 300: 1133.4 },
       sources: { auto: 451, shots: 671, melee: 0, pet: 0, other: 20 },
-      when: 'Stand at range and shoot. The best DPS without weaving and the easiest build to play. Bloodseeker, or Eaglehorn Long Bow for lone bosses.',
+      when: 'Stand at range and shoot. The best DPS without weaving and the easiest build to play. Bloodseeker, a free quest reward and practically the same as Eaglehorn Long Bow.',
       notes: ['Sniper Shot goes last in the priority and once before the pull. Efficiency stays at 4/5 to afford it.'],
       talentValues: { 'Deadly Aspects': [80.9, 13.3], 'Lethal Attacks': [53.5, 10.7], 'Improved Stings': [25.8, 9.0], 'Efficiency': [17.8, 0.3], 'Careful Aim': [63.8, 12.8], 'Rapid Killing': [0, 0], 'Improved Arcane Shot': [59.0, 52.6], 'Lone Wolf': [188.6, null], 'Trueshot Aura': [31.1, null], 'Mortal Shots': [70.7, 14.1], 'Rapid Recuperation': [11.9, 0.8], 'Barrage': [15.0, 7.5], 'Ranged Weapon Specialization': [52.9, 10.6], 'Sniper Shot': [69.3, null], 'Improved Tracking': [53.9, 10.8] } },
 
@@ -334,18 +334,19 @@ window.GUIDE = {
   // Why the turret sets wear Bloodseeker. Paired sims on the Max turret preset (MM build), Bloodseeker against Eaglehorn
   // Long Bow, 3000 iterations, 2026-11-17 (497d4a26f3). Judgement of Wisdom and the raid debuffs sit on the main target
   // only; turret rotation with Multi-Shot first at 2+ targets. The 30 minute runs draw random pulls (lone boss, boss + 2
-  // adds, packs of 3-4) with 20-60 s between pulls, drink between pulls, and Volley packs. [fight, DPS for Bloodseeker].
+  // adds, packs of 3-4) with 20-60 s between pulls, drink between pulls, and Volley packs. [fight, DPS for Bloodseeker, % of
+  // Eaglehorn's DPS in that fight].
   turretBow: {
     rows: [
-      ['Lone boss, 3 min', -17],
-      ['Lone boss, 5 min', -66],
-      ['Boss + 2 adds, staying on the boss', -1],
-      ['Boss + adds you have to kill', -22],
-      ['Pack of 4, Multi-Shot', 6],
-      ['Pack of 4, chaining Volley', 75],
-      ['30 min raid night, packs 19% of the combat time', -2],
-      ['30 min, packs a third of the combat time', 1],
-      ['30 min dungeon run, packs 62% of the combat time', 6],
+      ['Lone boss, 3 min', -17, -1.5],
+      ['Lone boss, 5 min', -66, -5.8],
+      ['Boss + 2 adds, staying on the boss', -1, -0.1],
+      ['Boss + adds you have to kill', -22, -2.0],
+      ['Pack of 4, Multi-Shot', 6, 0.5],
+      ['Pack of 4, chaining Volley', 75, 4.5],
+      ['30 min raid night, packs 19% of the combat time', -2, -0.3],
+      ['30 min, packs a third of the combat time', 1, 0.1],
+      ['30 min dungeon run, packs 62% of the combat time', 6, 0.9],
     ],
   },
 

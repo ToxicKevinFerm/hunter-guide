@@ -225,13 +225,12 @@ function openInfo(kind) {
     }).join('')}</ul><p class="small">${rich(G.prep.races.foot)}</p>`;
   } else if (kind === 'turretbow') {
     title = 'Why Bloodseeker?';
-    body = `<p class="sub">Bloodseeker is a free quest reward and ends <b>within 1%</b> of Eaglehorn Long Bow over a raid night, so the turret sets wear it. Eaglehorn is the bow for lone bosses.</p>
-      <table class="dtable"><thead><tr><th>Fight</th><th>Bloodseeker vs Eaglehorn</th></tr></thead><tbody>
-      ${G.turretBow.rows.map(r => `<tr><td>${esc(r[0])}</td><td class="n">${sgn(r[1])}</td></tr>`).join('')}</tbody></table>
-      <ul class="plain"><li><b>Bosses favor the fast bow:</b> more Auto Shots mean more Quick Shots procs and more Judgement of Wisdom mana, and turret runs on mana.</li>
-      <li><b>Volley favors the slow bow:</b> Volley stops Auto Shot, you get about one shot between Volleys whatever the bow, and a slow bow's shots and Multi-Shots hit about 13% harder.</li>
-      <li><b>Killing adds doesn't help Bloodseeker:</b> the adds carry no Judgement of Wisdom, so mana gets tighter, and mana is where the fast bow wins.</li></ul>
-      <p class="small">Dwarven Hand Cannon was ahead of both in every 30 minute run. Weaving is the other way round: your swing restarts Auto Shot, so a slow two-hander wants a slow bow.</p>`;
+    body = `<p class="sub">Bloodseeker is a free quest reward and <b>practically the same</b> as Eaglehorn Long Bow: about 1.5% on a 3 minute boss and within 1% over a raid night, so the turret sets wear it.</p>
+      <table class="dtable"><thead><tr><th>Fight</th><th>Bloodseeker vs Eaglehorn</th><th>%</th></tr></thead><tbody>
+      ${G.turretBow.rows.map(r => `<tr><td>${esc(r[0])}</td><td class="n">${sgn(r[1])}</td><td class="n">${r[2] > 0 ? '+' : r[2] < 0 ? '−' : ''}${Math.abs(r[2]).toFixed(1)}%</td></tr>`).join('')}</tbody></table>
+      <ul class="plain"><li><b>On a boss:</b> the fast bow's extra Auto Shots bring a few more Quick Shots procs and a little more Judgement of Wisdom mana. That is the 1.5%, and it only grows in long single-target fights.</li>
+      <li><b>On trash you Volley:</b> Volley pauses Auto Shot, you get about one shot between Volleys whatever the bow, and Bloodseeker's shots and Multi-Shots hit about 13% harder.</li></ul>
+      <p class="small">Rather spend gold? Dwarven Hand Cannon was ahead of both in every 30 minute run. Weaving is the other way round: your swing restarts Auto Shot, so a slow two-hander wants a slow bow.</p>`;
   } else if (kind === 'method') {
     title = 'How we tested';
     body = `<p>Every number is a WoWSims Forever sim (${G.meta.simDate}, ${G.meta.iterations} iterations): the sim's preset for each build, an Orc in the playstyle's best pre-raid gear, full raid buffs and consumables, a level 63 Dragonkin boss, a 3 minute fight.</p>

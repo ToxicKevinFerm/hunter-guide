@@ -284,19 +284,19 @@ NOTES = {'weapons_ranged': 'Weave: the two-hander and the bow are picked togethe
          'weapons': 'With the set\'s ranged weapon', 'ranged': 'With the set\'s melee weapons',
          'finger1': 'Unique rings cannot be worn twice', 'trinket1': 'Effects the sim does not model count as their stats only'}
 # Items worn by choice where the 3 minute boss sim picks another (owner ruling, 2026-11-17): Bloodseeker on every turret
-# set. Eaglehorn Long Bow wins the lone boss by about 16-18 DPS, but Bloodseeker is a free quest reward and ends within
+# set. Eaglehorn Long Bow is 16-18 DPS (1.6%) ahead on the lone boss, but Bloodseeker is a free quest reward and ends within
 # 1% of it over a raid night, ahead once Volleyed trash is a third of the combat time. Keep it worn when the sets are
 # rerun: the build stops if a set's gear wears anything else there. The card shows WHY as a hover on its title.
 BIS_OVERRIDE = {('turret', 'ranged'): {'item': 19107, 'label': 'Why Bloodseeker?', 'why': [
-    "A free quest reward that ends within 1% of Eaglehorn Long Bow over a raid night, so it is the pick here.",
-    "Lone boss: Eaglehorn wins, +1.6% on this 3 minute fight and about 6% on a 5 minute one. A fast bow fires more "
-    "Auto Shots, and each can proc Quick Shots and return Judgement of Wisdom mana.",
-    "Trash you Volley: Bloodseeker wins, about +75 DPS on a pack of four. Volley stops Auto Shot, you get about one shot "
-    "between Volleys whatever the bow, and a slow bow's shots and Multi-Shots hit 13% harder.",
-    "Boss + 2 adds while you stay on the boss: a tie. Adds you have to kill: Eaglehorn by about 22.",
-    "A 30 minute run of bosses, cleave and packs, Volleying the packs: Bloodseeker ahead by 1-6 once packs are a third "
-    "or more of the combat time, 2-6 behind on a boss-heavy night.",
-    "Dwarven Hand Cannon (auction house) was ahead of both in every one of those mixes."]}}
+    "A free quest reward that is practically the same as Eaglehorn Long Bow.",
+    "Lone boss: 1.6% behind on this 3 minute fight, practically the same. Only long single-target fights lean toward a "
+    "fast bow (about 6% at 5 minutes).",
+    "Trash you Volley: Bloodseeker pulls ahead, about +75 DPS on a pack of four. Volley pauses Auto Shot, so its bigger "
+    "shots and Multi-Shots (13% harder) count for more.",
+    "Cleave: a tie while you stay on the boss, about 2% behind when you swap to kill adds.",
+    "A 30 minute run of bosses, cleave and packs: within 1% either way, and ahead once Volleyed trash is a third of your "
+    "combat time.",
+    "Rather spend gold? Dwarven Hand Cannon was ahead of both in every mix."]}}
 used_items, used_suffixes = set(), {}
 loadouts = {}
 for lid in IDS:
