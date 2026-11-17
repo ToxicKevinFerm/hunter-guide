@@ -7,6 +7,8 @@ RUNS_DIR holds, per loadout (weave-max, weave-cheap, turret-max, turret-cheap, m
   <id>.gear.json   the loadout's gear: {"head": [id, enchant, suffix], ...}
   <id>.guide.json  the per-slot runs: {group: {"base": dps, "rows": [{"move": {...}, "d": .., "m": ..}]}}
   <id>.cond.json   optional, the flipped-condition runs: {group: {"best": {"cond", "d"}, "rows": [{"move", "cond", "d", "m"}]}}
+  <id>.scenario.json  optional, the best moves under a raid condition the set does not assume:
+                   {group: [{"when", "detail", "rows": [{"move", "d", "m", "note"?}]}]}, Δ against the set under the same condition
 and meta.json: {"loadouts": {id: {"build", "talents", "rotation", "hit"}}, "ep": {...}, "dw": [...], ...}.
 """
 import argparse, json, os, re, urllib.request
@@ -283,6 +285,8 @@ for lid in IDS:
     runs = json.load(open(os.path.join(a.runs, f'{lid}.guide.json')))
     cond_path = os.path.join(a.runs, f'{lid}.cond.json')
     cond = json.load(open(cond_path)) if os.path.exists(cond_path) else {}
+    scen_path = os.path.join(a.runs, f'{lid}.scenario.json')
+    scen = json.load(open(scen_path)) if os.path.exists(scen_path) else {}
     m = meta['loadouts'][lid]
     groups = []
     for g in GROUP_ORDER:
@@ -308,6 +312,12 @@ for lid in IDS:
         group = {'id': g, 'best': best, 'rows': rows, 'note': NOTES.get(g, '')}
         if (c := cond.get(g, {}).get('best')):
             group['bestAlt'] = {'when': COND_LABEL[c['cond']], 'd': c['d']}
+        if g in scen:
+            group['scenarios'] = [dict(sc, rows=[dict(r, move={s: spec_with_label(s, v) for s, v in r['move'].items() if v and v[0]})
+                                                 for r in sc['rows']]) for sc in scen[g]]
+            for sc in group['scenarios']:
+                for r in sc['rows']:
+                    used_items.update(v[0] for v in r['move'].values())
         groups.append(group)
     full = {s: spec_with_label(s, v) for s, v in gear.items() if v and v[0]}
     for s, spec in full.items():

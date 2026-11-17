@@ -131,7 +131,9 @@ so with the turret sets choose the Turret rotation or the MM, BM or SV preset bu
 <h3>Melee: dual wield, Crusader on the main hand</h3>
 <p>Survival melee dual wields: Annihilator (Max) or Rivenspike (Cheap) in the main hand, with Distracting Dagger in the
 off hand. Crusader on the main hand edges out Agility by about 2; the off hand keeps +15 Agility. SV Melee takes
-Careful Aim, so Intellect pays here too: Ranger's Belt over Marksman's Girdle, and the Elixir of Greater Intellect.</p>
+Careful Aim, so Intellect pays here too: Ranger's Belt over Marksman's Girdle, and the Elixir of Greater Intellect.
+If another raider's Annihilator already keeps Armor Shatter on the boss, yours adds nothing: on Max, Rivenspike takes
+the main hand (about 33 more), with Teebu's Blazing Longsword 2 to 3 behind before its Firebolt, which is not simmed.</p>
 
 <h3>Dual wield while weaving</h3>
 <p>If you weave with two one-handers, play Melee Weave (Normal): it walks in only when your shots are on cooldown and
@@ -175,6 +177,9 @@ method = f"""
 Hyjal, so area-bound bonuses count; an Orc hunter with the full raid buffs and consumables of the sim's hunter
 defaults; and a 150–350 ms reaction time. Each loadout uses the
 sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Melee for melee.</p>
+<p>The melee Max weapon cards also list the best pairs with Armor Shatter already on the target, as when another
+raider wears Annihilator: every main hand with Distracting Dagger and every off hand with Annihilator at 1,000
+iterations on the AV set, then the eight best of each paired at 3,000; the Darkspear set ran the best three again.</p>
 <p>A few items have a bonus that needs an area or a creature type. Rune of the Guard Captain's counts only in
 Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count in these numbers; those of Royal Seal of
 Eldre'Thalas (Demons), King Mosh's Tooth and Huntsman's Harpoon (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a

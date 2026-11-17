@@ -122,6 +122,11 @@ td.src .s + .s { margin-top: 2px; }
 .badge.cheap { color: #9fe39a; border-color: #4f7d4b; background: #13240f; }
 .badge.max { color: #e8c46d; border-color: #7a6331; background: #2a2210; }
 .empty-note { color: var(--muted); padding: 12px 14px; font-size: 13px; }
+.scenario { border-top: 1px solid var(--line); padding: 10px 14px 6px; }
+.scenario h4 { margin: 0; font: 700 13px var(--display); color: var(--hunter); }
+.scenario .sc-detail { color: var(--muted); font-size: 12px; margin: 3px 0 4px; line-height: 1.35; }
+.scenario td { padding-left: 0; }
+.dv.pos { color: var(--good); }
 
 /* All loadouts */
 .matrix { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
@@ -216,7 +221,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=d457281839"></script>
+<script src="data.js?v=894c578f0f"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -335,11 +340,19 @@ function renderCards() {
       return `<tr class="${r.best ? 'best' : ''}"><td class="rank">${i + 1}</td><td class="item">${items}</td>
         <td class="delta">${delta}${alt}</td><td>${tiers.map(t => `<span class="badge ${t}">${t}</span>`).join(' ')}</td><td class="src">${srcs}</td></tr>`;
     }).join('');
+    // The best moves under a raid condition the set does not assume, against the set under the same condition.
+    const scenarios = (g.scenarios || []).map(sc => {
+      const rows = sc.rows.filter(r => rowPasses(moveSpecs(r.move)));
+      if (!rows.length) return '';
+      const tr = rows.map(r => `<tr><td class="item">${moveSpecs(r.move).map(([, spec]) => itemHTML(spec)).join('<span class="plus">+</span>')}</td>
+        <td class="delta"><span class="dv pos">${r.d > 0 ? '+' : ''}${r.d.toFixed(1)}</span> <span class="dm">±${r.m.toFixed(1)}</span>${r.note ? `<div class="alt">${esc(r.note)}</div>` : ''}</td></tr>`).join('');
+      return `<div class="scenario"><h4>${esc(sc.when)}</h4><div class="sc-detail">${esc(sc.detail)}</div><table><tbody>${tr}</tbody></table></div>`;
+    }).join('');
     const hiddenBest = !rowPasses(moveSpecs(g.best));
     out.push(`<div class="card" id="card-${g.id}"><h3>${esc(SLOT_LABEL[g.id] || g.id)} <small>${g.note ? esc(g.note) : ''}</small></h3>
       ${shown.length ? `<table><thead><tr><th>#</th><th>Item</th><th>Δ DPS</th><th>Tier</th><th>Where</th></tr></thead><tbody>${tr}</tbody></table>` : ''}
       ${hiddenBest ? '<div class="empty-note">The best item for this slot is hidden by your filters.</div>' : ''}
-      ${!shown.length ? '<div class="empty-note">Nothing in this slot passes the filters.</div>' : ''}</div>`);
+      ${!shown.length ? '<div class="empty-note">Nothing in this slot passes the filters.</div>' : ''}${scenarios}</div>`);
   }
   document.getElementById('cards').innerHTML = out.join('');
 }
