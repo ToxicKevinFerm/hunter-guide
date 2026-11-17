@@ -69,8 +69,8 @@ BG_QUESTS = ('Korrak', 'Hero of the Frostwolf', 'Hero of the Stormpike')
 # The tier rules the presets were built with (see the guide's Method page).
 CHEAP_CRAFTS = {252605, 15062, 15063, 250619, 279273}
 MAX_CRAFTS = {252483, 279253, 252484, 12784, 12798, 12783}
-MAX_SOURCELESS = {1728, 13023}
-CHEAP_SOURCELESS = {6622}  # Sword of Zeal
+MAX_SOURCELESS = {1728}
+CHEAP_SOURCELESS = {6622, 13023}  # Sword of Zeal, Eaglehorn Long Bow
 STAT = ['Strength', 'Agility', 'Stamina', 'Intellect']
 TYPE = {1: 'Head', 2: 'Neck', 3: 'Shoulder', 4: 'Back', 5: 'Chest', 6: 'Wrist', 7: 'Hands', 8: 'Waist', 9: 'Legs',
         10: 'Feet', 11: 'Finger', 12: 'Trinket', 13: 'Weapon', 14: 'Ranged'}

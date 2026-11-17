@@ -124,7 +124,7 @@ around. These are the best pairs on the Max weave set:</p>
 still loses to the slow pair above.</p>
 
 <h3>Turret: a fast bow</h3>
-<p>Standing at range, more Auto Shots win: Eaglehorn Long Bow (1.8 s) on Max. On Cheap, Hyper Deluxe Sniper Rifle Mk XVII (2.5 s) edges out the fast Agility bows. The
+<p>Standing at range, more Auto Shots win: Eaglehorn Long Bow (1.8 s) on Max. On Cheap, Hyper Deluxe Sniper Rifle Mk XVII (2.5 s) ties Eaglehorn and edges out the fast Agility bows. The
 two-hander is only a stat stick. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
@@ -217,7 +217,7 @@ Darkspear sets wear Darkspear Epaulets, and the weave set Raider Gloves too. The
 place and lose {min(gap.values()):.0f}–{max(gap.values()):.0f} DPS. Items that need Exalted with any other faction (The Defilers, Timbermaw Hold, the other
 Warsong Gulch and Alterac Valley rewards) are in neither. <b>Cheap</b> leaves out exalted reputation, battleground
 quartermaster gear, epic crafts (Dawn Armor, Timbermaw Tunic), Arcanite Reaper,
-Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones and Sword of Zeal. Black
+Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones, Sword of Zeal and Eaglehorn Long Bow. Black
 Dragonscale Helm, the Devilsaur set, Legionite Glaive and the Hyper Deluxe Sniper Rifle count as cheap crafts, and the
 Korrak quest weapons (Bloodseeker, Ice Barbed Spear) as cheap. Crafts that need a material from Mount Hyjal
 (Outlaw's Collar, Mourning Handguards) are in no set. Max is a superset: every cheap item was simmed in it too.</p>
