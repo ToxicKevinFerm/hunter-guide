@@ -124,7 +124,7 @@ around. These are the best pairs on the Max weave set:</p>
 still loses to the slow pair above.</p>
 
 <h3>Turret: a fast bow</h3>
-<p>Standing at range, more Auto Shots win: Eaglehorn Long Bow (1.8 s) on Max. On Cheap, Hyper Deluxe Sniper Rifle Mk XVII (2.5 s) ties Eaglehorn and edges out the fast Agility bows. The
+<p>Standing at range, more Auto Shots win: Eaglehorn Long Bow (1.8 s) on Max and Cheap, ahead of the fast Agility bows. The
 two-hander is only a stat stick. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
@@ -202,8 +202,8 @@ Guard Captain) have the same stats.</li>
 <li>Each slot's candidates were screened at 3,000 iterations and the best six confirmed at 3,000 against the finished
 set on another seed. Every loadout was run again on 2026-11-17 with the sim's retuned presets: SV Melee on Careful
 Aim, the Elixir of Greater Intellect in every build and Brilliant Mana Oil on the turret. Where that run found a
-better item or a tie the rules above settle (The Blackrock Slicer on every weave set, with Bloodseeker on Cheap; Hyper
-Deluxe Sniper Rifle Mk XVII on Cheap turret; Darkmoon Card: Maelstrom on the Max melee sets; Bone Golem Shoulders on AV
+better item or a tie the rules above settle (The Blackrock Slicer on every weave set, with Bloodseeker on Cheap;
+Eaglehorn Long Bow on Cheap turret; Darkmoon Card: Maelstrom on the Max melee sets; Bone Golem Shoulders on AV
 melee; Truestrike Shoulders on Cheap melee), the changed slots were run again the same way on the new set, and the
 other slots of that set keep their gaps from before the change. Δ DPS is the confirmed gap, ± its 95% margin.</li>
 <li>When the sets were first built, set bonuses were tried as whole sets, the weave's two-hander and bow as one pair,
@@ -218,9 +218,10 @@ place and lose {min(gap.values()):.0f}–{max(gap.values()):.0f} DPS. Items that
 Warsong Gulch and Alterac Valley rewards) are in neither. <b>Cheap</b> leaves out exalted reputation, battleground
 quartermaster gear, epic crafts (Dawn Armor, Timbermaw Tunic), Arcanite Reaper,
 Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones, Sword of Zeal and Eaglehorn Long Bow. Black
-Dragonscale Helm, the Devilsaur set, Legionite Glaive and the Hyper Deluxe Sniper Rifle count as cheap crafts, and the
+Dragonscale Helm, the Devilsaur set and Legionite Glaive count as cheap crafts, and the
 Korrak quest weapons (Bloodseeker, Ice Barbed Spear) as cheap. Crafts that need a material from Mount Hyjal
-(Outlaw's Collar, Mourning Handguards) are in no set. Max is a superset: every cheap item was simmed in it too.</p>
+(Outlaw's Collar, Mourning Handguards) are in no set, nor is Hyper Deluxe Sniper Rifle Mk XVII, which cannot be
+crafted yet. Max is a superset: every cheap item was simmed in it too.</p>
 <h3>Limits</h3>
 <p>The sim models what the game files and combat logs show; a few trinket effects are missing (see How to gear). New
 Forever items without a source in the game files are listed as such.</p>

@@ -67,7 +67,7 @@ BG_VENDORS = {'Samuel Hawke', 'Rutherford Twing', 'Kelm Hargunth', 'Illiyana Moo
 BG_REP = {509, 510}
 BG_QUESTS = ('Korrak', 'Hero of the Frostwolf', 'Hero of the Stormpike')
 # The tier rules the presets were built with (see the guide's Method page).
-CHEAP_CRAFTS = {252605, 15062, 15063, 250619, 279273}
+CHEAP_CRAFTS = {252605, 15062, 15063, 250619}
 MAX_CRAFTS = {252483, 279253, 252484, 12784, 12798, 12783}
 MAX_SOURCELESS = {1728}
 CHEAP_SOURCELESS = {6622, 13023}  # Sword of Zeal, Eaglehorn Long Bow
