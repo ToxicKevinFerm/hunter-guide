@@ -91,9 +91,9 @@ if ep:
     stats = ['Agility', 'Strength', 'Intellect', 'Attack Power', 'Ranged Attack Power', 'Crit rating', 'Hit rating (under the cap)', 'Haste rating', 'MP5']
     ep_html = ('<h3>What a point of each stat is worth</h3><p>Paired sims on each playstyle\'s Max set, in Ranged Attack '
                'Power for weave and turret and in Attack Power for melee. Item crit rating is 14 per 1%, hit and haste '
-               'rating 10 per 1%. Intellect counts twice: Careful Aim turns each point into Attack Power and Ranged '
-               'Attack Power, and it is mana. MP5 is worth little in a three minute fight with full consumables and '
-               'more in a long one: about 2.5 Ranged Attack Power a point on the turret at five minutes.</p><table><thead><tr><th>Stat</th><th>Weave</th><th>Turret</th><th>Melee</th></tr></thead><tbody>'
+               'rating 10 per 1%. Intellect counts twice: Careful Aim, which every build takes, turns each point into '
+               'Attack Power and Ranged Attack Power, and it is mana. MP5 is worth little in a three minute fight with '
+               'full consumables, and more in a long one.</p><table><thead><tr><th>Stat</th><th>Weave</th><th>Turret</th><th>Melee</th></tr></thead><tbody>'
                + ''.join(tr([s] + [f"{ep.get(p, {}).get(s, 0):.2f}" for p in ('weave', 'turret', 'melee')]) for s in stats)
                + '</tbody></table>')
 
@@ -101,7 +101,7 @@ howto = f"""
 <div class="kpis">
   <div class="kpi"><b>8% hit</b><span>The cap against a level 63 boss, melee and ranged. Surefooted counts.</span></div>
   <div class="kpi"><b>Agility</b><span>The best stat for every playstyle; weave values it most.</span></div>
-  <div class="kpi"><b>Slow + slow</b><span>Weave: a slow two-hander wants a slow bow (Arcanite Reaper + Deep Jungle Rifle or Bloodseeker).</span></div>
+  <div class="kpi"><b>Slow + slow</b><span>Weave: a slow two-hander wants a slow bow (The Blackrock Slicer + Deep Jungle Rifle or Bloodseeker).</span></div>
   <div class="kpi"><b>Fast bow</b><span>Turret: Eaglehorn or a fast Agility bow. Pick a turret rotation.</span></div>
 </div>
 
@@ -124,13 +124,14 @@ around. These are the best pairs on the Max weave set:</p>
 still loses to the slow pair above.</p>
 
 <h3>Turret: a fast bow</h3>
-<p>Standing at range, more Auto Shots win: Eaglehorn Long Bow (1.8 s) on Max, a Hawkeye Bow of Agility on Cheap. The
+<p>Standing at range, more Auto Shots win: Eaglehorn Long Bow (1.8 s) on Max. On Cheap, Hyper Deluxe Sniper Rifle Mk XVII (2.5 s) edges out the fast Agility bows. The
 two-hander is only a stat stick. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
 <h3>Melee: dual wield, Crusader on the main hand</h3>
-<p>Survival melee dual wields: Annihilator (Max) or Dal'Rend's Sacred Charge (Cheap) in the main hand, with Bonescraper. Crusader on the main hand edges
-out Agility (about 2 on Max, a tie on Cheap); the off hand keeps +15 Agility.</p>
+<p>Survival melee dual wields: Annihilator (Max) or Rivenspike (Cheap) in the main hand, with Distracting Dagger in the
+off hand. Crusader on the main hand edges out Agility by about 2; the off hand keeps +15 Agility. SV Melee takes
+Careful Aim, so Intellect pays here too: Ranger's Belt over Marksman's Girdle, and the Elixir of Greater Intellect.</p>
 
 <h3>Dual wield while weaving</h3>
 <p>If you weave with two one-handers, play Melee Weave (Normal): it walks in only when your shots are on cooldown and
@@ -140,7 +141,7 @@ weave is still about 68 higher.</p>
 
 <h2>Enchants</h2>
 <table><thead><tr><th>Slot</th><th>Enchant</th><th>Where</th></tr></thead><tbody>
-{tr(['Head, legs', 'Lesser Arcane Amalgamation (+8 Agility)', 'Libram of Voracity (Dire Maul)'])}
+{tr(['Head, legs', 'Lesser Arcane Amalgamation (+8 Agility); Arcanum of Rapidity (+1% haste) on melee', 'Libram of Voracity, Libram of Rapidity (Dire Maul)'])}
 {tr(['Neck', '+5 Agility', 'Enchanter'])}
 {tr(['Back', '+5 Agility', 'Enchanter'])}
 {tr(['Chest', 'Greater Stats (+4 all stats)', 'Enchanter'])}
@@ -156,10 +157,10 @@ speed already covers it and only the highest speed effect counts. Sniper Scope l
 
 <h2>Trinkets</h2>
 <p>Heart of Wyrmthalak tops the weave and melee lists: its Flame Lash procs about twice a minute from melee and ranged
-hits. Blackhand's Breadth is next on weave and the best on turret, and Highborne Research Tablet is next on melee. Rune of the Guard Captain (Cleansed
+hits. Blackhand's Breadth is next on weave and the best on turret, and Darkmoon Card: Maelstrom is next on melee. Rune of the Guard Captain (Cleansed
 Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, and there it
-takes a trinket slot in every set but Weave Cheap, where it ties with Blackhand's Breadth and Blackhand's wins the
-tie (see Method). Anywhere else, in Onyxia's Lair for example, it keeps only its 14 Attack Power and 0.7% hit, and the
+takes a trinket slot in every set but Weave Cheap and the two Max melee sets, where it ties with Blackhand's Breadth
+and Darkmoon Card: Maelstrom and those win the tie (see Method). Anywhere else, in Onyxia's Lair for example, it keeps only its 14 Attack Power and 0.7% hit, and the
 sets that wear it lose {-max(rune_out.values()):.0f}–{-min(rune_out.values()):.0f} DPS. Every one of them then does
 {min(rune_next.values()):.0f}–{max(rune_next.values()):.0f} DPS more with its next trinket (Heart of Wyrmthalak on turret).
 Each trinket card shows the Rune's figure outside the area. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
@@ -179,7 +180,8 @@ Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count i
 Eldre'Thalas (Demons), King Mosh's Tooth and Huntsman's Harpoon (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a
 second figure under its Δ DPS: the same comparison against the same set, with its condition the other way round. When
 one of them ties with an item whose bonus always counts, the set wears the other item: Blackhand's Breadth over
-the Rune on Weave Cheap, and Shadowcraft Spaulders or Stratholme Militia Shoulderguard over Wyrmhide Spaulders. Turret
+the Rune on Weave Cheap, Darkmoon Card: Maelstrom over the Rune on the Max melee sets, and Shadowcraft Spaulders,
+Stratholme Militia Shoulderguard or Truestrike Shoulders over Wyrmhide Spaulders. Turret
 Cheap wears Truestrike Shoulders: Wyrmhide is 1.7 DPS ahead of it against Dragonkin and 3.7 behind against anything
 else, and Truestrike ties with the other shoulders while keeping Wyrmhide's 1.5% hit, so the set stays at the hit
 cap.</p>
@@ -190,10 +192,12 @@ not in the copy the sim's item database was built from, so they were simmed afte
 the same seed as the other rows. Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
 Guard Captain) have the same stats.</li>
 <li>Each slot's candidates were screened at 3,000 iterations and the best six confirmed at 3,000 against the finished
-set on another seed. Where that run found a better item (Heart of Wyrmthalak in the weave and melee sets, Bracers of
-the Eclipse on AV weave), the trinkets were simmed as pairs, and the changed slots were rerun the same way on the new
-set; the other slots of those sets keep their gaps from before the change. Δ DPS is the confirmed gap, ± its 95%
-margin.</li>
+set on another seed. Every loadout was run again on 2026-11-17 with the sim's retuned presets: SV Melee on Careful
+Aim, the Elixir of Greater Intellect in every build and Brilliant Mana Oil on the turret. Where that run found a
+better item or a tie the rules above settle (The Blackrock Slicer on every weave set, with Bloodseeker on Cheap; Hyper
+Deluxe Sniper Rifle Mk XVII on Cheap turret; Darkmoon Card: Maelstrom on the Max melee sets; Bone Golem Shoulders on AV
+melee; Truestrike Shoulders on Cheap melee), the changed slots were run again the same way on the new set, and the
+other slots of that set keep their gaps from before the change. Δ DPS is the confirmed gap, ± its 95% margin.</li>
 <li>When the sets were first built, set bonuses were tried as whole sets, the weave's two-hander and bow as one pair,
 and every two-slot combination of each slot's best alternatives was checked at the end. Every enchant was simmed
 against the others.</li>
