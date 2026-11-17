@@ -27,11 +27,14 @@ rune_out = {i: c['trinket2']['best']['d'] for i, c in cond.items() if c.get('tri
 rune_next = {i: max(r['d'] for r in runs[i]['trinket2']['rows']) - rune_out[i] for i in rune_out}
 assert all(v > 2 for v in rune_next.values()), rune_next
 
+# Build name and rotation per playstyle. The talents are the ones the sets were simmed with, read from the run's setup
+# (RUNS_DIR/<playstyle>.json), so they follow the sim's presets.
 BUILDS = {
-    'weave': ('SV Weave', '-00530501114-530200230050220151', 'Melee Weave (Max)'),
-    'turret': ('MM', '5-0053452511522051-5', 'Turret'),
-    'melee': ('SV Melee', '53200005001-004-530200230050022151', 'Melee'),
+    'weave': ('SV Weave', 'Melee Weave (Max)'),
+    'turret': ('MM', 'Turret'),
+    'melee': ('SV Melee', 'Melee'),
 }
+TALENTS = {ps: json.load(open(os.path.join(R, f'{ps}.json')))['player']['talentsString'] for ps in BUILDS}
 TITLES = {'weave': 'Weave', 'turret': 'Turret', 'melee': 'Melee'}
 # Wowhead's Forever talent calculator reads a build as its hash version followed by the points per talent, trees in
 # row and column order like the sim's. The version is "hashVersion" in nether.wowhead.com/forever/data/talents-classic;
@@ -48,10 +51,10 @@ for i in IDS:
     diff = dps[i] - dps.get(other, dps[i])
     b = BUILDS[ps]
     loadouts[i] = {
-        'title': f"{TITLES[ps]} · {('Max · AV' if av else 'Max · Darkspear') if tier == 'max' else 'Cheap'}", 'build': b[0], 'talents': b[1], 'rotation': b[2], 'dps': round(dps[i], 1),
+        'title': f"{TITLES[ps]} · {('Max · AV' if av else 'Max · Darkspear') if tier == 'max' else 'Cheap'}", 'build': b[0], 'talents': TALENTS[ps], 'rotation': b[1], 'dps': round(dps[i], 1),
         'hit': f"{hit[i][0]:g}% melee, {hit[i][1]:g}% ranged (cap 8%)",
         'vsOther': f"{'Cheap' if tier == 'max' else 'Max'} {dps.get(other, 0):.0f} ({diff:+.0f})",
-        'talentLink': f"https://www.wowhead.com/forever/talent-calc/hunter/{WOWHEAD_HASH_VERSION}{b[1]}",
+        'talentLink': f"https://www.wowhead.com/forever/talent-calc/hunter/{WOWHEAD_HASH_VERSION}{TALENTS[ps]}",
         'simLink': LINKS.get(i, '').strip(),
     }
 
