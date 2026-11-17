@@ -551,13 +551,13 @@
 
   // The page or the modal opens and closes the viewer; it only draws while open.
   window.weaveViewer = {
-    open(key) {
+    open(key, opts = {}) {
       view.open = true;
       setVariant(key || view.v);
       // The first time, the tour stops at every action; after that it opens straight on the loop.
-      let done = false;
-      try { done = localStorage.getItem('weaveTourDone') === '1'; } catch (e) { /* private mode */ }
-      if (done) { tour.on = false; $('wv-pop').hidden = true; $('wv-tour').setAttribute('aria-pressed', 'false'); setPlaying(true); } else startTour();
+      let done = !opts.tour ? false : null;
+      if (done === false) try { done = localStorage.getItem('weaveTourDone') === '1'; } catch (e) { /* private mode */ }
+      if (done === true) { tour.on = false; $('wv-pop').hidden = true; $('wv-tour').setAttribute('aria-pressed', 'false'); setPlaying(true); } else startTour();
       cancelAnimationFrame(view.frame);
       view.frame = requestAnimationFrame(loop);
     },

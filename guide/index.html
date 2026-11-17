@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forever Hunter Guide</title>
+<link rel="icon" href="https://wow.zamimg.com/images/wow/icons/medium/classicon_hunter.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css?v=7f5dbe981b">
+<link rel="stylesheet" href="../weave/viewer.css?v=296d8883e3">
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#top">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 20 4"/><path d="M14 4h6v6"/><path d="M4 14c4 0 6 2 6 6"/></svg>
+      <span>Forever Hunter</span>
+    </a>
+    <nav class="steps" aria-label="Guide steps">
+      <a href="#pick" data-sec="pick">1 · Pick a build</a>
+      <a href="#talents" data-sec="talents">2 · Talents</a>
+      <a href="#play" data-sec="play">3 · How to play</a>
+      <a href="#prep" data-sec="prep">4 · Before the pull</a>
+      <a href="#stats" data-sec="stats">5 · Gear stats</a>
+      <a href="#ui" data-sec="ui">UI &amp; addons</a>
+    </nav>
+    <a class="bis" href="../">Pre-raid BiS ↗</a>
+  </div>
+  <div class="buildbar" id="buildbar" aria-label="Switch build">
+    <div class="bb-in">
+      <span class="bb-label">Build</span>
+      <div class="bb-chips" id="bbchips"></div>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero">
+    <p class="kicker">WoW Forever · Phase 1 · Level 60</p>
+    <h1>Play Hunter in five steps</h1>
+    <p class="lede">Pick a build, copy its talents, learn one short loop, bring the right consumables. Every number here comes from a simulator, so you can trust the order without reading the maths.</p>
+  </section>
+
+  <section id="pick" class="sec">
+    <div class="sec-h split">
+      <div>
+        <span class="eyebrow">Step 1</span>
+        <h2>Pick a build</h2>
+        <p class="sub">New to Hunter? Start with <b>MM Turret</b>: you stand still and shoot. Move up to SV Weave when you want the top spot.</p>
+      </div>
+      <div class="pick-side"><span class="small" id="simdate"></span><div class="seg" role="group" aria-label="Fight length" id="fights"></div></div>
+    </div>
+    <div class="builds" id="builds" role="list"></div>
+    <div class="card picked" id="picked"></div>
+  </section>
+
+  <section id="talents" class="sec">
+    <div class="sec-h">
+      <span class="eyebrow">Step 2</span>
+      <h2>Copy the talents</h2>
+      <p class="sub">Copy it in one click. Click any talent to see what it does for this build: the bright rings are the ones that matter.</p>
+    </div>
+    <div class="talrow">
+      <div class="card calc">
+        <div class="trees" id="trees"></div>
+        <div class="legend">
+          <span><i class="ring core"></i>Core · 40+ DPS</span>
+          <span><i class="ring good"></i>Good · 10–40</span>
+          <span><i class="ring minor"></i>Small · under 10</span>
+          <span><i class="idot">i</i>Worth reading</span>
+          <span>Faded = not taken</span>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="copy">Copy talent string</button>
+          <a class="btn" id="wowhead" target="_blank" rel="noopener">Open in Wowhead ↗</a>
+          <span class="split-pts" id="splitpts"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="play" class="sec">
+    <div class="sec-h split">
+      <div>
+        <span class="eyebrow">Step 3</span>
+        <h2>How to play it</h2>
+        <p class="sub" id="playintro"></p>
+      </div>
+      <div class="seg" role="group" aria-label="Rotation" id="variants"></div>
+    </div>
+    <div class="howto card" id="howto" hidden>
+      <div><h3>New to weaving? Watch it first.</h3><p class="small">A real weave cycle from the sim, paused at every step so you see when to walk in and when to walk out.</p></div>
+      <button class="btn blue" data-open="weave">▶ How to weave</button>
+    </div>
+    <ol class="loop" id="loop"></ol>
+    <p class="after" id="after"></p>
+    <div class="card">
+      <h3 class="card-h">Opener: the first seconds, in order</h3>
+      <ol class="opener" id="opener"></ol>
+    </div>
+    <div class="card tips">
+      <h3 class="card-h">Good to know</h3>
+      <ul id="tips"></ul>
+    </div>
+  </section>
+
+  <section id="prep" class="sec">
+    <div class="sec-h">
+      <span class="eyebrow">Step 4</span>
+      <h2>Before the pull</h2>
+    </div>
+    <div class="prep">
+      <div class="card">
+        <h3 class="card-h">Bring these first</h3>
+        <p class="keytext" id="prepkey"></p>
+      </div>
+      <div class="card">
+        <h3 class="card-h">What they're worth</h3>
+        <div class="bignum"><b id="consworth"></b><span>DPS from consumables</span></div>
+        <div class="bignum blue"><b id="buffworth"></b><span>DPS from raid buffs</span></div>
+        <button class="btn ghost" data-modal="prep">Full consumable &amp; buff list →</button>
+      </div>
+      <div class="card">
+        <h3 class="card-h">Which race?</h3>
+        <p class="say">Play the one you like.</p>
+        <p class="small" id="racetip"></p>
+        <button class="btn ghost" data-modal="races">Compare races →</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="stats" class="sec">
+    <div class="sec-h">
+      <span class="eyebrow">Step 5</span>
+      <h2>What to look for on gear</h2>
+      <p class="sub">Get <b>8% hit</b> first. After that, compare items with this order: longer bar, better stat.</p>
+    </div>
+    <div class="statrow">
+      <div class="card stats" id="statlist"></div>
+      <div class="card">
+        <h3 class="card-h">Weapons</h3>
+        <ul class="plain">
+          <li><b>Weave:</b> a slow two-hander with a slow bow, e.g. Arcanite Reaper with Bloodseeker.</li>
+          <li><b>Turret:</b> a fast bow, e.g. Eaglehorn Long Bow. <button class="link" data-modal="fastbow">Why fast?</button></li>
+          <li><b>Melee:</b> dual wield, Crusader on the main hand.</li>
+        </ul>
+        <p class="small">Survival's Surefooted gives 3% hit, so Survival needs only 3–5% from gear.</p>
+      </div>
+    </div>
+    <a class="card gearlink" href="../">
+      <span><b>Every slot, item by item</b><span class="small">The pre-raid best in slot list for each playstyle, with enchants.</span></span>
+      <span class="btn primary">Open the gear page →</span>
+    </a>
+  </section>
+
+  <section id="ui" class="sec">
+    <div class="sec-h">
+      <span class="eyebrow">Extra</span>
+      <h2>Set up your UI</h2>
+      <p class="sub">Weaving is all about timing, so get a swing timer that shows your Auto Shot and your melee swing.</p>
+    </div>
+    <div class="addons">
+      <a class="card addon" href="https://www.curseforge.com/wow/addons/appelswings" target="_blank" rel="noopener">
+        <b>Appel Swings ↗</b><span class="small">Swing timer addon on CurseForge.</span>
+      </a>
+      <a class="card addon" href="https://www.curseforge.com/wow/addons/weaponswingtimer-sixxfix" target="_blank" rel="noopener">
+        <b>WeaponSwingTimer (SixxFix) ↗</b><span class="small">Swing timer addon on CurseForge.</span>
+      </a>
+      <div class="card addon">
+        <b>Turn off auto-swap</b><span class="small">Turn off the combat setting that swaps between Auto Attack and Auto Shot when you change range: it can delay both your next swing and your next shot.</span>
+      </div>
+    </div>
+    <div class="sec-h">
+      <h3 class="h-md">Macros</h3>
+      <p class="sub">Click Copy, then paste into a new macro in game (<b>/macro</b>). From the <a href="https://github.com/classic-hunter/forever-hunter/wiki/Hunter-Macros" target="_blank" rel="noopener">Forever hunter wiki</a>, where you'll find more.</p>
+    </div>
+    <div class="macros" id="macros"></div>
+  </section>
+
+  <section class="sec">
+    <h2 class="h-sm">Words you'll see</h2>
+    <dl class="gloss">
+      <div><dt>Turret</dt><dd>Stand at range and shoot. Nothing else.</dd></div>
+      <div><dt>Weave</dt><dd>Walk in for one melee swing between Auto Shots, then walk back out.</dd></div>
+      <div><dt>Lone Wolf</dt><dd>A talent: dismiss your pet, deal 20% more damage.</dd></div>
+      <div><dt>Dead zone</dt><dd>Too close to shoot, too far to hit. Step past about 13 yd.</dd></div>
+      <div><dt>Hit cap</dt><dd>8% hit stops you missing a raid boss. More is wasted.</dd></div>
+      <div><dt>DPS</dt><dd>Damage per second, averaged over thousands of simulated fights.</dd></div>
+    </dl>
+  </section>
+
+  <footer class="foot" id="foot"></footer>
+</main>
+
+<div class="modal" id="infomodal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="infotitle">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <span class="small" id="infofor"></span>
+    <h2 id="infotitle"></h2>
+    <div id="infobody"></div>
+  </div>
+</div>
+
+<div class="modal" id="weavemodal" hidden>
+  <div class="modal-box wide" role="dialog" aria-modal="true" aria-labelledby="weavetitle">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2 id="weavetitle">How to weave</h2>
+    <p class="sub">A few real weave cycles from the sim, looped. Slow it down and watch the two timers on the right: you walk in when the bow has just fired, and you walk out when the two-hander has swung.</p>
+    <div class="wv-top">
+      <div class="wv-seg"><button data-wv="normal">Normal weave</button><button data-wv="max">Max weave</button></div>
+      <span class="dm" id="wv-source"></span>
+    </div>
+    <div class="wv-grid">
+      <div class="wv-left">
+        <div class="wv-fieldbox"><canvas id="wv-field" role="img" aria-label="You and the boss from above, with melee range and the dead zone"></canvas>
+          <div class="wv-pop" id="wv-pop" role="dialog" aria-live="polite" hidden>
+            <div class="wv-pop-step" id="wv-pop-step"></div>
+            <h4 id="wv-pop-title"></h4>
+            <div class="wv-pop-text" id="wv-pop-text"></div>
+            <div class="wv-pop-btns"><button id="wv-pop-next" class="wv-btn">Continue ▶</button><button id="wv-pop-skip" class="wv-link">Skip the tour</button></div>
+          </div></div>
+        <div class="actionbar" id="wv-bar" aria-label="Your action bar: what you press, with cooldowns"></div>
+      </div>
+      <div class="wv-side">
+        <div class="wv-timer"><div class="wv-th"><span>Bow · Auto Shot</span><em id="wv-bow-label"></em></div><div class="wv-track"><div id="wv-bow" class="wv-fill bow"></div></div></div>
+        <div class="wv-timer"><div class="wv-th"><span>Two-hander · swing</span><em id="wv-melee-label"></em></div><div class="wv-track"><div id="wv-melee" class="wv-fill melee"></div></div></div>
+        <ol class="wv-steps" id="wv-steps"></ol>
+        <h4>What just happened</h4>
+        <ul class="wv-feed" id="wv-feed"></ul>
+      </div>
+    </div>
+    <div class="wv-controls">
+      <button id="wv-play" class="wv-btn">Play</button>
+      <button id="wv-tour" class="wv-tourbtn" aria-pressed="false">Step by step</button>
+      <div class="wv-seg" id="wv-speeds"></div>
+      <span id="wv-time" class="wv-time"></span>
+      <span id="wv-zone" class="wv-zone"></span>
+    </div>
+    <canvas id="wv-strip" aria-hidden="true"></canvas>
+    <p class="dm wv-legend">The strip is your distance over the loop, with the dead zone shaded. Blue marks on top: an Auto Shot goes off. Orange marks below: your two-hander swings. Click or drag it to jump.</p>
+  </div>
+</div>
+<div id="toast" hidden></div>
+
+<script src="data/talents.js?v=9f13d4d6e6"></script>
+<script src="data/guide.js?v=c3ae9c062c"></script>
+<script src="app.js?v=b50e361fef"></script>
+<script src="../weave/data.js?v=de72e9c6d0"></script>
+<script src="../weave/viewer.js?v=5004995f5c"></script>
+</body>
+</html>
