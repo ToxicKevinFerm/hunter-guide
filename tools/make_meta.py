@@ -135,7 +135,7 @@ Careful Aim, so Intellect pays here too: Ranger's Belt over Marksman's Girdle, a
 If another raider's Annihilator already keeps Armor Shatter on the boss, yours adds nothing: on Max, Teebu's Blazing
 Longsword takes the main hand (about 31 more, before its Firebolt, which is not simmed), with Sword of Zeal about 5
 behind it. Rivenspike's Puncture Armor does not stack with Armor Shatter, so Rivenspike gains only about 4 there, and
-on Cheap Dal'Rend's Sacred Charge takes its place (about 12 more), with Bagh Nakh about 3 behind it.</p>
+on Cheap Sword of Zeal takes its place (about 18 more), with Dal'Rend's Sacred Charge about 6 behind it.</p>
 
 <h3>Dual wield while weaving</h3>
 <p>If you weave with two one-handers, play Melee Weave (Normal): it walks in only when your shots are on cooldown and
@@ -217,7 +217,7 @@ Darkspear sets wear Darkspear Epaulets, and the weave set Raider Gloves too. The
 place and lose {min(gap.values()):.0f}–{max(gap.values()):.0f} DPS. Items that need Exalted with any other faction (The Defilers, Timbermaw Hold, the other
 Warsong Gulch and Alterac Valley rewards) are in neither. <b>Cheap</b> leaves out exalted reputation, battleground
 quartermaster gear, epic crafts (Dawn Armor, Timbermaw Tunic), Arcanite Reaper,
-Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones. Black
+Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones and Sword of Zeal. Black
 Dragonscale Helm, the Devilsaur set, Legionite Glaive and the Hyper Deluxe Sniper Rifle count as cheap crafts, and the
 Korrak quest weapons (Bloodseeker, Ice Barbed Spear) as cheap. Crafts that need a material from Mount Hyjal
 (Outlaw's Collar, Mourning Handguards) are in no set. Max is a superset: every cheap item was simmed in it too.</p>

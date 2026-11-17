@@ -70,6 +70,7 @@ BG_QUESTS = ('Korrak', 'Hero of the Frostwolf', 'Hero of the Stormpike')
 CHEAP_CRAFTS = {252605, 15062, 15063, 250619, 279273}
 MAX_CRAFTS = {252483, 279253, 252484, 12784, 12798, 12783}
 MAX_SOURCELESS = {1728, 13023}
+CHEAP_SOURCELESS = {6622}  # Sword of Zeal
 STAT = ['Strength', 'Agility', 'Stamina', 'Intellect']
 TYPE = {1: 'Head', 2: 'Neck', 3: 'Shoulder', 4: 'Back', 5: 'Chest', 6: 'Wrist', 7: 'Hands', 8: 'Waist', 9: 'Legs',
         10: 'Feet', 11: 'Finger', 12: 'Trinket', 13: 'Weapon', 14: 'Ranged'}
@@ -131,6 +132,8 @@ def sources(it):
     if not out:
         if it.get('randomSuffixOptions'):
             out, kinds = ['World drop (random suffix, Auction House)'], {'world'}
+        elif it['id'] < 200000:  # a classic item the game files give no source for, as the tier rules read it
+            out, kinds = ['World drop (Auction House)'], {'world'}
         else:
             out, kinds = ['New Forever item: no source in the game files yet'], {'unknown'}
     return out[:4], sorted(kinds)
@@ -159,6 +162,8 @@ def tier(it):
         return 'max'
     if not srcs:
         if it.get('randomSuffixOptions'):
+            return 'cheap'
+        if it['id'] in CHEAP_SOURCELESS:
             return 'cheap'
         return 'max' if (it['id'] in MAX_SOURCELESS or it['id'] < 200000) else 'cheap'
     if 'rep-high' in kinds and not kinds & {'drop', 'quest', 'rep'}:
