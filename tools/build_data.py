@@ -283,6 +283,10 @@ GROUP_ORDER = ['weapons_ranged', 'weapons', 'ranged', 'head', 'neck', 'shoulder'
 NOTES = {'weapons_ranged': 'Weave: the two-hander and the bow are picked together',
          'weapons': 'With the set\'s ranged weapon', 'ranged': 'With the set\'s melee weapons',
          'finger1': 'Unique rings cannot be worn twice', 'trinket1': 'Effects the sim does not model count as their stats only'}
+# Rows a playstyle's card always shows, past the Top N cut, with a note. Bloodseeker is the AV quest bow most turret
+# hunters already hold. A rerun that drops one of these rows stops the build, so sim the row again before building.
+PINNED = {('turret', 'ranged'): {19107: "If you have Bloodseeker: don't chase a fast bow for mixed content; it's under 1%. "
+                                        "On raid bosses it's 1.5% (3 min) to 6% (5 min)."}}
 used_items, used_suffixes = set(), {}
 loadouts = {}
 for lid in IDS:
@@ -308,7 +312,14 @@ for lid in IDS:
             row = {'move': move, 'd': round(r['d'], 2), 'm': round(r['m'], 2)}
             if (c := flipped.get(json.dumps(r['move'], sort_keys=True))):
                 row['alt'] = {'when': COND_LABEL[c['cond']], 'd': c['d'], 'm': c['m']}
+            if len(move) == 1 and (note := PINNED.get((lid.split('-')[0], g), {}).get(next(iter(move.values()))[0])):
+                row['pinned'] = True
+                row['note'] = note
             rows.append(row)
+        pinned = PINNED.get((lid.split('-')[0], g), {})
+        if (missing := set(pinned) - {r['move'][s][0] for r in rows if r.get('pinned') for s in r['move']}
+                - {spec[0] for spec in best.values()}):
+            raise SystemExit(f'{lid} {g}: no row for pinned item(s) {sorted(missing)}; sim them into {lid}.guide.json')
         for spec in list(best.values()) + [v for r in rows for v in r['move'].values()]:
             used_items.add(spec[0])
             if spec[2]:
