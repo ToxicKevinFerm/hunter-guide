@@ -192,12 +192,12 @@ function renderStats() {
     + `<p class="small">What a point of each stat is worth, in attack power, for ${esc(G.playstyles[psOf(BUILD[state.build])].name.toLowerCase())}.</p>`;
 }
 
-// ---------- Info modal: consumables & buffs, races, fast bow, method ----------
+// ---------- Info modal: consumables & buffs, races, turret bow, method ----------
 let infoKind = null, prepTab = 'consumables';
 function openInfo(kind) {
   infoKind = kind;
   const b = BUILD[state.build], ps = psOf(b);
-  $('infofor').textContent = kind === 'method' || kind === 'fastbow' ? '' : `For ${b.name}`;
+  $('infofor').textContent = kind === 'method' || kind === 'turretbow' ? '' : `For ${b.name}`;
   let title = '', body = '';
   if (kind === 'prep') {
     title = prepTab === 'buffs' ? 'Raid buffs & debuffs' : 'Consumables';
@@ -223,17 +223,15 @@ function openInfo(kind) {
         <span class="mt"><b>${esc(r.name)}</b> <small class="fac">${r.faction}</small><small>${r.racials.map(x => `<b>${esc(x.name)}</b>: ${esc(x.what)}`).join(' · ')}</small></span>
         <span class="mv ${cls}"><b>${Math.round(r.dps[col])}${i ? ` · ${pct.toFixed(1)}%` : ' · best'}</b><span class="bar"><span style="width:${Math.max(4, 100 + pct * 25).toFixed(0)}%"></span></span></span></li>`;
     }).join('')}</ul><p class="small">${rich(G.prep.races.foot)}</p>`;
-  } else if (kind === 'fastbow') {
-    title = 'Why turret wants a fast bow';
-    const F = G.fastBow;
-    body = `<p class="sub">Eaglehorn Long Bow (1.8 s) does <b>38 more DPS</b> than a 3.3 s bow with the same damage per second, and <b>80 more</b> in a 5 minute fight.</p>
-      <table class="dtable"><thead><tr><th>A slow bow instead</th><th>3 min</th><th>5 min</th></tr></thead><tbody>
-      ${[...F.rows, F.total].map((r, i, a) => `<tr class="${i === a.length - 1 ? 'total' : ''}"><td>${esc(r[0])}</td><td class="n">${sgn(r[1])}</td><td class="n">${sgn(r[2])}</td></tr>`).join('')}</tbody></table>
-      <ul class="plain"><li><b>Aimed Shot is normalized:</b> its attack power bonus counts every bow as 2.8 s, so a slow bow only adds its own damage roll.</li>
-      <li><b>Casting doesn't cost Auto Shots:</b> on Forever, Auto Shot keeps firing while you cast.</li>
-      <li><b>More shots, more Quick Shots:</b> each Auto Shot can proc Deadly Aspects' +30% speed.</li>
-      <li><b>More hits, more mana:</b> Judgement of Wisdom returns mana per hit.</li></ul>
-      <p class="small">${esc(F.real)} Weaving is the other way round: your swing restarts Auto Shot, so a slow two-hander wants a slow bow.</p>`;
+  } else if (kind === 'turretbow') {
+    title = 'Why Bloodseeker?';
+    body = `<p class="sub">Bloodseeker is a free quest reward and ends <b>within 1%</b> of Eaglehorn Long Bow over a raid night, so the turret sets wear it. Eaglehorn is the bow for lone bosses.</p>
+      <table class="dtable"><thead><tr><th>Fight</th><th>Bloodseeker vs Eaglehorn</th></tr></thead><tbody>
+      ${G.turretBow.rows.map(r => `<tr><td>${esc(r[0])}</td><td class="n">${sgn(r[1])}</td></tr>`).join('')}</tbody></table>
+      <ul class="plain"><li><b>Bosses favor the fast bow:</b> more Auto Shots mean more Quick Shots procs and more Judgement of Wisdom mana, and turret runs on mana.</li>
+      <li><b>Volley favors the slow bow:</b> Volley stops Auto Shot, you get about one shot between Volleys whatever the bow, and a slow bow's shots and Multi-Shots hit about 13% harder.</li>
+      <li><b>Killing adds doesn't help Bloodseeker:</b> the adds carry no Judgement of Wisdom, so mana gets tighter, and mana is where the fast bow wins.</li></ul>
+      <p class="small">Dwarven Hand Cannon was ahead of both in every 30 minute run. Weaving is the other way round: your swing restarts Auto Shot, so a slow two-hander wants a slow bow.</p>`;
   } else if (kind === 'method') {
     title = 'How we tested';
     body = `<p>Every number is a WoWSims Forever sim (${G.meta.simDate}, ${G.meta.iterations} iterations): the sim's preset for each build, an Orc in the playstyle's best pre-raid gear, full raid buffs and consumables, a level 63 Dragonkin boss, a 3 minute fight.</p>

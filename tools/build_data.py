@@ -283,10 +283,20 @@ GROUP_ORDER = ['weapons_ranged', 'weapons', 'ranged', 'head', 'neck', 'shoulder'
 NOTES = {'weapons_ranged': 'Weave: the two-hander and the bow are picked together',
          'weapons': 'With the set\'s ranged weapon', 'ranged': 'With the set\'s melee weapons',
          'finger1': 'Unique rings cannot be worn twice', 'trinket1': 'Effects the sim does not model count as their stats only'}
-# Rows a playstyle's card always shows, past the Top N cut, with a note. Bloodseeker is the AV quest bow most turret
-# hunters already hold. A rerun that drops one of these rows stops the build, so sim the row again before building.
-PINNED = {('turret', 'ranged'): {19107: "If you have Bloodseeker: don't chase a fast bow for mixed content; it's under 1%. "
-                                        "On raid bosses it's 1.5% (3 min) to 6% (5 min)."}}
+# Items worn by choice where the 3 minute boss sim picks another (owner ruling, 2026-11-17): Bloodseeker on every turret
+# set. Eaglehorn Long Bow wins the lone boss by about 16-18 DPS, but Bloodseeker is a free quest reward and ends within
+# 1% of it over a raid night, ahead once Volleyed trash is a third of the combat time. Keep it worn when the sets are
+# rerun: the build stops if a set's gear wears anything else there. The card shows WHY as a hover on its title.
+BIS_OVERRIDE = {('turret', 'ranged'): {'item': 19107, 'label': 'Why Bloodseeker?', 'why': [
+    "A free quest reward that ends within 1% of Eaglehorn Long Bow over a raid night, so it is the pick here.",
+    "Lone boss: Eaglehorn wins, +1.6% on this 3 minute fight and about 6% on a 5 minute one. A fast bow fires more "
+    "Auto Shots, and each can proc Quick Shots and return Judgement of Wisdom mana.",
+    "Trash you Volley: Bloodseeker wins, about +75 DPS on a pack of four. Volley stops Auto Shot, you get about one shot "
+    "between Volleys whatever the bow, and a slow bow's shots and Multi-Shots hit 13% harder.",
+    "Boss + 2 adds while you stay on the boss: a tie. Adds you have to kill: Eaglehorn by about 22.",
+    "A 30 minute run of bosses, cleave and packs, Volleying the packs: Bloodseeker ahead by 1-6 once packs are a third "
+    "or more of the combat time, 2-6 behind on a boss-heavy night.",
+    "Dwarven Hand Cannon (auction house) was ahead of both in every one of those mixes."]}}
 used_items, used_suffixes = set(), {}
 loadouts = {}
 for lid in IDS:
@@ -312,20 +322,19 @@ for lid in IDS:
             row = {'move': move, 'd': round(r['d'], 2), 'm': round(r['m'], 2)}
             if (c := flipped.get(json.dumps(r['move'], sort_keys=True))):
                 row['alt'] = {'when': COND_LABEL[c['cond']], 'd': c['d'], 'm': c['m']}
-            if len(move) == 1 and (note := PINNED.get((lid.split('-')[0], g), {}).get(next(iter(move.values()))[0])):
-                row['pinned'] = True
-                row['note'] = note
             rows.append(row)
-        pinned = PINNED.get((lid.split('-')[0], g), {})
-        if (missing := set(pinned) - {r['move'][s][0] for r in rows if r.get('pinned') for s in r['move']}
-                - {spec[0] for spec in best.values()}):
-            raise SystemExit(f'{lid} {g}: no row for pinned item(s) {sorted(missing)}; sim them into {lid}.guide.json')
+        override = BIS_OVERRIDE.get((lid.split('-')[0], g))
+        if override and override['item'] not in {spec[0] for spec in best.values()}:
+            raise SystemExit(f"{lid} {g}: the set must wear {items[override['item']]['name']} (BIS_OVERRIDE); put it back in "
+                             f"{lid}.gear.json and rerun the card against it")
         for spec in list(best.values()) + [v for r in rows for v in r['move'].values()]:
             used_items.add(spec[0])
             if spec[2]:
                 used_suffixes.setdefault(spec[0], set()).add(spec[2])
         rows.sort(key=lambda r: -r['d'])
         group = {'id': g, 'best': best, 'rows': rows, 'note': NOTES.get(g, '')}
+        if override:
+            group['why'] = {'label': override['label'], 'lines': override['why']}
         if (c := cond.get(g, {}).get('best')):
             group['bestAlt'] = {'when': COND_LABEL[c['cond']], 'd': c['d']}
         if g in scen:

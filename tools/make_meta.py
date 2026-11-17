@@ -60,8 +60,9 @@ playstyles = [
      'blurb': 'Survival with Marksmanship, no pet (Lone Wolf). A slow two-hander and a slow bow: each weave lasts as long '
               'as the slower swing, so the two are picked as a pair.'},
     {'id': 'turret', 'short': 'Turret', 'name': 'Turret',
-     'blurb': 'Marksmanship from range. The two-hander is only a stat stick, and a fast bow fires the most Auto Shots. '
-              'Pick a turret rotation: the Auto rotation weaves whenever a two-hander is equipped.'},
+     'blurb': 'Marksmanship from range. The two-hander is only a stat stick. Bloodseeker is the bow by choice: Eaglehorn Long '
+              'Bow wins lone bosses, Bloodseeker trash you Volley, and over a raid night they end within 1%. Pick a turret '
+              'rotation: the Auto rotation weaves whenever a two-hander is equipped.'},
     {'id': 'melee', 'short': 'Melee', 'name': 'Survival Melee',
      'blurb': 'Dual wield in melee with hawks (Beast Mastery 16 / Survival 31). Crusader on the main hand; run out for '
               'Serpent Sting while Strider Kick speeds you up.'},
@@ -102,7 +103,7 @@ howto = f"""
   <div class="kpi"><b>8% hit</b><span>The cap against a level 63 boss, melee and ranged. Surefooted counts.</span></div>
   <div class="kpi"><b>Agility</b><span>The best stat for every playstyle; weave values it most.</span></div>
   <div class="kpi"><b>Slow + slow</b><span>Weave: a slow two-hander wants a slow bow (The Blackrock Slicer + Deep Jungle Rifle or Bloodseeker).</span></div>
-  <div class="kpi"><b>Fast bow</b><span>Turret: Eaglehorn or a fast Agility bow. Pick a turret rotation.</span></div>
+  <div class="kpi"><b>Bloodseeker</b><span>Turret: free, and within 1% of Eaglehorn over a raid night. Eaglehorn wins lone bosses. Pick a turret rotation.</span></div>
 </div>
 
 <h2>Hit first</h2>
@@ -123,9 +124,11 @@ around. These are the best pairs on the Max weave set:</p>
 <p>A faster two-hander wants a faster bow: Legionite Glaive (3.2 s) does best with Riphook (2.2 s), and that pair
 still loses to the slow pair above.</p>
 
-<h3>Turret: a fast bow</h3>
-<p>Standing at range, more Auto Shots win: Eaglehorn Long Bow (1.8 s) on Max and Cheap, ahead of the fast Agility bows. The
-two-hander is only a stat stick. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
+<h3>Turret: Bloodseeker, or Eaglehorn for bosses</h3>
+<p>On a lone boss more Auto Shots win: Eaglehorn Long Bow (1.8 s) beats Bloodseeker (3.3 s) by about 1.6% on the 3 minute
+boss here and about 6% on a 5 minute one. On trash you Volley the slow bow wins, and over a raid night of bosses, cleave
+and packs the two end within 1%. Every turret set wears Bloodseeker, a free quest reward; Why Bloodseeker? on the
+ranged card has the numbers. The two-hander is only a stat stick. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
 <h3>Melee: dual wield, Crusader on the main hand</h3>
@@ -203,9 +206,11 @@ Guard Captain) have the same stats.</li>
 set on another seed. Every loadout was run again on 2026-11-17 with the sim's retuned presets: SV Melee on Careful
 Aim, the Elixir of Greater Intellect in every build and Brilliant Mana Oil on the turret. Where that run found a
 better item or a tie the rules above settle (The Blackrock Slicer on every weave set, with Bloodseeker on Cheap;
-Eaglehorn Long Bow on Cheap turret; Darkmoon Card: Maelstrom on the Max melee sets; Bone Golem Shoulders on AV
+Darkmoon Card: Maelstrom on the Max melee sets; Bone Golem Shoulders on AV
 melee; Truestrike Shoulders on Cheap melee), the changed slots were run again the same way on the new set, and the
-other slots of that set keep their gaps from before the change. Δ DPS is the confirmed gap, ± its 95% margin.</li>
+other slots of that set keep their gaps from before the change. Bloodseeker is worn on every turret set by choice:
+Eaglehorn Long Bow wins this boss by 16–18 DPS, but Bloodseeker is a free quest reward and ends within 1% of it over a
+raid night, so the ranged card was run again against it. Δ DPS is the confirmed gap, ± its 95% margin.</li>
 <li>When the sets were first built, set bonuses were tried as whole sets, the weave's two-hander and bow as one pair,
 and every two-slot combination of each slot's best alternatives was checked at the end. Every enchant was simmed
 against the others.</li>

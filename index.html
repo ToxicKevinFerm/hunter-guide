@@ -90,6 +90,7 @@ section[hidden] { display: none; }
 .card.flash { box-shadow: 0 0 0 2px var(--gold); }
 .card h3 { margin: 0; padding: 10px 14px; font: 700 15px var(--display); color: var(--gold); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; background: #00000022; }
 .card h3 small { font: 500 12px var(--body); color: var(--muted); }
+.why { margin-left: 8px; font: 600 11px var(--body); color: var(--gold); background: #d9b45f1a; border: 1px solid var(--gold-dim); border-radius: 10px; padding: 1px 8px; cursor: help; vertical-align: 2px; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 7px 10px; text-align: left; vertical-align: middle; }
 th { font: 600 11px var(--body); text-transform: uppercase; letter-spacing: .5px; color: var(--muted); border-bottom: 1px solid var(--line); }
@@ -114,7 +115,6 @@ td.delta { white-space: nowrap; width: 120px; }
 .dm { color: var(--muted); font-size: 11px; }
 .alt { color: var(--muted); font-size: 11px; white-space: normal; margin-top: 3px; line-height: 1.3; }
 .alt b { color: #e9c58a; }
-.alt.pin { color: var(--gold); }
 .bar-bg { height: 4px; background: #ffffff10; border-radius: 3px; margin-top: 3px; overflow: hidden; }
 .bar-fg { height: 100%; background: linear-gradient(90deg, #e0705f, #e2b54a); }
 td.src { font-size: 12.5px; color: var(--muted); }
@@ -158,6 +158,8 @@ td.src .s + .s { margin-top: 2px; }
 #tip .y { color: #ffd100; }
 #tip .m { color: #9d9d9d; }
 #tip .row { display: flex; justify-content: space-between; gap: 16px; }
+#tip.wide { max-width: 420px; }
+#tip .why-l { margin: 6px 0 0; color: #d8d4c6; }
 footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding: 18px 0 40px; }
 
 @media (max-width: 980px) {
@@ -222,7 +224,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=a2bf3f637c"></script>
+<script src="data.js?v=b9bccf8d50"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -324,10 +326,9 @@ function renderCards() {
   const out = [];
   for (const g of L.groups) {
     const rows = [{ move: g.best, d: 0, m: 0, best: true, alt: g.bestAlt }, ...g.rows];
-    // A pinned row shows past the Top N cut, under its own rank.
-    const shown = rows.filter(r => rowPasses(moveSpecs(r.move))).map((r, i) => [r, i]).filter(([r, i]) => i < state.topn || r.pinned);
+    const shown = rows.filter(r => rowPasses(moveSpecs(r.move))).slice(0, state.topn);
     const maxLoss = Math.max(1, ...rows.slice(0, state.topn + 2).map(r => -r.d));
-    const tr = shown.map(([r, i]) => {
+    const tr = shown.map((r, i) => {
       const specs = moveSpecs(r.move);
       const items = specs.map(([s, spec]) => itemHTML(spec)).join('<span class="plus">+</span>');
       const tiers = [...new Set(specs.map(([, spec]) => (item(spec[0]) || {}).tier).filter(Boolean))];
@@ -335,12 +336,12 @@ function renderCards() {
       const pct = L.dps ? (r.d / L.dps * 100) : 0;
       const tie = !r.best && Math.abs(r.d) <= r.m;
       const delta = r.best ? '<span class="dv zero">BiS</span>' :
-        `<span class="dv ${tie ? 'zero' : 'neg'}">${r.d > 0 ? '+' : ''}${r.d.toFixed(1)}</span> <span class="dm">±${r.m.toFixed(1)} · ${tie ? 'tie' : pct.toFixed(1) + '%'}</span>
+        `<span class="dv ${tie ? 'zero' : r.d > 0 ? 'pos' : 'neg'}">${r.d > 0 ? '+' : ''}${r.d.toFixed(1)}</span> <span class="dm">±${r.m.toFixed(1)} · ${tie ? 'tie' : (r.d > 0 ? '+' : '') + pct.toFixed(1) + '%'}</span>
          <div class="bar-bg"><div class="bar-fg" style="width:${Math.max(0, Math.min(100, -r.d / maxLoss * 100))}%"></div></div>`;
       // An area or creature bonus's other case, against the same set as the Δ above it.
       const alt = r.alt ? `<div class="alt" title="Δ DPS against the same set when this item's area or creature bonus is the other way round">${esc(r.alt.when)}: <b>${r.alt.d > 0 ? '+' : ''}${r.alt.d.toFixed(1)}</b>${r.alt.m != null ? ` <span class="dm">±${r.alt.m.toFixed(1)}</span>` : ''}</div>` : '';
       return `<tr class="${r.best ? 'best' : ''}"><td class="rank">${i + 1}</td><td class="item">${items}</td>
-        <td class="delta">${delta}${alt}${r.note ? `<div class="alt pin">${esc(r.note)}</div>` : ''}</td><td>${tiers.map(t => `<span class="badge ${t}">${t}</span>`).join(' ')}</td><td class="src">${srcs}</td></tr>`;
+        <td class="delta">${delta}${alt}</td><td>${tiers.map(t => `<span class="badge ${t}">${t}</span>`).join(' ')}</td><td class="src">${srcs}</td></tr>`;
     }).join('');
     // The best moves under a raid condition the set does not assume, against the set under the same condition.
     const scenarios = (g.scenarios || []).map(sc => {
@@ -351,7 +352,7 @@ function renderCards() {
       return `<div class="scenario"><h4>${esc(sc.when)}</h4><div class="sc-detail">${esc(sc.detail)}</div><table><tbody>${tr}</tbody></table></div>`;
     }).join('');
     const hiddenBest = !rowPasses(moveSpecs(g.best));
-    out.push(`<div class="card" id="card-${g.id}"><h3>${esc(SLOT_LABEL[g.id] || g.id)} <small>${g.note ? esc(g.note) : ''}</small></h3>
+    out.push(`<div class="card" id="card-${g.id}"><h3><span>${esc(SLOT_LABEL[g.id] || g.id)}${g.why ? ` <button class="why" type="button" data-why="${g.id}">${esc(g.why.label)}</button>` : ''}</span> <small>${g.note ? esc(g.note) : ''}</small></h3>
       ${shown.length ? `<table><thead><tr><th>#</th><th>Item</th><th>Δ DPS</th><th>Tier</th><th>Where</th></tr></thead><tbody>${tr}</tbody></table>` : ''}
       ${hiddenBest ? '<div class="empty-note">The best item for this slot is hidden by your filters.</div>' : ''}
       ${!shown.length ? '<div class="empty-note">Nothing in this slot passes the filters.</div>' : ''}${scenarios}</div>`);
@@ -465,9 +466,11 @@ document.getElementById('topn').addEventListener('change', e => { state.topn = +
 
 const tip = document.getElementById('tip');
 document.addEventListener('mousemove', e => {
-  const t = e.target.closest('[data-tip]');
+  const t = e.target.closest('[data-tip], [data-why]');
   if (!t) { tip.hidden = true; return; }
-  tip.innerHTML = tipHTML(+t.dataset.tip, +t.dataset.sfx);
+  const why = t.dataset.why && loadout().groups.find(g => g.id === t.dataset.why).why;
+  tip.classList.toggle('wide', !!why);
+  tip.innerHTML = why ? `<div class="t y">${esc(why.label)}</div>${why.lines.map(l => `<p class="why-l">${esc(l)}</p>`).join('')}` : tipHTML(+t.dataset.tip, +t.dataset.sfx);
   tip.hidden = false;
   const w = tip.offsetWidth, h = tip.offsetHeight;
   let x = e.clientX + 16, y = e.clientY + 16;
