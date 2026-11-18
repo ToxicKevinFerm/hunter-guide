@@ -225,7 +225,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=a386e2b2a2"></script>
+<script src="data.js?v=741c1b55b7"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -233,7 +233,7 @@ const WH = id => `https://www.wowhead.com/forever/item=${id}`;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const SLOT_LABEL = { head: 'Head', neck: 'Neck', shoulder: 'Shoulder', back: 'Back', chest: 'Chest', wrist: 'Wrist', hands: 'Hands',
   waist: 'Waist', legs: 'Legs', feet: 'Feet', finger1: 'Ring 1', finger2: 'Ring 2', trinket1: 'Trinket 1', trinket2: 'Trinket 2',
-  main_hand: 'Main hand', off_hand: 'Off hand', ranged: 'Ranged', weapons: 'Weapons', weapons_ranged: 'Weapons + ranged (as a pair)' };
+  main_hand: 'Main hand', off_hand: 'Off hand', ranged: 'Ranged', weapons: 'Weapons', weapons_ranged: 'Weapons + ranged (as a pair)', two_hand: 'Two-hander' };
 const LEFT = ['head', 'neck', 'shoulder', 'back', 'chest', 'wrist'];
 const RIGHT = ['hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2'];
 const WEAPONS = ['main_hand', 'off_hand', 'ranged'];
@@ -326,7 +326,9 @@ function renderCards() {
   const L = loadout();
   const out = [];
   for (const g of L.groups) {
-    const rows = [{ move: g.best, d: 0, m: 0, best: true, alt: g.bestAlt }, ...g.rows];
+    // A list with nothing worn in its slot (one-handers on a two-hander set) has no BiS row; its Δ is against the set.
+    const hasBest = Object.keys(g.best).length > 0;
+    const rows = [...(hasBest ? [{ move: g.best, d: 0, m: 0, best: true, alt: g.bestAlt }] : []), ...g.rows];
     const shown = rows.filter(r => rowPasses(moveSpecs(r.move))).slice(0, state.topn);
     const maxLoss = Math.max(1, ...rows.slice(0, state.topn + 2).map(r => -r.d));
     const tr = shown.map((r, i) => {
@@ -352,7 +354,7 @@ function renderCards() {
         <td class="delta"><span class="dv pos">${r.d > 0 ? '+' : ''}${r.d.toFixed(1)}</span> <span class="dm">±${r.m.toFixed(1)}</span>${r.note ? `<div class="alt">${esc(r.note)}</div>` : ''}</td></tr>`).join('');
       return `<div class="scenario"><h4>${esc(sc.when)}</h4><div class="sc-detail">${esc(sc.detail)}</div><table><tbody>${tr}</tbody></table></div>`;
     }).join('');
-    const hiddenBest = !rowPasses(moveSpecs(g.best));
+    const hiddenBest = hasBest && !rowPasses(moveSpecs(g.best));
     const sect = `<div class="sect" id="card-${g.id}"><h3><span>${esc(SLOT_LABEL[g.id] || g.id)}${g.why ? ` <button class="why" type="button" data-why="${g.id}">${esc(g.why.label)}</button>` : ''}</span> <small>${g.note ? esc(g.note) : ''}</small></h3>
       ${shown.length ? `<table><thead><tr><th>#</th><th>Item</th><th>Δ DPS</th><th>Tier</th><th>Where</th></tr></thead><tbody>${tr}</tbody></table>` : ''}
       ${hiddenBest ? '<div class="empty-note">The best item for this slot is hidden by your filters.</div>' : ''}
@@ -458,7 +460,7 @@ document.addEventListener('click', e => {
   else if (t.dataset.src) { state.srcs.has(t.dataset.src) ? state.srcs.delete(t.dataset.src) : state.srcs.add(t.dataset.src); t.setAttribute('aria-pressed', state.srcs.has(t.dataset.src)); }
   else if (t.dataset.go) {
     const L = loadout();
-    const g = L.groups.find(g => g.id === t.dataset.go) || L.groups.find(g => Object.keys(g.best).includes(t.dataset.go));
+    const g = L.groups.find(g => g.id === t.dataset.go && t.dataset.go in g.best) || L.groups.find(g => t.dataset.go in g.best);
     const card = g && document.getElementById('card-' + g.id);
     if (card) { card.scrollIntoView({ block: 'start' }); card.classList.add('flash'); setTimeout(() => card.classList.remove('flash'), 1200); }
     return;
