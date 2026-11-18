@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forever Hunter · Pre-raid best in slot</title>
+<link rel="icon" href="https://wow.zamimg.com/images/wow/icons/medium/classicon_hunter.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css?v=2cc41620ff">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brandrow">
+      <a class="brand" href="../guide/">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 20 4"/><path d="M14 4h6v6"/><path d="M4 14c4 0 6 2 6 6"/></svg>
+        <span>Forever Hunter</span>
+      </a>
+      <a class="bis" href="../guide/">Class guide ↗</a>
+    </div>
+    <h1>Pre-raid best in slot</h1>
+    <p class="lede" id="lede"></p>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="gear" aria-selected="true">Gear by slot</button>
+      <button role="tab" data-tab="all">All loadouts</button>
+      <button role="tab" data-tab="howto">How to gear</button>
+      <button role="tab" data-tab="method">Method</button>
+    </nav>
+  </div>
+</header>
+
+<div class="bar" id="bar">
+  <div class="wrap bar-in">
+    <div class="group"><span>Playstyle</span><div class="seg" id="ps"></div></div>
+    <div class="group" id="specgroup"><span id="speclabel">Spec</span><div class="seg" id="spec"></div></div>
+    <div class="group"><span>Budget</span><div class="seg" id="tier"></div></div>
+    <div class="group" id="repgroup"><span>Exalted with</span><div class="seg" id="rep"></div></div>
+    <div class="group"><span>Options per slot</span><div class="seg" id="topn"></div></div>
+    <div class="group grow"><span>Filter</span>
+      <div class="filter">
+        <input type="search" class="search" id="q" placeholder="Item, boss, zone, quest" aria-label="Search items">
+        <details class="srcpick" id="srcpick"><summary id="srcsum">All sources</summary><div class="srcmenu" id="srcs"></div></details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section data-panel="gear">
+    <div class="doll" id="doll"></div>
+    <div class="key" id="key"></div>
+    <details class="ov" id="ovd">
+      <summary><span class="ov-t">How much each slot matters</span><span class="small" id="ovteaser"></span></summary>
+      <div id="overview"></div>
+    </details>
+    <div class="cards" id="cards"></div>
+  </section>
+  <section data-panel="all" hidden>
+    <p class="sub">Every loadout side by side. Faded rows are the same in every loadout; a shaded cell differs from the most common pick.</p>
+    <div class="matrix" id="matrix"></div>
+  </section>
+  <section data-panel="howto" hidden><div class="prose" id="howto"></div></section>
+  <section data-panel="method" hidden><div class="prose" id="method"></div></section>
+</main>
+
+<footer class="wrap foot" id="foot"></footer>
+
+<div class="modal" id="infomodal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="infotitle">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2 id="infotitle"></h2>
+    <div id="infobody"></div>
+  </div>
+</div>
+<div id="tip" hidden></div>
+
+<script src="../data.js?v=4790b98ae3"></script>
+<script src="app.js?v=e4ad02c239"></script>
+</body>
+</html>

@@ -404,4 +404,10 @@ if os.path.exists(index):
     html = open(index).read()
     html = re.sub(r'<script src="data\.js(\?v=[0-9a-f]*)?"></script>', f'<script src="data.js?v={digest}"></script>', html)
     open(index, 'w').write(html)
+# The other pages that read the data (prebis-new/, the class guide) are stamped by tools/stamp_guide.py: run it too,
+# so a rebuild never leaves one of them on a cached copy.
+stamp = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'stamp_guide.py')
+if os.path.exists(stamp):
+    import runpy
+    runpy.run_path(stamp, run_name='__main__')
 print(f"wrote {a.out}: {len(used_items)} items, {len(loadouts)} loadouts")
