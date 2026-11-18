@@ -270,6 +270,14 @@ function toURL() {
   if (Array.isArray(G.rotationOf[state.build]) && state.rot && state.rot !== G.rotationOf[state.build][0]) p.set('rot', state.rot);
   if (state.fight !== 180) p.set('fight', state.fight);
   history.replaceState(null, '', `?${p}${location.hash}`);
+  bisLinks();
+}
+// The pre-raid BiS links open that page (prebis-new/) on this build's gear: SV Turret wears the MM Turret set.
+const BIS_SET = { 'sv-turret': 'ps=turret&spec=mm', 'mm-turret': 'ps=turret&spec=mm', 'mm-pet': 'ps=turret&spec=mm',
+  'bm-turret': 'ps=turret&spec=bm', 'sv-melee': 'ps=melee', 'sv-melee-lw': 'ps=melee' };
+function bisLinks() {
+  const set = BIS_SET[state.build] || `ps=weave&spec=${state.rot === 'weave-max' ? 'max' : 'normal'}`;
+  document.querySelectorAll('a[data-bis]').forEach(a => a.href = `../prebis-new/#${set}`);
 }
 function fromURL() {
   const p = new URLSearchParams(location.search);
@@ -343,7 +351,7 @@ const io = new IntersectionObserver(entries => {
 }, { threshold: [0, .1, .25, .5, .75, 1] });
 document.querySelectorAll('section.sec[id]').forEach(s => io.observe(s));
 
-$('foot').innerHTML = `Simulated ${G.meta.simDate} · ${G.meta.iterations} iterations per build · WoWSims Forever <code>${G.meta.forever}</code> · <a href="#" data-modal="method">How we tested</a> · <a href="../">Pre-raid best in slot</a>`;
+$('foot').innerHTML = `Simulated ${G.meta.simDate} · ${G.meta.iterations} iterations per build · WoWSims Forever <code>${G.meta.forever}</code> · <a href="#" data-modal="method">How we tested</a> · <a href="../prebis-new/" data-bis>Pre-raid best in slot</a>`;
 // Macros from the Forever hunter wiki (Hunter Macros page), the ones a raider uses every fight.
 const MACROS = [
   ['Auto Shot', 'Starts Auto Shot, picking a target if you have none. Pressing it again never turns it off.', '#showtooltip\n/targetenemy [noexists][dead][help]\n/cast !Auto Shot'],
@@ -360,3 +368,4 @@ const SIM = new Date(G.meta.simDate + 'T00:00:00').toLocaleDateString('en-US', {
 $('simdate').textContent = `DPS for a fight this long · simmed ${SIM}`;
 fromURL();
 renderAll();
+bisLinks();
