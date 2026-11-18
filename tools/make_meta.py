@@ -14,7 +14,7 @@ NAME = {it['id']: it['name'] for it in db['items']}
 SPEED = {it['id']: it.get('weaponSpeed', 0) for it in db['items']}
 # <playstyle>-max is the Max set for a player exalted with Darkspear Raiders (Theramore), <playstyle>-max-av the one for a
 # player exalted with Frostwolf Clan (Stormpike Guard) in Alterac Valley.
-IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'bmturret-max',
+IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'nweave-max', 'nweave-max-av', 'nweave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'bmturret-max',
        'bmturret-max-av', 'bmturret-cheap', 'melee-max', 'melee-max-av', 'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(R, f'{i}.guide.json'))]
 runs = {i: json.load(open(os.path.join(R, f'{i}.guide.json'))) for i in IDS}
@@ -31,13 +31,14 @@ assert all(v > 2 for v in rune_next.values()), rune_next
 # (RUNS_DIR/<playstyle>.json), so they follow the sim's presets.
 BUILDS = {
     'weave': ('SV Weave', 'Melee Weave (Max)'),
+    'nweave': ('SV Weave', 'Melee Weave (Normal)'),
     'turret': ('MM', 'Turret'),
     'bmturret': ('BM', 'Turret (Hawks)'),
     'melee': ('SV Melee', 'Melee'),
 }
 TALENTS = {ps: json.load(open(os.path.join(R, f'{ps}.json')))['player']['talentsString'] for ps in BUILDS
            if os.path.exists(os.path.join(R, f'{ps}.json'))}
-TITLES = {'weave': 'Weave', 'turret': 'Turret · MM', 'bmturret': 'Turret · BM', 'melee': 'Melee'}
+TITLES = {'weave': 'Weave', 'nweave': 'Weave · Normal', 'turret': 'Turret · MM', 'bmturret': 'Turret · BM', 'melee': 'Melee'}
 # Wowhead's Forever talent calculator reads a build as its hash version followed by the points per talent, trees in
 # row and column order like the sim's. The version is "hashVersion" in nether.wowhead.com/forever/data/talents-classic;
 # Wowhead converts links stamped with an older version when its trees change.
@@ -60,17 +61,57 @@ for i in IDS:
         'simLink': LINKS.get(i, '').strip(),
     }
 
+def swapped(base, other):
+    """The items set `other` wears that set `base` does not, in slot order."""
+    a = json.load(open(os.path.join(R, f'{base}.gear.json'))); b = json.load(open(os.path.join(R, f'{other}.gear.json')))
+    worn = {v[0] for v in a.values() if v and v[0]}
+    names = [NAME[v[0]] for v in b.values() if v and v[0] and v[0] not in worn]
+    return ', '.join(names[:-1]) + ' and ' + names[-1] if len(names) > 1 else ''.join(names)
+
+
+NWEAVE_BLURB = ('Survival with Marksmanship, no pet (Lone Wolf), played with the Melee Weave (Normal) rotation: the shots '
+                'come first, you walk in only once Aimed Shot and Arcane Shot are both cooling and Auto Shot has just gone '
+                'off, and you stay while a melee cooldown comes up soon. Fewer trips than the max weave, and easier to play.')
+nweave_html = ''
+if 'nweave-max-av' in dps:
+    def replaced(t):
+        """'X for Y' per slot where the normal weave set `t` wears another item than the max weave one."""
+        a = json.load(open(os.path.join(R, f'weave-{t}.gear.json'))); b = json.load(open(os.path.join(R, f'nweave-{t}.gear.json')))
+        worn = {v[0] for v in a.values() if v and v[0]}
+        out = [f"{NAME[v[0]]} for {NAME[a[s][0]]}" for s, v in b.items() if v and v[0] and v[0] not in worn]
+        return ', '.join(out[:-1]) + ' and ' + out[-1] if len(out) > 1 else ''.join(out)
+    by = {t: replaced(t) for t in ('max', 'max-av', 'cheap')}
+    nw_swaps = (f"on both Max sets {by['max']}" if by['max'] == by['max-av'] else
+                f"on Max · Darkspear {by['max']}, on Max · AV {by['max-av']}")
+    nw_swaps += f"; on Cheap {by['cheap']}" if by['cheap'] else '. Cheap wears the same set for both'
+    nweave_html = f"""<h3>Weave: max or normal</h3>
+<p>Weave comes in two rotations, each with its own sets: pick Max weave or Normal weave under Rotation. The max weave
+walks in after every Auto Shot and is the stronger, {dps['weave-max-av'] - dps['nweave-max-av']:.0f} DPS ahead on the AV
+set ({dps['weave-max-av']:.0f} against {dps['nweave-max-av']:.0f}). The normal weave walks in only once Aimed Shot and
+Arcane Shot are both cooling, and stays while a melee cooldown comes up soon. Its sets were searched on its own
+rotation from the max weave sets, with every two-hander and bow pair in the pool. They swap a few pieces:
+{nw_swaps}. A two-hander still beats dual wield on the normal weave, by about 47 on Max.</p>"""
+
+
 playstyles = [
     {'id': 'weave', 'short': 'Weave', 'name': 'Melee Weave',
      'blurb': 'Survival with Marksmanship, no pet (Lone Wolf). A slow two-hander and a slow bow: each weave lasts as long '
-              'as the slower swing, so the two are picked as a pair.'},
+              'as the slower swing, so the two are picked as a pair.',
+     # Weave comes as two rotations with their own sets: max weave (weave-*) and normal weave (nweave-*).
+     'specLabel': 'Rotation',
+     'specs': [{'id': 'max', 'short': 'Max weave', 'name': 'Melee Weave (Max): walk in after every Auto Shot',
+                'title': 'Melee Weave', 'prefix': 'weave'},
+               {'id': 'normal', 'short': 'Normal weave', 'title': 'Melee Weave · Normal', 'prefix': 'nweave',
+                'name': 'Melee Weave (Normal): walk in only while the shots are cooling, stay for the melee cooldowns',
+                'blurb': NWEAVE_BLURB}]},
     {'id': 'turret', 'short': 'Turret', 'name': 'Turret',
      'blurb': 'Marksmanship from range. The two-hander is only a stat stick. Bloodseeker is the bow: a free quest reward, '
               'practically the same as Eaglehorn Long Bow, and ahead on trash you Volley. Pick a turret rotation: the Auto '
               'rotation weaves whenever a two-hander is equipped.',
      # Turret comes as two specs with their own sets: Marksmanship (turret-*) and Beast Mastery (bmturret-*).
-     'specs': [{'id': 'mm', 'short': 'MM', 'name': 'Marksmanship'},
-               {'id': 'bm', 'short': 'BM', 'name': 'Beast Mastery',
+     'specLabel': 'Spec',
+     'specs': [{'id': 'mm', 'short': 'MM', 'name': 'Marksmanship', 'title': 'Turret · MM', 'prefix': 'turret'},
+               {'id': 'bm', 'short': 'BM', 'name': 'Beast Mastery', 'title': 'Turret · BM', 'prefix': 'bmturret',
                 'blurb': 'Beast Mastery from range with a Raptor and Summon Hawk (Turret (Hawks) rotation). The two-hander '
                          'is only a stat stick and Bloodseeker is the bow, as on Marksmanship.'}]},
     {'id': 'melee', 'short': 'Melee', 'name': 'Survival Melee',
@@ -177,6 +218,7 @@ and the next two-hander (Flameslash Crescent on Max, Peacemaker on Cheap) about 
 list them all. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
+{nweave_html}
 {bm_html}
 {long_html}
 
@@ -236,7 +278,8 @@ Hyjal, so area-bound bonuses count; an Orc hunter with the full raid buffs and c
 defaults; and a 150–350 ms reaction time. Each loadout uses the
 sim's preset build for its playstyle: SV Weave for weave, MM or BM for turret, SV Melee for melee. The BM turret sets
 were searched from the MM ones on the BM build, slot by slot with a pair check, Beastmaster Armor combinations
-included, then run through the same cards. The long fight figures run the same set and the four pieces at 240 and 300 s.</p>
+included, then run through the same cards. The normal weave sets were searched the same way from the max weave ones,
+on the SV Weave build with the Melee Weave (Normal) rotation. The long fight figures run the same set and the four pieces at 240 and 300 s.</p>
 <p>The melee weapon cards were run again on 2026-11-18 on the sim's pending change that puts Armor Shatter and Puncture
 Armor in Faerie Fire's armor slot (178 Warcraft Logs reports show neither lands while Faerie Fire or Curse of Recklessness is up).
 Every main hand was run beside Distracting Dagger and beside Bagh Nakh, and every off hand beside Annihilator and

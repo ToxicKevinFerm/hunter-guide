@@ -3,7 +3,7 @@
 
     python3 tools/build_data.py --forever ~/forever --runs RUNS_DIR --out data.js
 
-RUNS_DIR holds, per loadout (weave-, turret-, bmturret- and melee- max, max-av and cheap):
+RUNS_DIR holds, per loadout (weave-, nweave-, turret-, bmturret- and melee- max, max-av and cheap):
   <id>.gear.json   the loadout's gear: {"head": [id, enchant, suffix], ...}
   <id>.guide.json  the per-slot runs: {group: {"base": dps, "rows": [{"move": {...}, "d": .., "m": ..}]}}
   <id>.cond.json   optional, the flipped-condition runs: {group: {"best": {"cond", "d"}, "rows": [{"move", "cond", "d", "m"}]}}
@@ -276,8 +276,9 @@ def spec_with_label(slot, v):
     return [v[0], v[1], v[2], enchant_label(v[1], slot) if v[1] else '']
 
 
-# bmturret-* are the Beast Mastery turret sets, picked under Turret beside the Marksmanship ones (turret-*).
-IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'bmturret-max',
+# nweave-* are the normal weave sets, picked under Weave beside the max weave ones (weave-*); bmturret-* the Beast
+# Mastery turret sets, picked under Turret beside the Marksmanship ones (turret-*).
+IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'nweave-max', 'nweave-max-av', 'nweave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'bmturret-max',
        'bmturret-max-av', 'bmturret-cheap', 'melee-max', 'melee-max-av', 'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(a.runs, f'{i}.guide.json'))]
 GROUP_ORDER = ['weapons_ranged', 'weapons', 'main_hand', 'off_hand', 'two_hand', 'ranged', 'head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist',

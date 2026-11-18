@@ -204,7 +204,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <div class="bar">
   <div class="wrap">
     <div class="group"><label>Playstyle</label><div class="seg" id="ps"></div></div>
-    <div class="group" id="specgroup"><label>Spec</label><div class="seg" id="spec"></div></div>
+    <div class="group" id="specgroup"><label id="speclabel">Spec</label><div class="seg" id="spec"></div></div>
     <div class="group"><label>Budget</label><div class="seg" id="tier"></div></div>
     <div class="group" id="repgroup"><label>Exalted rep</label><div class="seg" id="rep"></div></div>
     <div class="group"><label>Options</label>
@@ -231,7 +231,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=50eb11bc31"></script>
+<script src="data.js?v=25b771f900"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -246,24 +246,28 @@ const WEAPONS = ['main_hand', 'off_hand', 'ranged'];
 const SOURCE_KINDS = [['dungeon', 'Dungeon'], ['quest', 'Quest'], ['craft', 'Crafted'], ['vendor', 'Vendor'], ['rep', 'Reputation'],
   ['bg', 'Battleground'], ['world', 'World drop'], ['unknown', 'Unknown']];
 
-const state = { ps: 'weave', spec: 'mm', long: false, tier: 'max', rep: 'av', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
+// spec: the pick per playstyle that has one (Weave: max or normal rotation; Turret: MM or BM).
+const state = { ps: 'weave', spec: { weave: 'max', turret: 'mm' }, long: false, tier: 'max', rep: 'av', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
 const fromHash = () => {
   const p = new URLSearchParams(location.hash.slice(1));
   if (G.playstyles.some(x => x.id === p.get('ps'))) state.ps = p.get('ps');
   if (['max', 'cheap'].includes(p.get('tier'))) state.tier = p.get('tier');
   if (['darkspear', 'av'].includes(p.get('rep'))) state.rep = p.get('rep');
   if (['gear', 'all', 'howto', 'method'].includes(p.get('tab'))) state.tab = p.get('tab');
-  if (['mm', 'bm'].includes(p.get('spec'))) state.spec = p.get('spec');
+  const P = G.playstyles.find(x => x.id === state.ps);
+  if ((P.specs || []).some(x => x.id === p.get('spec'))) state.spec[state.ps] = p.get('spec');
   state.long = p.get('long') === '1';
 };
-const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}${state.ps === 'turret' ? `&spec=${state.spec}` : ''}&tier=${state.tier}&rep=${state.rep}${state.long ? '&long=1' : ''}`);
+const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}${state.ps in state.spec ? `&spec=${state.spec[state.ps]}` : ''}&tier=${state.tier}&rep=${state.rep}${state.long ? '&long=1' : ''}`);
 
 const item = id => G.items[id];
 const qcls = it => `color: var(--q${it ? it.q : 1})`;
 // Max comes in two sets, one per exalted reputation: Darkspear Raiders (<ps>-max) or Alterac Valley (<ps>-max-av).
-// Turret has a Marksmanship (turret-*) and a Beast Mastery (bmturret-*) set per budget.
-const loadout = () => G.loadouts[`${state.ps === 'turret' && state.spec === 'bm' ? 'bmturret' : state.ps}-${state.tier}${state.tier === 'max' && state.rep === 'av' ? '-av' : ''}`];
-const specOf = P => (P.specs || []).find(x => x.id === state.spec);
+// A playstyle with specs has a set per spec and budget, under the spec's prefix: Weave max (weave-*) or normal
+// (nweave-*), Turret Marksmanship (turret-*) or Beast Mastery (bmturret-*).
+const curPS = () => G.playstyles.find(p => p.id === state.ps);
+const loadout = () => G.loadouts[`${(specOf(curPS()) || { prefix: state.ps }).prefix}-${state.tier}${state.tier === 'max' && state.rep === 'av' ? '-av' : ''}`];
+const specOf = P => (P.specs || []).find(x => x.id === state.spec[P.id]);
 const tierLabel = () => state.tier === 'cheap' ? 'Cheap' : `Max · ${state.rep === 'av' ? 'AV' : 'Darkspear'}`;
 
 function itemName(spec) {
@@ -323,7 +327,7 @@ function renderDoll() {
   document.getElementById('doll').innerHTML = `
     <div class="col">${LEFT.map(slot).join('')}</div>
     <div class="center">
-      <h2>${esc(P.name)}${sp ? ' · ' + esc(sp.short) : ''} · ${tierLabel()}</h2>
+      <h2>${esc(sp ? sp.title : P.name)} · ${tierLabel()}</h2>
       <div class="dps"><b>${L.dps.toFixed(0)}</b> <span>DPS in the sim</span></div>
       <dl class="facts">
         <dt>Build</dt><dd>${esc(L.build)}</dd>
@@ -449,7 +453,6 @@ function renderStatic() {
   document.getElementById('method').innerHTML = G.method;
   document.getElementById('foot').innerHTML = G.meta.footer;
   document.getElementById('ps').innerHTML = G.playstyles.map(p => `<button data-ps="${p.id}">${esc(p.short)}</button>`).join('');
-  document.getElementById('spec').innerHTML = G.playstyles.find(p => p.id === 'turret').specs.map(x => `<button data-spec="${x.id}" title="${esc(x.name)}">${esc(x.short)}</button>`).join('');
   document.getElementById('tier').innerHTML = '<button data-tier="max">Max</button><button data-tier="cheap">Cheap</button>';
   document.getElementById('rep').innerHTML = '<button data-rep="darkspear" title="Darkspear Raiders (Alliance: Theramore)">Darkspear</button>' +
     '<button data-rep="av" title="Frostwolf Clan (Alliance: Stormpike Guard)">AV</button>';
@@ -461,8 +464,12 @@ function render() {
   document.querySelectorAll('[data-tier]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tier === state.tier));
   document.querySelectorAll('[data-rep]').forEach(b => b.setAttribute('aria-pressed', b.dataset.rep === state.rep));
   document.getElementById('repgroup').style.display = state.tier === 'max' ? '' : 'none';
-  document.querySelectorAll('[data-spec]').forEach(b => b.setAttribute('aria-pressed', b.dataset.spec === state.spec));
-  document.getElementById('specgroup').style.display = state.ps === 'turret' ? '' : 'none';
+  const P = curPS();
+  document.getElementById('specgroup').style.display = P.specs ? '' : 'none';
+  if (P.specs) {
+    document.getElementById('speclabel').textContent = P.specLabel;
+    document.getElementById('spec').innerHTML = P.specs.map(x => `<button data-spec="${x.id}" title="${esc(x.name)}" aria-pressed="${x.id === state.spec[P.id]}">${esc(x.short)}</button>`).join('');
+  }
   document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === state.tab));
   document.querySelectorAll('section[data-panel]').forEach(s => s.hidden = s.dataset.panel !== state.tab);
   document.querySelector('.bar').style.display = state.tab === 'gear' ? '' : 'none';
@@ -477,7 +484,7 @@ document.addEventListener('click', e => {
   if (t.dataset.ps) state.ps = t.dataset.ps;
   else if (t.dataset.tier) state.tier = t.dataset.tier;
   else if (t.dataset.rep) state.rep = t.dataset.rep;
-  else if (t.dataset.spec) state.spec = t.dataset.spec;
+  else if (t.dataset.spec) state.spec[state.ps] = t.dataset.spec;
   else if (t.hasAttribute('data-long')) state.long = !state.long;
   else if (t.dataset.tab) state.tab = t.dataset.tab;
   else if (t.dataset.src) { state.srcs.has(t.dataset.src) ? state.srcs.delete(t.dataset.src) : state.srcs.add(t.dataset.src); t.setAttribute('aria-pressed', state.srcs.has(t.dataset.src)); }
