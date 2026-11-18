@@ -224,7 +224,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=adc8bca48a"></script>
+<script src="data.js?v=a386e2b2a2"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -454,7 +454,7 @@ document.addEventListener('click', e => {
   else if (t.dataset.src) { state.srcs.has(t.dataset.src) ? state.srcs.delete(t.dataset.src) : state.srcs.add(t.dataset.src); t.setAttribute('aria-pressed', state.srcs.has(t.dataset.src)); }
   else if (t.dataset.go) {
     const L = loadout();
-    const g = L.groups.find(g => Object.keys(g.best).includes(t.dataset.go)) || L.groups.find(g => g.id === t.dataset.go);
+    const g = L.groups.find(g => g.id === t.dataset.go) || L.groups.find(g => Object.keys(g.best).includes(t.dataset.go));
     const card = g && document.getElementById('card-' + g.id);
     if (card) { card.scrollIntoView({ block: 'start' }); card.classList.add('flash'); setTimeout(() => card.classList.remove('flash'), 1200); }
     return;

@@ -278,10 +278,11 @@ def spec_with_label(slot, v):
 IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'melee-max', 'melee-max-av',
        'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(a.runs, f'{i}.guide.json'))]
-GROUP_ORDER = ['weapons_ranged', 'weapons', 'ranged', 'head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist',
+GROUP_ORDER = ['weapons_ranged', 'weapons', 'main_hand', 'off_hand', 'ranged', 'head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist',
                'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2']
 NOTES = {'weapons_ranged': 'Weave: the two-hander and the bow are picked together',
          'weapons': 'With the set\'s ranged weapon', 'ranged': 'With the set\'s melee weapons',
+         'main_hand': 'One-handers beside the set\'s off hand', 'off_hand': 'Beside the set\'s main hand',
          'finger1': 'Unique rings cannot be worn twice', 'trinket1': 'Effects the sim does not model count as their stats only'}
 # Items worn by choice where the 3 minute boss sim picks another (owner ruling, 2026-11-17): Bloodseeker on every turret
 # set. Eaglehorn Long Bow is 16-18 DPS (1.6%) ahead on the lone boss, but Bloodseeker is a free quest reward and ends within

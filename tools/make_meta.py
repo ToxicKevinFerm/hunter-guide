@@ -191,7 +191,8 @@ sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Mele
 Armor in Faerie Fire's armor slot (178 Warcraft Logs reports show neither lands while Faerie Fire or Curse of Recklessness is up).
 Every main hand was run beside Distracting Dagger and beside Bagh Nakh, and every off hand beside Annihilator and
 beside Teebu's Blazing Longsword (Dal'Rend's Sacred Charge on Cheap), at 3,000 iterations. The best seven or eight of each hand were then
-paired and the best six pairs confirmed at 3,000 against the new set. Two-handers trail dual wield by 77 or more
+paired and the best six pairs confirmed at 3,000 against the new set. The Main hand and Off hand cards run every one-hander on its own beside the set's other hand,
+so each weapon shows once. Two-handers trail dual wield by 77 or more
 and were not run again. The other melee slots keep their gaps from before the change.</p>
 <p>A few items have a bonus that needs an area or a creature type. Rune of the Guard Captain's counts only in
 Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count in these numbers; those of Royal Seal of
@@ -232,7 +233,7 @@ quartermaster gear, epic crafts (Dawn Armor, Timbermaw Tunic), Arcanite Reaper,
 Annihilator, Heartseeker, the Beastmaster vendor pieces and world drops other than random-suffix ones, Sword of Zeal and Eaglehorn Long Bow. Black
 Dragonscale Helm, the Devilsaur set and Legionite Glaive count as cheap crafts, and the
 Korrak quest weapons (Bloodseeker, Ice Barbed Spear) as cheap. Crafts that need a material from Mount Hyjal
-(Outlaw's Collar, Mourning Handguards) are in no set, nor is Hyper Deluxe Sniper Rifle Mk XVII, which cannot be
+(Outlaw's Collar, Mourning Handguards, Ironwood Blade) are in no set, nor is Hyper Deluxe Sniper Rifle Mk XVII, which cannot be
 crafted yet. Max is a superset: every cheap item was simmed in it too.</p>
 <h3>Limits</h3>
 <p>The sim models what the game files and combat logs show; a few trinket effects are missing (see How to gear). New
