@@ -112,8 +112,8 @@ howto = f"""
 <h2>Hit first</h2>
 <p>Against a level 63 boss you miss 8% of your attacks, melee and ranged, until hit takes it away; past that hit is
 worth nothing. Surefooted gives 3% and the Devilsaur two-piece another 2%, so the Survival sets need only about 3–5%
-from gear. Every set here lands between {min(min(v) for v in hit.values()):g}% and {max(max(v) for v in hit.values()):g}%; the dual wield sets keep a little extra, since white swings with two weapons miss far more often. An Orc swinging an axe (Arcanite Reaper, Annihilator) needs only
-6% in melee, but the bow still needs 8%.</p>
+from gear. Every set here lands between {min(min(v) for v in hit.values()):g}% and {max(max(v) for v in hit.values()):g}%; the dual wield sets keep a little extra, since white swings with two weapons miss far more often. An Orc swinging an axe (The Blackrock Slicer on the weave sets) needs only
+6% in melee, but the bow still needs 8%. The melee sets swing a sword and a dagger, so they need the full 8%.</p>
 {ep_html}
 
 <h2>Weapons decide the playstyle</h2>
@@ -135,13 +135,15 @@ numbers. The two-hander is only a stat stick. The Auto rotation weaves with any 
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
 <h3>Melee: dual wield, Crusader on the main hand</h3>
-<p>Survival melee dual wields: Annihilator (Max) or Rivenspike (Cheap) in the main hand, with Distracting Dagger in the
-off hand. Crusader on the main hand edges out Agility by about 2; the off hand keeps +15 Agility. SV Melee takes
-Careful Aim, so Intellect pays here too: Ranger's Belt over Marksman's Girdle, and the Elixir of Greater Intellect.
-If another raider's Annihilator already keeps Armor Shatter on the boss, yours adds nothing: on Max, Teebu's Blazing
-Longsword takes the main hand (about 31 more, before its Firebolt, which is not simmed), with Sword of Zeal about 5
-behind it. Rivenspike's Puncture Armor does not stack with Armor Shatter, so Rivenspike gains only about 4 there, and
-on Cheap Sword of Zeal takes its place (about 18 more), with Dal'Rend's Sacred Charge about 6 behind it.</p>
+<p>Survival melee dual wields: Teebu's Blazing Longsword (Max) or Sword of Zeal (Cheap) in the main hand, with
+Distracting Dagger in the off hand. Sword of Zeal is about 5 behind Teebu's on Max, and on Cheap Dal'Rend's Sacred
+Charge is about 5 behind Sword of Zeal. Teebu's Firebolt is not simmed, so Teebu's does a little more in game. Crusader
+on the main hand edges out Agility by about 2; the off hand keeps +15 Agility. SV Melee takes Careful Aim, so
+Intellect pays here too: Ranger's Belt over Marksman's Girdle, and the Elixir of Greater Intellect.</p>
+<p>Annihilator and Rivenspike are bait. Their armor procs (Armor Shatter, Puncture Armor) share one slot with Faerie
+Fire and Curse of Recklessness, and only the strongest in it counts. Faerie Fire and the curse are both stronger, so with
+either on the boss the proc adds nothing. Left as stat sticks, Annihilator is about 28 behind Teebu's and Rivenspike about 24; on
+Cheap, Rivenspike is about 18 behind Sword of Zeal.</p>
 
 <h3>Dual wield while weaving</h3>
 <p>If you weave with two one-handers, play Melee Weave (Normal): it walks in only when your shots are on cooldown and
@@ -185,10 +187,12 @@ method = f"""
 Hyjal, so area-bound bonuses count; an Orc hunter with the full raid buffs and consumables of the sim's hunter
 defaults; and a 150–350 ms reaction time. Each loadout uses the
 sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Melee for melee.</p>
-<p>The melee weapon cards also list the best pairs with Armor Shatter already on the target, as when another
-raider wears Annihilator: every main hand with Distracting Dagger and every off hand with the set's main hand at 1,000
-iterations on the AV and Cheap sets, then the eight best of each paired at 3,000; the Darkspear set ran the best three
-again. Rivenspike's Puncture Armor does not stack with Armor Shatter, so Rivenspike was run without it.</p>
+<p>The melee weapon cards were run again on 2026-11-18 on the sim's pending change that puts Armor Shatter and Puncture
+Armor in Faerie Fire's armor slot (178 Warcraft Logs reports show neither lands while Faerie Fire or Curse of Recklessness is up).
+Every main hand was run beside Distracting Dagger and beside Bagh Nakh, and every off hand beside Annihilator and
+beside Teebu's Blazing Longsword (Dal'Rend's Sacred Charge on Cheap), at 3,000 iterations. The best seven or eight of each hand were then
+paired and the best six pairs confirmed at 3,000 against the new set. Two-handers trail dual wield by 77 or more
+and were not run again. The other melee slots keep their gaps from before the change.</p>
 <p>A few items have a bonus that needs an area or a creature type. Rune of the Guard Captain's counts only in
 Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count in these numbers; those of Royal Seal of
 Eldre'Thalas (Demons), King Mosh's Tooth and Huntsman's Harpoon (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a
