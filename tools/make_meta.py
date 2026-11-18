@@ -161,13 +161,15 @@ weave is still about 68 higher.</p>
 {tr(['Back', '+5 Agility', 'Enchanter'])}
 {tr(['Chest', 'Greater Stats (+4 all stats)', 'Enchanter'])}
 {tr(['Wrist', '+9 Agility', 'Enchanter'])}
-{tr(['Hands', 'Superior Agility (+15 Agility)', 'Enchanter'])}
+{tr(['Hands', 'Greater Agility (+10 Agility); Minor Haste (+1% attack speed) on melee', 'Enchanter'])}
 {tr(['Feet', 'Greater Agility (+7 Agility)', 'Enchanter'])}
 {tr(['Two-hander', '+25 Agility', 'Enchanter'])}
 {tr(['Melee main hand / off hand', 'Crusader / +15 Agility', 'Enchanter'])}
 {tr(['Ranged', 'SAF-T Ultra Precision Scope (+2% ranged crit)', 'Engineering'])}
 </tbody></table>
-<p>Every slot was checked against its other enchants. Minor Speed on boots loses to Agility, because Strider Kick's
+<p>Every slot was checked against its other enchants. Superior Agility on gloves (+15) is from Ahn'Qiraj, so it is not
+in these sets: Greater Agility is about 4–5 behind it on weave and turret. On melee, Minor Haste edges out Greater Agility
+by 1–3. Minor Speed on boots loses to Agility, because Strider Kick's
 speed already covers it and only the highest speed effect counts. Sniper Scope loses to SAF-T by 8–11.</p>
 
 <h2>Trinkets</h2>
