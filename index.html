@@ -82,6 +82,11 @@ section[hidden] { display: none; }
 .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 13px; background: #00000033; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
 .facts dt { color: var(--muted); }
 .facts dd { margin: 0; overflow-wrap: anywhere; }
+.slot.lf { border-color: var(--gold-dim); background: #2a241433; }
+.lfbox { font-size: 12.5px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: #00000033; }
+.lfbox button { background: var(--panel); color: var(--muted); border: 1px solid var(--line-2); border-radius: 8px; padding: 5px 10px; font: 600 12.5px var(--body); cursor: pointer; }
+.lfbox button[aria-pressed="true"] { background: #2b3220; color: var(--hunter); }
+.lfbox p { margin: 6px 0 0; color: var(--muted); }
 .callout { font-size: 12.5px; color: var(--muted); border-left: 3px solid var(--gold-dim); padding: 4px 10px; background: #00000022; border-radius: 0 8px 8px 0; }
 
 /* Slot cards */
@@ -199,6 +204,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <div class="bar">
   <div class="wrap">
     <div class="group"><label>Playstyle</label><div class="seg" id="ps"></div></div>
+    <div class="group" id="specgroup"><label>Spec</label><div class="seg" id="spec"></div></div>
     <div class="group"><label>Budget</label><div class="seg" id="tier"></div></div>
     <div class="group" id="repgroup"><label>Exalted rep</label><div class="seg" id="rep"></div></div>
     <div class="group"><label>Options</label>
@@ -215,7 +221,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
     <div class="cards" id="cards"></div>
   </section>
   <section data-panel="all" hidden>
-    <p class="sub">Every loadout side by side. A green row means all six loadouts wear the same item; an outlined cell differs from the most common pick.</p>
+    <p class="sub">Every loadout side by side. A green row means every loadout wears the same item; an outlined cell differs from the most common pick.</p>
     <div class="matrix" id="matrix"></div>
   </section>
   <section data-panel="howto" hidden><div class="prose" id="howto"></div></section>
@@ -225,7 +231,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=a4331471ac"></script>
+<script src="data.js?v=5e17d92663"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -240,20 +246,24 @@ const WEAPONS = ['main_hand', 'off_hand', 'ranged'];
 const SOURCE_KINDS = [['dungeon', 'Dungeon'], ['quest', 'Quest'], ['craft', 'Crafted'], ['vendor', 'Vendor'], ['rep', 'Reputation'],
   ['bg', 'Battleground'], ['world', 'World drop'], ['unknown', 'Unknown']];
 
-const state = { ps: 'weave', tier: 'max', rep: 'av', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
+const state = { ps: 'weave', spec: 'mm', long: false, tier: 'max', rep: 'av', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
 const fromHash = () => {
   const p = new URLSearchParams(location.hash.slice(1));
   if (G.playstyles.some(x => x.id === p.get('ps'))) state.ps = p.get('ps');
   if (['max', 'cheap'].includes(p.get('tier'))) state.tier = p.get('tier');
   if (['darkspear', 'av'].includes(p.get('rep'))) state.rep = p.get('rep');
   if (['gear', 'all', 'howto', 'method'].includes(p.get('tab'))) state.tab = p.get('tab');
+  if (['mm', 'bm'].includes(p.get('spec'))) state.spec = p.get('spec');
+  state.long = p.get('long') === '1';
 };
-const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}&tier=${state.tier}&rep=${state.rep}`);
+const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}${state.ps === 'turret' ? `&spec=${state.spec}` : ''}&tier=${state.tier}&rep=${state.rep}${state.long ? '&long=1' : ''}`);
 
 const item = id => G.items[id];
 const qcls = it => `color: var(--q${it ? it.q : 1})`;
 // Max comes in two sets, one per exalted reputation: Darkspear Raiders (<ps>-max) or Alterac Valley (<ps>-max-av).
-const loadout = () => G.loadouts[`${state.ps}-${state.tier}${state.tier === 'max' && state.rep === 'av' ? '-av' : ''}`];
+// Turret has a Marksmanship (turret-*) and a Beast Mastery (bmturret-*) set per budget.
+const loadout = () => G.loadouts[`${state.ps === 'turret' && state.spec === 'bm' ? 'bmturret' : state.ps}-${state.tier}${state.tier === 'max' && state.rep === 'av' ? '-av' : ''}`];
+const specOf = P => (P.specs || []).find(x => x.id === state.spec);
 const tierLabel = () => state.tier === 'cheap' ? 'Cheap' : `Max · ${state.rep === 'av' ? 'AV' : 'Darkspear'}`;
 
 function itemName(spec) {
@@ -294,19 +304,26 @@ function rowPasses(specs) {
 
 function renderDoll() {
   const L = loadout();
+  // The long fight toggle shows the set with the pieces a 4-5 minute fight swaps in, marked.
+  const LF = state.long && L.long;
+  const gear = LF ? { ...L.gear, ...L.long.pieces } : L.gear;
   const slot = s => {
-    const spec = L.gear[s];
+    const spec = gear[s];
     if (!spec || !spec[0]) return `<div class="slot empty" data-go="${s}"><div class="icon"></div><div class="meta"><div class="lbl">${SLOT_LABEL[s]}</div><div class="nm">Empty</div></div></div>`;
     const it = item(spec[0]);
-    return `<div class="slot" data-go="${s}" data-tip="${spec[0]}" data-sfx="${spec[2] || 0}">
+    return `<div class="slot${LF && L.long.pieces[s] ? ' lf' : ''}" data-go="${s}" data-tip="${spec[0]}" data-sfx="${spec[2] || 0}">
       <img class="icon" src="${ICON(it.icon)}" alt=""><div class="meta"><div class="lbl">${SLOT_LABEL[s]}${(L.groups.find(g => g.id === s && g.why) || {}).why ? ` <button class="why" type="button" data-why="${s}">${esc(L.groups.find(g => g.id === s).why.label)}</button>` : ''}</div>
       <div class="nm" style="${qcls(it)}">${esc(itemName(spec))}${it.alliance ? `<span class="ally"> / ${esc(it.alliance.name)}</span>` : ''}</div><div class="en">${esc(enchantName(spec)) || '&nbsp;'}</div></div></div>`;
   };
   const P = G.playstyles.find(p => p.id === state.ps);
+  const sp = specOf(P);
+  const sign = v => (v > 0 ? '+' : '') + v.toFixed(1);
+  const lfBox = L.long ? `<div class="lfbox"><button type="button" data-long aria-pressed="${!!LF}">Long fight (4–5 min)</button>
+      ${LF ? `<p>${esc(L.long.label)} (marked): ${L.long.at.map(a => `<b>${sign(a.d)}</b> ±${a.m.toFixed(1)} at ${esc(a.t)}`).join(', ')}, against this set at the same length. ${esc(L.long.note || '')}</p>` : ''}</div>` : '';
   document.getElementById('doll').innerHTML = `
     <div class="col">${LEFT.map(slot).join('')}</div>
     <div class="center">
-      <h2>${esc(P.name)} · ${tierLabel()}</h2>
+      <h2>${esc(P.name)}${sp ? ' · ' + esc(sp.short) : ''} · ${tierLabel()}</h2>
       <div class="dps"><b>${L.dps.toFixed(0)}</b> <span>DPS in the sim</span></div>
       <dl class="facts">
         <dt>Build</dt><dd>${esc(L.build)}</dd>
@@ -316,7 +333,8 @@ function renderDoll() {
         <dt>vs other budget</dt><dd>${esc(L.vsOther)}</dd>
       </dl>
       ${L.simLink ? `<a class="simlink" href="${esc(L.simLink)}" target="_blank" rel="noopener">Open this set in WoWSims</a>` : ''}
-      <div class="callout">${P.blurb}</div>
+      ${lfBox}
+      <div class="callout">${(sp && sp.blurb) || P.blurb}</div>
     </div>
     <div class="col right">${RIGHT.map(slot).join('')}</div>
     <div class="weapons">${WEAPONS.map(slot).join('')}</div>`;
@@ -431,6 +449,7 @@ function renderStatic() {
   document.getElementById('method').innerHTML = G.method;
   document.getElementById('foot').innerHTML = G.meta.footer;
   document.getElementById('ps').innerHTML = G.playstyles.map(p => `<button data-ps="${p.id}">${esc(p.short)}</button>`).join('');
+  document.getElementById('spec').innerHTML = G.playstyles.find(p => p.id === 'turret').specs.map(x => `<button data-spec="${x.id}" title="${esc(x.name)}">${esc(x.short)}</button>`).join('');
   document.getElementById('tier').innerHTML = '<button data-tier="max">Max</button><button data-tier="cheap">Cheap</button>';
   document.getElementById('rep').innerHTML = '<button data-rep="darkspear" title="Darkspear Raiders (Alliance: Theramore)">Darkspear</button>' +
     '<button data-rep="av" title="Frostwolf Clan (Alliance: Stormpike Guard)">AV</button>';
@@ -442,6 +461,8 @@ function render() {
   document.querySelectorAll('[data-tier]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tier === state.tier));
   document.querySelectorAll('[data-rep]').forEach(b => b.setAttribute('aria-pressed', b.dataset.rep === state.rep));
   document.getElementById('repgroup').style.display = state.tier === 'max' ? '' : 'none';
+  document.querySelectorAll('[data-spec]').forEach(b => b.setAttribute('aria-pressed', b.dataset.spec === state.spec));
+  document.getElementById('specgroup').style.display = state.ps === 'turret' ? '' : 'none';
   document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === state.tab));
   document.querySelectorAll('section[data-panel]').forEach(s => s.hidden = s.dataset.panel !== state.tab);
   document.querySelector('.bar').style.display = state.tab === 'gear' ? '' : 'none';
@@ -456,6 +477,8 @@ document.addEventListener('click', e => {
   if (t.dataset.ps) state.ps = t.dataset.ps;
   else if (t.dataset.tier) state.tier = t.dataset.tier;
   else if (t.dataset.rep) state.rep = t.dataset.rep;
+  else if (t.dataset.spec) state.spec = t.dataset.spec;
+  else if (t.hasAttribute('data-long')) state.long = !state.long;
   else if (t.dataset.tab) state.tab = t.dataset.tab;
   else if (t.dataset.src) { state.srcs.has(t.dataset.src) ? state.srcs.delete(t.dataset.src) : state.srcs.add(t.dataset.src); t.setAttribute('aria-pressed', state.srcs.has(t.dataset.src)); }
   else if (t.dataset.go) {

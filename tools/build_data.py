@@ -3,12 +3,13 @@
 
     python3 tools/build_data.py --forever ~/forever --runs RUNS_DIR --out data.js
 
-RUNS_DIR holds, per loadout (weave-max, weave-cheap, turret-max, turret-cheap, melee-max, melee-cheap):
+RUNS_DIR holds, per loadout (weave-, turret-, bmturret- and melee- max, max-av and cheap):
   <id>.gear.json   the loadout's gear: {"head": [id, enchant, suffix], ...}
   <id>.guide.json  the per-slot runs: {group: {"base": dps, "rows": [{"move": {...}, "d": .., "m": ..}]}}
   <id>.cond.json   optional, the flipped-condition runs: {group: {"best": {"cond", "d"}, "rows": [{"move", "cond", "d", "m"}]}}
   <id>.scenario.json  optional, the best moves under a raid condition the set does not assume:
                    {group: [{"when", "detail", "rows": [{"move", "d", "m", "note"?}]}]}, Δ against the set under the same condition
+  <id>.long.json   optional, the long fight toggle: {"label", "pieces": {slot: spec}, "at": [{"t", "d", "m"}], "note"}
 and meta.json: {"loadouts": {id: {"build", "talents", "rotation", "hit"}}, "ep": {...}, "dw": [...], ...}.
 """
 import argparse, json, os, re, urllib.request
@@ -275,8 +276,9 @@ def spec_with_label(slot, v):
     return [v[0], v[1], v[2], enchant_label(v[1], slot) if v[1] else '']
 
 
-IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'melee-max', 'melee-max-av',
-       'melee-cheap']
+# bmturret-* are the Beast Mastery turret sets, picked under Turret beside the Marksmanship ones (turret-*).
+IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'bmturret-max',
+       'bmturret-max-av', 'bmturret-cheap', 'melee-max', 'melee-max-av', 'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(a.runs, f'{i}.guide.json'))]
 GROUP_ORDER = ['weapons_ranged', 'weapons', 'main_hand', 'off_hand', 'two_hand', 'ranged', 'head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist',
                'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2']
@@ -299,6 +301,13 @@ BIS_OVERRIDE = {('turret', 'ranged'): {'item': 19107, 'label': 'Why Bloodseeker?
     "A 30 minute run of bosses, cleave and packs: within 1% either way, and ahead once Volleyed trash is a third of your "
     "combat time.",
     "Rather spend gold? Dwarven Hand Cannon was ahead of both in every mix."]}}
+# Beast Mastery turret keeps Bloodseeker too (the ruling covers every turret set); its gap was measured on its own sets.
+BIS_OVERRIDE[('bmturret', 'ranged')] = {'item': 19107, 'label': 'Why Bloodseeker?', 'why': [
+    "A free quest reward. Every turret set wears it.",
+    "Lone boss on Beast Mastery: Eaglehorn Long Bow is about 2% ahead on this 3 minute fight (+22 on Max, +19 on Cheap).",
+    "The trash, cleave and raid night comparisons were run on Marksmanship, where Bloodseeker pulls ahead on trash you "
+    "Volley and ends within 1% over a night.",
+    "Rather spend gold? Eaglehorn Long Bow or a Hawkeye Bow of Agility."]}
 used_items, used_suffixes = set(), {}
 loadouts = {}
 for lid in IDS:
@@ -362,6 +371,14 @@ for lid in IDS:
             used_suffixes.setdefault(spec[0], set()).add(spec[2])
     loadouts[lid] = {'title': m['title'], 'build': m['build'], 'talents': m['talents'], 'rotation': m['rotation'],
                      'dps': m['dps'], 'hit': m['hit'], 'vsOther': m['vsOther'], 'talentLink': m['talentLink'], 'simLink': m['simLink'], 'gear': full, 'groups': groups}
+    # <id>.long.json, when measured: the pieces a long fight swaps in and their gain at each length, against this set.
+    long_path = os.path.join(a.runs, f'{lid}.long.json')
+    if os.path.exists(long_path):
+        lf = json.load(open(long_path))
+        lf['pieces'] = {s: spec_with_label(s, v) for s, v in lf['pieces'].items()}
+        for spec in lf['pieces'].values():
+            used_items.add(spec[0])
+        loadouts[lid]['long'] = lf
 
 data = {
     'meta': meta['meta'],

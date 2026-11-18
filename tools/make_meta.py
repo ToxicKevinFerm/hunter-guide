@@ -14,8 +14,8 @@ NAME = {it['id']: it['name'] for it in db['items']}
 SPEED = {it['id']: it.get('weaponSpeed', 0) for it in db['items']}
 # <playstyle>-max is the Max set for a player exalted with Darkspear Raiders (Theramore), <playstyle>-max-av the one for a
 # player exalted with Frostwolf Clan (Stormpike Guard) in Alterac Valley.
-IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'melee-max', 'melee-max-av',
-       'melee-cheap']
+IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'turret-max', 'turret-max-av', 'turret-cheap', 'bmturret-max',
+       'bmturret-max-av', 'bmturret-cheap', 'melee-max', 'melee-max-av', 'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(R, f'{i}.guide.json'))]
 runs = {i: json.load(open(os.path.join(R, f'{i}.guide.json'))) for i in IDS}
 hit = json.load(open(os.path.join(R, 'hit.json')))
@@ -32,10 +32,12 @@ assert all(v > 2 for v in rune_next.values()), rune_next
 BUILDS = {
     'weave': ('SV Weave', 'Melee Weave (Max)'),
     'turret': ('MM', 'Turret'),
+    'bmturret': ('BM', 'Turret (Hawks)'),
     'melee': ('SV Melee', 'Melee'),
 }
-TALENTS = {ps: json.load(open(os.path.join(R, f'{ps}.json')))['player']['talentsString'] for ps in BUILDS}
-TITLES = {'weave': 'Weave', 'turret': 'Turret', 'melee': 'Melee'}
+TALENTS = {ps: json.load(open(os.path.join(R, f'{ps}.json')))['player']['talentsString'] for ps in BUILDS
+           if os.path.exists(os.path.join(R, f'{ps}.json'))}
+TITLES = {'weave': 'Weave', 'turret': 'Turret · MM', 'bmturret': 'Turret · BM', 'melee': 'Melee'}
 # Wowhead's Forever talent calculator reads a build as its hash version followed by the points per talent, trees in
 # row and column order like the sim's. The version is "hashVersion" in nether.wowhead.com/forever/data/talents-classic;
 # Wowhead converts links stamped with an older version when its trees change.
@@ -65,13 +67,51 @@ playstyles = [
     {'id': 'turret', 'short': 'Turret', 'name': 'Turret',
      'blurb': 'Marksmanship from range. The two-hander is only a stat stick. Bloodseeker is the bow: a free quest reward, '
               'practically the same as Eaglehorn Long Bow, and ahead on trash you Volley. Pick a turret rotation: the Auto '
-              'rotation weaves whenever a two-hander is equipped.'},
+              'rotation weaves whenever a two-hander is equipped.',
+     # Turret comes as two specs with their own sets: Marksmanship (turret-*) and Beast Mastery (bmturret-*).
+     'specs': [{'id': 'mm', 'short': 'MM', 'name': 'Marksmanship'},
+               {'id': 'bm', 'short': 'BM', 'name': 'Beast Mastery',
+                'blurb': 'Beast Mastery from range with a Raptor and Summon Hawk (Turret (Hawks) rotation). The two-hander '
+                         'is only a stat stick and Bloodseeker is the bow, as on Marksmanship.'}]},
     {'id': 'melee', 'short': 'Melee', 'name': 'Survival Melee',
      'blurb': 'Dual wield in melee with hawks (Beast Mastery 16 / Survival 31). Crusader on the main hand; run out for '
               'Serpent Sting while Strider Kick speeds you up.'},
 ]
 
 pairs = runs['weave-max'].get('weapons_ranged', {}).get('rows', [])
+# The long fight toggles (<id>.long.json): the Beastmaster Armor pieces a 4-5 minute fight swaps in, and their gain.
+LONG = {i: json.load(open(os.path.join(R, f'{i}.long.json'))) for i in IDS if os.path.exists(os.path.join(R, f'{i}.long.json'))}
+def at(lf, t):
+    return next(x['d'] for x in lf['at'] if x['t'] == t)
+long_list = '; '.join(f"{loadouts[i]['title']}: {at(lf, '3 min'):+.0f} at 3 min, {at(lf, '4 min'):+.0f} at 4, {at(lf, '5 min'):+.0f} at 5"
+                      for i, lf in LONG.items())
+BM_WORN = {i: sum(1 for s, v in json.load(open(os.path.join(R, f'{i}.gear.json'))).items() if NAME.get(v[0], '').startswith('Beastmaster'))
+           for i in IDS if i.startswith('bmturret')}
+def swaps(t):
+    mm = json.load(open(os.path.join(R, f'turret-{t}.gear.json'))); bm = json.load(open(os.path.join(R, f'bmturret-{t}.gear.json')))
+    names = [NAME[bm[s][0]] for s in bm if bm[s][0] and bm[s][0] != mm.get(s, [0])[0]]
+    return ', '.join(names[:-1]) + ' and ' + names[-1] if len(names) > 1 else ''.join(names)
+bm_html = ''
+if 'bmturret-max' in dps:
+    bm_swaps = f"{swaps('max-av')} on Max; {swaps('cheap')} on Cheap"
+    # The best Beastmaster four-piece on the BM turret AV set at each length (bm/long.py, not a toggle: it never gains).
+    bm_long = {x['t']: x['d'] for x in json.load(open(os.path.join(R, 'bm', 'bmturret-max-av.long.draft.json')))['at']}
+    bm_html = (f"""<h3>Turret: Marksmanship or Beast Mastery</h3>
+<p>Turret comes in two specs, each with its own sets: pick MM or BM under Spec. Marksmanship is the stronger turret,
+{dps['turret-max-av'] - dps['bmturret-max-av']:.0f} DPS ahead on the AV set ({dps['turret-max-av']:.0f} against {dps['bmturret-max-av']:.0f}).
+Beast Mastery plays the Turret (Hawks) rotation with a Raptor. Its sets were searched on its own build, with every
+Beastmaster Armor combination in the pool, and differ from the Marksmanship ones in a few slots: {bm_swaps}. Four
+Beastmaster pieces never pay on Beast Mastery, whose turret does not run dry: the best four-piece is still
+{-bm_long['3 min']:.0f} behind at 3 minutes, {-bm_long['4 min']:.0f} at 4 and {-bm_long['5 min']:.0f} at 5 (Max · AV).</p>""")
+long_html = ''
+if LONG:
+    long_html = f"""<h3>Long fights: Beastmaster Armor</h3>
+<p>Beastmaster Armor, the hunter vendor set, gives +8 mana per 5 sec at three pieces and Sudden Insight, a mana proc on
+5% of Auto Shots and white swings, at four. On a 3 minute boss no set runs dry, so the pieces cost more than their mana
+is worth. Marksmanship turret runs low on mana past about three and a half minutes and Survival melee toward five, and
+there four pieces pay; Beast Mastery turret never does. Those sets carry a Long fight (4–5 min) toggle in the character
+window, which swaps the four pieces in: {long_list}. Weave
+never gets there: its best four-piece is still 13–17 behind at 5 minutes.</p>"""
 
 
 def tr(cells):
@@ -137,6 +177,9 @@ and the next two-hander (Flameslash Crescent on Max, Peacemaker on Cheap) about 
 list them all. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
+{bm_html}
+{long_html}
+
 <h3>Melee: dual wield, Crusader on the main hand</h3>
 <p>Survival melee dual wields: Teebu's Blazing Longsword (Max) or Sword of Zeal (Cheap) in the main hand, with
 Distracting Dagger in the off hand. Sword of Zeal is about 5 behind Teebu's on Max, and on Cheap Dal'Rend's Sacred
@@ -191,7 +234,9 @@ method = f"""
 <p>Every number comes from WoWSims Forever: a 180 s fight against one level 63 dragonkin boss in a Forest/Grassland area, as in Mount
 Hyjal, so area-bound bonuses count; an Orc hunter with the full raid buffs and consumables of the sim's hunter
 defaults; and a 150–350 ms reaction time. Each loadout uses the
-sim's preset build for its playstyle: SV Weave for weave, MM for turret, SV Melee for melee.</p>
+sim's preset build for its playstyle: SV Weave for weave, MM or BM for turret, SV Melee for melee. The BM turret sets
+were searched from the MM ones on the BM build, slot by slot with a pair check, Beastmaster Armor combinations
+included, then run through the same cards. The long fight figures run the same set and the four pieces at 240 and 300 s.</p>
 <p>The melee weapon cards were run again on 2026-11-18 on the sim's pending change that puts Armor Shatter and Puncture
 Armor in Faerie Fire's armor slot (178 Warcraft Logs reports show neither lands while Faerie Fire or Curse of Recklessness is up).
 Every main hand was run beside Distracting Dagger and beside Bagh Nakh, and every off hand beside Annihilator and
