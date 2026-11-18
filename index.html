@@ -87,7 +87,8 @@ section[hidden] { display: none; }
 /* Slot cards */
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 14px; margin-top: 18px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.card.flash { box-shadow: 0 0 0 2px var(--gold); }
+.sect.flash { box-shadow: inset 0 0 0 2px var(--gold); }
+.sect + .sect h3 { border-top: 1px solid var(--line); }
 .card h3 { margin: 0; padding: 10px 14px; font: 700 15px var(--display); color: var(--gold); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; background: #00000022; }
 .card h3 small { font: 500 12px var(--body); color: var(--muted); }
 .why { margin-left: 8px; font: 600 11px var(--body); color: var(--gold); background: #d9b45f1a; border: 1px solid var(--gold-dim); border-radius: 10px; padding: 1px 8px; cursor: help; vertical-align: 2px; }
@@ -352,12 +353,15 @@ function renderCards() {
       return `<div class="scenario"><h4>${esc(sc.when)}</h4><div class="sc-detail">${esc(sc.detail)}</div><table><tbody>${tr}</tbody></table></div>`;
     }).join('');
     const hiddenBest = !rowPasses(moveSpecs(g.best));
-    out.push(`<div class="card" id="card-${g.id}"><h3><span>${esc(SLOT_LABEL[g.id] || g.id)}${g.why ? ` <button class="why" type="button" data-why="${g.id}">${esc(g.why.label)}</button>` : ''}</span> <small>${g.note ? esc(g.note) : ''}</small></h3>
+    const sect = `<div class="sect" id="card-${g.id}"><h3><span>${esc(SLOT_LABEL[g.id] || g.id)}${g.why ? ` <button class="why" type="button" data-why="${g.id}">${esc(g.why.label)}</button>` : ''}</span> <small>${g.note ? esc(g.note) : ''}</small></h3>
       ${shown.length ? `<table><thead><tr><th>#</th><th>Item</th><th>Δ DPS</th><th>Tier</th><th>Where</th></tr></thead><tbody>${tr}</tbody></table>` : ''}
       ${hiddenBest ? '<div class="empty-note">The best item for this slot is hidden by your filters.</div>' : ''}
-      ${!shown.length ? '<div class="empty-note">Nothing in this slot passes the filters.</div>' : ''}${scenarios}</div>`);
+      ${!shown.length ? '<div class="empty-note">Nothing in this slot passes the filters.</div>' : ''}${scenarios}</div>`;
+    // The off hand list sits under the main hand list in one card, about as tall as the pair card beside it.
+    if (g.id === 'off_hand' && out.length && out[out.length - 1].id === 'main_hand') out[out.length - 1].html += sect;
+    else out.push({ id: g.id, html: sect });
   }
-  document.getElementById('cards').innerHTML = out.join('');
+  document.getElementById('cards').innerHTML = out.map(c => `<div class="card">${c.html}</div>`).join('');
 }
 
 // Rings and trinkets have no order: each loadout's pair is listed with the item more loadouts wear first, so the same
