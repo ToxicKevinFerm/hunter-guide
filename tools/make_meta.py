@@ -194,8 +194,7 @@ howto = f"""
 <h2>Hit first</h2>
 <p>Against a level 63 boss you miss 8% of your attacks, melee and ranged, until hit takes it away; past that hit is
 worth nothing. Surefooted gives 3% and the Devilsaur two-piece another 2%, so the Survival sets need only about 3–5%
-from gear. Every set here lands between {min(min(v) for v in hit.values()):g}% and {max(max(v) for v in hit.values()):g}%; the dual wield sets keep a little extra, since white swings with two weapons miss far more often. An Orc swinging an axe (The Blackrock Slicer on the weave sets) needs only
-6% in melee, but the bow still needs 8%. The melee sets swing a sword and a dagger, so they need the full 8%.</p>
+from gear. Every set here lands between {min(min(v) for v in hit.values()):g}% and {max(max(v) for v in hit.values()):g}%; the dual wield sets keep a little extra, since white swings with two weapons miss far more often.</p>
 {ep_html}
 
 <h2>Weapons decide the playstyle</h2>
