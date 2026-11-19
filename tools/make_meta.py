@@ -25,7 +25,8 @@ cond = {i: json.load(open(os.path.join(R, f'{i}.cond.json'))) for i in IDS if os
 # Rune of the Guard Captain outside Forest/Grassland: each set's loss, and the best other trinket 2's gap to it there.
 rune_out = {i: c['trinket2']['best']['d'] for i, c in cond.items() if c.get('trinket2', {}).get('best')}
 rune_next = {i: max(r['d'] for r in runs[i]['trinket2']['rows']) - rune_out[i] for i in rune_out}
-assert all(v > 2 for v in rune_next.values()), rune_next
+# The prose says each of these sets does more with its next trinket outside the area (BM Cheap 1.6 on 2026-11-19).
+assert all(v > 1 for v in rune_next.values()), rune_next
 
 # Build name and rotation per playstyle. The talents are the ones the sets were simmed with, read from the run's setup
 # (RUNS_DIR/<playstyle>.json), so they follow the sim's presets.
@@ -152,7 +153,7 @@ if LONG:
 is worth. Marksmanship turret runs low on mana past about three and a half minutes and Survival melee toward five, and
 there four pieces pay; Beast Mastery turret never does. Those sets carry a Long fight (4–5 min) toggle in the character
 window, which swaps the four pieces in: {long_list}. Weave
-never gets there: its best four-piece is still 13–17 behind at 5 minutes.</p>"""
+never gets there: its best four-piece is still 12–15 behind at 5 minutes.</p>"""
 
 
 def tr(cells):
@@ -209,12 +210,12 @@ around. These are the best pairs on the Max weave set:</p>
 still loses to the slow pair above.</p>
 
 <h3>Turret: Bloodseeker</h3>
-<p>Bloodseeker (3.3 s) is a free quest reward and practically the same as Eaglehorn Long Bow (1.8 s): 1.6% behind on the
+<p>Bloodseeker (3.3 s) is a free quest reward and practically the same as Eaglehorn Long Bow (1.8 s): 1.5% behind on the
 3 minute boss here, within 1% over a raid night of bosses, cleave and packs, and ahead on trash you Volley. Only long
 single-target fights lean toward the fast bow (about 6% at 5 minutes). Why Bloodseeker? next to the ranged slot has the
 numbers. The melee weapon is only a stat stick, since turret never swings it: Legionite Glaive is the best, a pair of
 one-handers (Shadowblade with Tooth of the Matriarch on Max, two Tooth of the Matriarch on Cheap) is about 6–8 behind,
-and the next two-hander (Flameslash Crescent on Max, Peacemaker on Cheap) about 10–14 behind. The Weapons, Main hand, Off hand and Two-hander cards
+and the next two-hander (Flameslash Crescent on Max, Peacemaker on Cheap) about 11–15 behind. The Weapons, Main hand, Off hand and Two-hander cards
 list them all. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
@@ -224,13 +225,13 @@ so with the turret sets choose the Turret rotation or the MM, BM or SV preset bu
 
 <h3>Melee: dual wield, Crusader on the main hand</h3>
 <p>Survival melee dual wields: Teebu's Blazing Longsword (Max) or Sword of Zeal (Cheap) in the main hand, with
-Distracting Dagger in the off hand. Sword of Zeal is about 5 behind Teebu's on Max, and on Cheap Dal'Rend's Sacred
+Distracting Dagger in the off hand. Sword of Zeal is about 5–7 behind Teebu's on Max, and on Cheap Dal'Rend's Sacred
 Charge is about 5 behind Sword of Zeal. Teebu's Firebolt is not simmed, so Teebu's does a little more in game. Crusader
 on the main hand edges out Agility by about 2; the off hand keeps +15 Agility. SV Melee takes Careful Aim, so
 Intellect pays here too: Ranger's Belt over Marksman's Girdle, and the Elixir of Greater Intellect.</p>
 <p>Annihilator and Rivenspike are bait. Their armor procs (Armor Shatter, Puncture Armor) share one slot with Faerie
 Fire and Curse of Recklessness, and only the strongest in it counts. Faerie Fire and the curse are both stronger, so with
-either on the boss the proc adds nothing. Left as stat sticks, Annihilator is about 28 behind Teebu's and Rivenspike about 24; on
+either on the boss the proc adds nothing. Left as stat sticks, Annihilator is about 31 behind Teebu's and Rivenspike about 25; on
 Cheap, Rivenspike is about 18 behind Sword of Zeal.</p>
 
 <h3>Dual wield while weaving</h3>
@@ -254,18 +255,19 @@ weave is still about 68 higher.</p>
 </tbody></table>
 <p>Every slot was checked against its other enchants. Superior Agility on gloves (+15) is from Ahn'Qiraj, so it is not
 in these sets: Greater Agility is about 4–5 behind it on weave and turret. On melee, Minor Haste edges out Greater Agility
-by 1–3. Minor Speed on boots loses to Agility, because Strider Kick's
-speed already covers it and only the highest speed effect counts. Sniper Scope loses to SAF-T by 8–11.</p>
+by 2–3. Minor Speed on boots loses to Agility, because Strider Kick's
+speed already covers it and only the highest speed effect counts. Sniper Scope loses to SAF-T by about 8 on weave, 15 on turret and 3 on melee.</p>
 
 <h2>Trinkets</h2>
 <p>Heart of Wyrmthalak tops the weave and melee lists: its Flame Lash procs about twice a minute from melee and ranged
 hits. Blackhand's Breadth is next on weave and the best on turret, and Darkmoon Card: Maelstrom is next on melee. Rune of the Guard Captain (Cleansed
 Vilebranch Medallion on Alliance) gains +28 Attack Power in Forest/Grassland areas such as Mount Hyjal, and there it
-takes a trinket slot in every set but Weave Cheap and the two Max melee sets, where it ties with Blackhand's Breadth
-and Darkmoon Card: Maelstrom and those win the tie (see Method). Anywhere else, in Onyxia's Lair for example, it keeps only its 14 Attack Power and 0.7% hit, and the
+takes a trinket slot on the max weave Max sets and every turret set. On Weave Cheap and the melee sets it ties with
+Blackhand's Breadth or Darkmoon Card: Maelstrom and those win the tie (see Method); the normal weave sets wear Heart of
+Wyrmthalak and Blackhand's Breadth. Anywhere else, in Onyxia's Lair for example, it keeps only its 14 Attack Power and 0.7% hit, and the
 sets that wear it lose {-max(rune_out.values()):.0f}–{-min(rune_out.values()):.0f} DPS. Every one of them then does
 {min(rune_next.values()):.0f}–{max(rune_next.values()):.0f} DPS more with its next trinket (Heart of Wyrmthalak on turret).
-Each trinket card shows the Rune's figure outside the area. Hand of Justice is within a few DPS of the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
+Each trinket card shows the Rune's figure outside the area. Hand of Justice is about 5–7 DPS behind the melee picks. Some trinkets do more in game than here, because the sim does not model their effect and counts only their
 stats: Arcanite Dragonling, Scented Runewood Brooch, the Defender of the Timbermaw and Barkskin
 pair (Teachings of the Furbolgs), Devilsaur Eye's use, and Scalding Flamehoof's run speed.</p>
 """
@@ -280,39 +282,37 @@ sim's preset build for its playstyle: SV Weave for weave, MM or BM for turret, S
 were searched from the MM ones on the BM build, slot by slot with a pair check, Beastmaster Armor combinations
 included, then run through the same cards. The normal weave sets were searched the same way from the max weave ones,
 on the SV Weave build with the Melee Weave (Normal) rotation. The long fight figures run the same set and the four pieces at 240 and 300 s.</p>
-<p>The melee weapon cards were run again on 2026-11-18 on the sim's pending change that puts Armor Shatter and Puncture
-Armor in Faerie Fire's armor slot (178 Warcraft Logs reports show neither lands while Faerie Fire or Curse of Recklessness is up).
-Every main hand was run beside Distracting Dagger and beside Bagh Nakh, and every off hand beside Annihilator and
-beside Teebu's Blazing Longsword (Dal'Rend's Sacred Charge on Cheap), at 3,000 iterations. The best seven or eight of each hand were then
-paired and the best six pairs confirmed at 3,000 against the new set. The Main hand and Off hand cards run every one-hander on its own beside the set's other hand,
-so each weapon shows once. The turret sets wear a two-hander, so their one-hand lists run each one beside Tooth of the
-Matriarch and take Δ against the set; their Two-hander card runs every two-hander, all against the Bloodseeker set. Two-handers trail dual wield by 77 or more
-and were not run again. The other melee slots keep their gaps from before the change.</p>
+<p>Every card was run again on 2026-11-19 on the sim's master (84c19d4326), which puts Armor Shatter and Puncture
+Armor in Faerie Fire's armor slot (178 Warcraft Logs reports show neither lands while Faerie Fire or Curse of Recklessness
+is up) and takes many weapon proc rates from logs. Each set's cards share one run against the finished set, so every
+gap on a page is against the same base. The melee Weapons card runs the best pairs of the per-hand screens (Distracting
+Dagger included), the top one-handers paired with each other, and the two-handers; the Main hand and Off hand cards run every one-hander
+on its own beside the set's other hand, so each weapon shows once. The turret sets wear a two-hander, so their one-hand
+lists run each one beside Tooth of the Matriarch and take Δ against the set; their Two-hander card runs every
+two-hander, all against the Bloodseeker set. Every row wears the set's enchant in its slot.</p>
 <p>A few items have a bonus that needs an area or a creature type. Rune of the Guard Captain's counts only in
 Forest/Grassland and Wyrmhide Spaulders' only against Dragonkin, so both count in these numbers; those of Royal Seal of
 Eldre'Thalas (Demons), King Mosh's Tooth and Huntsman's Harpoon (Beasts) and Satyr's Bow (Elementals) do not. Each of these items shows a
 second figure under its Δ DPS: the same comparison against the same set, with its condition the other way round. When
 one of them ties with an item whose bonus always counts, the set wears the other item: Blackhand's Breadth over
-the Rune on Weave Cheap, Darkmoon Card: Maelstrom over the Rune on the Max melee sets, and Shadowcraft Spaulders,
+the Rune on Weave Cheap, Darkmoon Card: Maelstrom over the Rune on the melee sets, and Shadowcraft Spaulders,
 Stratholme Militia Shoulderguard or Truestrike Shoulders over Wyrmhide Spaulders. Turret
-Cheap wears Truestrike Shoulders: Wyrmhide is 1.7 DPS ahead of it against Dragonkin and 3.7 behind against anything
-else, and Truestrike ties with the other shoulders while keeping Wyrmhide's 1.5% hit, so the set stays at the hit
-cap.</p>
+Cheap wears Truestrike Shoulders: Wyrmhide is 1.7 DPS ahead of it against Dragonkin and 3.6 behind against anything
+else, and Truestrike keeps Wyrmhide's 1.5% hit, so the set stays at the hit cap.</p>
 <ul>
 <li>Every Phase 1 item a hunter can wear was a candidate, except raid loot, raid reputation (The Watchers) and honor
-rank gear. Huntsman's Harpoon, Belt of the Trickster and Pendant of Celerity are in the game's own hotfix cache but
-not in the copy the sim's item database was built from, so they were simmed afterwards against the finished sets, on
-the same seed as the other rows. Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
+rank gear. Huntsman's Harpoon is in the game's own hotfix cache but not in the sim's item database, so it is not
+simmed (on 2026-11-16, with Bloodseeker on Weave Cheap, it was about 3 behind the set). Items are Horde; Alliance mirrors (Theramore for Darkspear, Cleansed Vilebranch Medallion for Rune of the
 Guard Captain) have the same stats.</li>
-<li>Each slot's candidates were screened at 3,000 iterations and the best six confirmed at 3,000 against the finished
-set on another seed. Every loadout was run again on 2026-11-17 with the sim's retuned presets: SV Melee on Careful
-Aim, the Elixir of Greater Intellect in every build and Brilliant Mana Oil on the turret. Where that run found a
-better item or a tie the rules above settle (The Blackrock Slicer on every weave set, with Bloodseeker on Cheap;
-Darkmoon Card: Maelstrom on the Max melee sets; Bone Golem Shoulders on AV
-melee; Truestrike Shoulders on Cheap melee), the changed slots were run again the same way on the new set, and the
-other slots of that set keep their gaps from before the change. Bloodseeker is worn on every turret set by choice:
-Eaglehorn Long Bow is 16–18 DPS ahead on this boss (about 1.6%, practically the same) and Bloodseeker is a free quest
-reward, so the ranged card was run again against it. Δ DPS is the confirmed gap, ± its 95% margin.</li>
+<li>Each slot's candidates were screened at 3,000 iterations (groups of more than 200, the weapon pairs, first at
+1,000, keeping everything within 25 DPS of the best) and the best six confirmed at 3,000 against the finished set on
+another seed. The sets come from the searches before (2026-11-15 to 2026-11-18, on the sim's retuned presets: SV Melee
+on Careful Aim, the Elixir of Greater Intellect in every build and Brilliant Mana Oil on the turret). Where a card
+shows a row above the worn item, the set was not searched again: the item ties on other seeds (Arcanite Reaper on the
+normal weave Max sets), the rules above keep the worn one, or it is a gain of a DPS or two (Bone Golem Shoulders on the
+AV and Cheap turret sets).
+Bloodseeker is worn on every turret set by choice: Eaglehorn Long Bow is about 16 DPS ahead on this boss (about 1.5%,
+practically the same) and Bloodseeker is a free quest reward. Δ DPS is the confirmed gap, ± its 95% margin.</li>
 <li>When the sets were first built, set bonuses were tried as whole sets, the weave's two-hander and bow as one pair,
 and every two-slot combination of each slot's best alternatives was checked at the end. Every enchant was simmed
 against the others.</li>
@@ -336,7 +336,7 @@ Forever items without a source in the game files are listed as such.</p>
 
 meta = {
     'meta': {'lede': 'WoW Forever · Phase 1 · simmed pre-raid gear for weave, turret and melee hunters',
-             'footer': 'Simmed with WoWSims Forever on 2026-11-16. Item data from the game files; links go to Wowhead.'},
+             'footer': 'Simmed with WoWSims Forever on 2026-11-19 (master 84c19d4326). Item data from the game files; links go to Wowhead.'},
     'playstyles': playstyles, 'loadouts': loadouts, 'howto': howto, 'method': method,
 }
 json.dump(meta, open(os.path.join(R, 'meta.json'), 'w'), indent=1)

@@ -289,12 +289,12 @@ NOTES = {'weapons_ranged': 'Weave: the two-hander and the bow are picked togethe
          'two_hand': 'With the set\'s ranged weapon',
          'finger1': 'Unique rings cannot be worn twice', 'trinket1': 'Effects the sim does not model count as their stats only'}
 # Items worn by choice where the 3 minute boss sim picks another (owner ruling, 2026-11-17): Bloodseeker on every turret
-# set. Eaglehorn Long Bow is 16-18 DPS (1.6%) ahead on the lone boss, but Bloodseeker is a free quest reward and ends within
+# set. Eaglehorn Long Bow is about 16 DPS (1.5%) ahead on the lone boss, but Bloodseeker is a free quest reward and ends within
 # 1% of it over a raid night, ahead once Volleyed trash is a third of the combat time. Keep it worn when the sets are
 # rerun: the build stops if a set's gear wears anything else there. The card shows WHY as a hover on its title.
 BIS_OVERRIDE = {('turret', 'ranged'): {'item': 19107, 'label': 'Why Bloodseeker?', 'why': [
     "A free quest reward that is practically the same as Eaglehorn Long Bow.",
-    "Lone boss: 1.6% behind on this 3 minute fight, practically the same. Only long single-target fights lean toward a "
+    "Lone boss: 1.5% behind on this 3 minute fight, practically the same. Only long single-target fights lean toward a "
     "fast bow (about 6% at 5 minutes).",
     "Trash you Volley: Bloodseeker pulls ahead, about +75 DPS on a pack of four. Volley pauses Auto Shot, so its bigger "
     "shots and Multi-Shots (13% harder) count for more.",
@@ -305,7 +305,7 @@ BIS_OVERRIDE = {('turret', 'ranged'): {'item': 19107, 'label': 'Why Bloodseeker?
 # Beast Mastery turret keeps Bloodseeker too (the ruling covers every turret set); its gap was measured on its own sets.
 BIS_OVERRIDE[('bmturret', 'ranged')] = {'item': 19107, 'label': 'Why Bloodseeker?', 'why': [
     "A free quest reward. Every turret set wears it.",
-    "Lone boss on Beast Mastery: Eaglehorn Long Bow is about 2% ahead on this 3 minute fight (+22 on Max, +19 on Cheap).",
+    "Lone boss on Beast Mastery: Eaglehorn Long Bow is about 2% ahead on this 3 minute fight (+21 on Max, +18 on Cheap).",
     "The trash, cleave and raid night comparisons were run on Marksmanship, where Bloodseeker pulls ahead on trash you "
     "Volley and ends within 1% over a night.",
     "Rather spend gold? Eaglehorn Long Bow or a Hawkeye Bow of Agility."]}
