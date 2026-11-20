@@ -206,9 +206,10 @@ still loses to the slow pair above.</p>
 <p>Bloodseeker (3.3 s) is a free quest reward and practically the same as Eaglehorn Long Bow (1.8 s): 1.1% behind on the
 3 minute boss here, within 1% over a raid night of bosses, cleave and packs, and ahead on trash you Volley. Only long
 single-target fights lean toward the fast bow (about 6% at 5 minutes). Why Bloodseeker? next to the ranged slot has the
-numbers. The melee weapon is only a stat stick, since turret never swings it: Legionite Glaive is the best, a pair of
-one-handers (Shadowblade with Tooth of the Matriarch or Heartseeker on Max, two Tooth of the Matriarch on Cheap) is
-about 7–9 behind, and the next two-hander (Peacemaker) about 13–14 behind. The Weapons, Main hand, Off hand and Two-hander cards
+numbers. The melee weapon is only a stat stick, since turret never swings it: Legionite Glaive is the best on Max, with
+Beastslayer's Trident about 6–7 behind and a pair of one-handers (Shadowblade with Tooth of the Matriarch or
+Heartseeker) about 7. Cheap wears the Trident, since the Glaive is a Max craft: its 1.6% hit lets the rest of the set
+shed hit, so the Glaive is only 1–2 ahead there. Against Beasts the Trident passes the Glaive. The Weapons, Main hand, Off hand and Two-hander cards
 list them all. The Auto rotation weaves with any two-hander, and in a weave a slow bow wins by 30 to 90,
 so with the turret sets choose the Turret rotation or the MM, BM or SV preset build.</p>
 
@@ -307,7 +308,8 @@ against the others.</li>
 Chain pieces, +20 Agility at two) in its best two of all fifteen pairs, and the Devilsaur pair (+2% hit) where the set
 does not wear it. Nothing else in the set changes, so a set already at the hit cap gets little from Devilsaur. The
 PvP pair pays only on the AV weave sets, which now wear it: Premier Chain Shoulders with the Boots (max weave) or the
-Gauntlets (normal weave), about +3.</li>
+Gauntlets (normal weave), about +3. On BM Turret Cheap the Breastplate and Shoulders tie (+0.7 ±0.6), and the
+set wears them.</li>
 </ul>
 <h3>Max and Cheap</h3>
 <p><b>Max</b> is everything outside raids, with Exalted reputation from the one faction you pick: <b>Darkspear</b>
@@ -317,8 +319,8 @@ place and lose {min(gap.values()):.0f}–{max(gap.values()):.0f} DPS. Items that
 Warsong Gulch and Alterac Valley rewards) are in neither. <b>Cheap</b> leaves out exalted reputation, battleground
 quartermaster gear, the 0.5 set (the Beastmaster vendor pieces), crafted epics (Black Dragonscale Helm, Dawn Armor,
 Timbermaw Tunic), epics that bind on equip (Lady Maye's Pendant, The Lion Horn of Stormwind, Ankle Slicers), Arcanite
-Reaper, Annihilator, Heartseeker, and world drops other than random-suffix ones, Sword of Zeal and Eaglehorn Long Bow.
-The Devilsaur set and Legionite Glaive count as cheap crafts, and the Korrak quest weapons (Bloodseeker, Ice Barbed
+Reaper, Annihilator, Heartseeker, Legionite Glaive, and world drops other than random-suffix ones, Sword of Zeal and Eaglehorn Long Bow.
+The Devilsaur set counts as a cheap craft, and the Korrak quest weapons (Bloodseeker, Ice Barbed
 Spear) as cheap. The Premier blues (the item level 60 PvP pieces) are in both: a Cheap set wears two at most, Max any
 number. The item level 65 Premier epics are honor rank gear and in neither. Crafts that need a material from Mount
 Hyjal (Outlaw's Collar, Mourning Handguards, Ironwood Blade) and items sold there (Bear Poking Stick) are in no set, nor
