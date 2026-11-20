@@ -184,12 +184,16 @@ function renderPrep() {
 
 // ---------- 5 · Stats ----------
 function renderStats() {
-  const ci = { weave: 1, turret: 2, melee: 3 }[psOf(BUILD[state.build])];
-  const rows = G.stats.weights.map(r => [r[0].replace(' rating', '').replace(' (under the cap)', ' (to 8%)'), r[ci]]).sort((a, b) => b[1] - a[1]);
+  const b = BUILD[state.build], w = G.stats.weights[b.id] || G.stats.weights[b.valuesFrom];
+  // A stat worth nothing to the build (Strength or melee attack power on a turret) leaves the list.
+  const rows = G.stats.rows.map((n, i) => [n.replace(' rating', '').replace(' (under the cap)', ' (to 8%)'), w[i]])
+    .filter(r => r[1] >= 0.005).sort((x, y) => y[1] - x[1]);
   const top = rows[0][1];
-  $('statlist').innerHTML = rows.map(([n, w], i) => `<div class="srow"><span class="sr">${i + 1}</span><span class="sn">${esc(n)}</span>
-    <span class="bar"><span class="${i ? '' : 'top'}" style="width:${(w / top * 100).toFixed(0)}%"></span></span><span class="sw">${w.toFixed(2)}</span></div>`).join('')
-    + `<p class="small">What a point of each stat is worth, in attack power, for ${esc(G.playstyles[psOf(BUILD[state.build])].name.toLowerCase())}.</p>`;
+  $('statlist').innerHTML = rows.map(([n, v], i) => `<div class="srow"><span class="sr">${i + 1}</span><span class="sn">${esc(n)}</span>
+    <span class="bar"><span class="${i ? '' : 'top'}" style="width:${(v / top * 100).toFixed(0)}%"></span></span><span class="sw">${v.toFixed(2)}</span></div>`).join('')
+    + `<p class="small">What a point of each stat is worth in Agility, for ${esc(b.name)}: the sim's own EP on the build's pre-raid set.
+    EP changes with gear, talents, buffs and consumables, so for your own character run the stat weights in
+    <a href="https://www.wowsims.com/forever/hunter/dps/" target="_blank" rel="noopener">the sim</a>.</p>`;
 }
 
 // ---------- Info modal: consumables & buffs, races, turret bow, method ----------

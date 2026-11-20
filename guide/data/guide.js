@@ -495,10 +495,20 @@ window.GUIDE = {
     ],
   },
 
+  // The sim's own EP (its stat weights, as the site runs them, in Agility = 1) for each build on its playstyle's Max
+  // pre-raid set: WoWSims Forever master 38786d6412 with the guide's two changes, a boss with no creature type and no
+  // biome, 3 minutes, 6000 iterations on seed 7364. Hit is weighed 20 rating under the cap (SV Turret, on MM's set and
+  // 30 over the cap with Surefooted, 50 under).
   stats: {
-    weights: [
-      ['Agility', 5.09, 2.93, 2.73], ['Intellect', 2.19, 1.11, 1.92], ['Crit rating', 4.19, 2.46, 2.67],
-      ['Hit rating (under the cap)', 6.99, 3.45, 6.58], ['Haste rating', 2.43, 2.33, 2.61], ['MP5', 0.17, 0.11, 0.75],
-    ],
+    rows: ['Agility', 'Strength', 'Intellect', 'Attack Power', 'Ranged Attack Power', 'Crit rating', 'Hit rating (under the cap)', 'Haste rating', 'MP5'],
+    weights: {
+      'sv-weave': [1, 0.22, 0.44, 0.2, 0.2, 0.83, 1.43, 0.82, 0.12],
+      'sv-turret': [1, 0, 0.39, 0, 0.31, 0.73, 1.1, 0.64, 0.1],
+      'sv-melee': [1, 0.41, 0.7, 0.37, 0.15, 1, 2.48, 0.91, 0.23],
+      'sv-melee-lw': [1, 0.43, 0.56, 0.39, 0.09, 0.98, 2.15, 1.01, 0.1],
+      'mm-turret': [1, 0, 0.64, 0, 0.34, 0.87, 1.26, 0.75, 0.41],
+      'mm-pet': [1, 0, 0.46, 0, 0.34, 0.88, 1.41, 0.76, 0.1],
+      'bm-turret': [1, 0, 0.39, 0, 0.35, 0.78, 1.41, 0.64, 0.01],
+    },
   },
 };

@@ -168,13 +168,20 @@ pair_rows = tr([wname(best_pair['main_hand'][0]), wname(best_pair['ranged'][0]),
 
 ep_html = ''
 if ep:
-    stats = ['Agility', 'Strength', 'Intellect', 'Attack Power', 'Ranged Attack Power', 'Crit rating', 'Hit rating (under the cap)', 'Haste rating', 'MP5']
-    ep_html = ('<h3>What a point of each stat is worth</h3><p>Paired sims on each playstyle\'s Max set, in Ranged Attack '
-               'Power for weave and turret and in Attack Power for melee. Item crit rating is 14 per 1%, hit and haste '
-               'rating 10 per 1%. Intellect counts twice: Careful Aim, which every build takes, turns each point into '
-               'Attack Power and Ranged Attack Power, and it is mana. MP5 is worth little in a three minute fight with '
-               'full consumables, and more in a long one.</p><table><thead><tr><th>Stat</th><th>Weave</th><th>Turret</th><th>Melee</th></tr></thead><tbody>'
-               + ''.join(tr([s] + [f"{ep.get(p, {}).get(s, 0):.2f}" for p in ('weave', 'turret', 'melee')]) for s in stats)
+    # ep.json: the sim's own stat weights (gearkit epsim, core.StatWeights) in Agility, as the site's hunter EP is.
+    stats = ['Agility', 'Strength', 'Intellect', 'Attack Power', 'Ranged Attack Power', 'Crit rating', 'Hit rating (under the cap)',
+             'Haste rating', 'MP5', 'Main hand weapon DPS', 'Off hand weapon DPS', 'Ranged weapon DPS']
+    cols = [('weave', 'Weave'), ('nweave', 'Normal weave'), ('turret', 'MM Turret'), ('bmturret', 'BM Turret'), ('melee', 'Melee')]
+    ep_html = ('<h3>What a point of each stat is worth</h3><p>The sim\'s own EP, its stat weights as the site runs them, on '
+               'each playstyle\'s Max set, in Agility: Agility is 1. Hit is weighed under the cap. Item crit rating is 14 per '
+               '1%, hit and haste rating 10 per 1%. Intellect counts twice: Careful Aim, which every build takes, turns each '
+               'point into Attack Power and Ranged Attack Power, and it is mana. The MM Turret set runs short of mana, so '
+               'Intellect and MP5 count more there.</p><p>These numbers hold for these sets only. EP changes with gear, '
+               'talents, buffs and consumables, so for your own character run the stat weights in '
+               '<a href="https://www.wowsims.com/forever/hunter/dps/" target="_blank" rel="noopener">the sim</a>.</p>'
+               '<table><thead><tr><th>Stat</th>'
+               + ''.join(f'<th>{n}</th>' for _, n in cols) + '</tr></thead><tbody>'
+               + ''.join(tr([s] + [f"{ep.get(p, {}).get(s, 0):.2f}" for p, _ in cols]) for s in stats)
                + '</tbody></table>')
 
 howto = f"""
