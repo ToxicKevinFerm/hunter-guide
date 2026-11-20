@@ -6,7 +6,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const $ = id => document.getElementById(id);
 const SLOT_LABEL = { head: 'Head', neck: 'Neck', shoulder: 'Shoulder', back: 'Back', chest: 'Chest', wrist: 'Wrist', hands: 'Hands',
   waist: 'Waist', legs: 'Legs', feet: 'Feet', finger1: 'Ring 1', finger2: 'Ring 2', trinket1: 'Trinket 1', trinket2: 'Trinket 2',
-  main_hand: 'Main hand', off_hand: 'Off hand', ranged: 'Ranged', weapons: 'Weapons', weapons_ranged: 'Weapons + ranged (as a pair)', two_hand: 'Two-hander' };
+  main_hand: 'Main hand', off_hand: 'Off hand', ranged: 'Ranged', weapons: 'Weapons', weapons_ranged: 'Weapons + ranged (as a pair)', two_hand: 'Two-hander', sets: 'Two-piece sets' };
 const LEFT = ['head', 'neck', 'shoulder', 'back', 'chest', 'wrist'];
 const RIGHT = ['hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2'];
 const WEAPONS = ['main_hand', 'off_hand', 'ranged'];
@@ -179,7 +179,7 @@ function rowHTML(r, L, x, bestMove, c, enSlots) {
   const d = r.best ? '<b>Best</b>' : `<b>${fmt(r.d)}</b> <small>±${r.m.toFixed(1)}</small>`;
   const maxRow = r.max || its.some(it => it.tier === 'max');
   // Phones have no Budget column: a Max row on a Cheap card says so before its source.
-  const where = `<span class="w1">${!c.tier && state.tier === 'cheap' && r.max ? 'Max · ' : ''}${esc(srcs.join(' + '))}</span>${alt}`;
+  const where = `<span class="w1">${!c.tier && state.tier === 'cheap' && r.max ? 'Max · ' : ''}${esc([...new Set(srcs)].join(' + '))}</span>${alt}`;
   return `<tr class="${k}"><td class="c-item"><span class="items">${specs.map(([s, spec]) => itemHTML(spec, enSlots && enSlots.has(s))).join('<span class="plus">+</span>')}</span>${c.where ? '' : `<span class="c-where" title="${esc(allSrcs)}">${where}</span>`}</td>
     ${c.where ? `<td class="c-where" title="${esc(allSrcs)}">${where}</td>` : ''}
     <td class="c-d" title="${r.best ? 'The best item in this set' : `${fmt(pct)}% of the set's DPS${k === 'same' ? ': within the margin, the same DPS' : ''}`}">${d}</td>
@@ -220,7 +220,7 @@ function bandVars(x, rows) {
 }
 
 // ---------- How much each slot matters: every option of every slot on one shared axis ----------
-const OV_LABEL = { weapons_ranged: 'Two-hander + bow', weapons: 'Weapons', two_hand: 'Two-hander', main_hand: 'Main hand', off_hand: 'Off hand' };
+const OV_LABEL = { weapons_ranged: 'Two-hander + bow', weapons: 'Weapons', two_hand: 'Two-hander', main_hand: 'Main hand', off_hand: 'Off hand', sets: 'Two-piece sets' };
 function renderOverview() {
   const L = loadout();
   const lines = L.groups.map(g => {

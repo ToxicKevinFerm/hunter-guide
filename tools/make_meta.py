@@ -303,6 +303,11 @@ practically the same) and Bloodseeker is a free quest reward. Δ DPS is the conf
 <li>When the sets were first built, set bonuses were tried as whole sets, the weave's two-hander and bow as one pair,
 and every two-slot combination of each slot's best alternatives was checked at the end. Every enchant was simmed
 against the others.</li>
+<li>The Two-piece sets card swaps two set pieces into each set together: the PvP set (Champion's Pursuit, the Premier
+Chain pieces, +20 Agility at two) in its best two of all fifteen pairs, and the Devilsaur pair (+2% hit) where the set
+does not wear it. Nothing else in the set changes, so a set already at the hit cap gets little from Devilsaur. The
+PvP pair pays only on the AV weave sets, which now wear it: Premier Chain Shoulders with the Boots (max weave) or the
+Gauntlets (normal weave), about +3.</li>
 </ul>
 <h3>Max and Cheap</h3>
 <p><b>Max</b> is everything outside raids, with Exalted reputation from the one faction you pick: <b>Darkspear</b>

@@ -24,6 +24,9 @@ db = json.load(open(os.path.join(a.forever, 'assets/database/db.json')))
 items = {it['id']: it for it in db['items']}
 
 
+# The two-piece set card (user, 2026-11-20): the PvP set in its best two pieces and the Devilsaur pair.
+SET_SLOTS = ('head', 'shoulder', 'chest', 'hands', 'legs', 'feet')
+SET_NOTES = {"Champion's Pursuit": 'PvP set, two pieces: +20 Agility', 'Devilsaur Armor': 'Devilsaur, two pieces: +2% hit'}
 # Quests the item database marks Alliance that both factions can do (user, 2026-11-20): Mapping the Way Forward.
 BOTH_FACTIONS_QUESTS = {95925}
 
@@ -310,8 +313,9 @@ IDS = ['weave-max', 'weave-max-av', 'weave-cheap', 'nweave-max', 'nweave-max-av'
        'bmturret-max-av', 'bmturret-cheap', 'melee-max', 'melee-max-av', 'melee-cheap']
 IDS = [i for i in IDS if os.path.exists(os.path.join(a.runs, f'{i}.guide.json'))]
 GROUP_ORDER = ['weapons_ranged', 'weapons', 'main_hand', 'off_hand', 'two_hand', 'ranged', 'head', 'neck', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'waist',
-               'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2']
-NOTES = {'weapons_ranged': 'Weave: the two-hander and the bow are picked together',
+               'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2', 'sets']
+NOTES = {'sets': 'Two pieces swapped in together, against the set; the rest stays as it is',
+         'weapons_ranged': 'Weave: the two-hander and the bow are picked together',
          'weapons': 'With the set\'s ranged weapon', 'ranged': 'With the set\'s melee weapons',
          'main_hand': 'One-handers beside the set\'s off hand', 'off_hand': 'Beside the set\'s main hand',
          'two_hand': 'With the set\'s ranged weapon',
@@ -354,8 +358,9 @@ for lid in IDS:
         if g not in runs:
             continue
         slots = [s for s in {'weapons_ranged': ['main_hand', 'off_hand', 'ranged'], 'weapons': ['main_hand', 'off_hand'],
-                             'two_hand': ['main_hand', 'off_hand']}.get(g, [g])]
-        best = {s: spec_with_label(s, gear.get(s, [0, 0, 0])) for s in slots if gear.get(s, [0])[0]}
+                             'two_hand': ['main_hand', 'off_hand'], 'sets': list(SET_SLOTS)}.get(g, [g])]
+        # The two-piece set card has no best row: each pair is against the set.
+        best = {} if g == 'sets' else {s: spec_with_label(s, gear.get(s, [0, 0, 0])) for s in slots if gear.get(s, [0])[0]}
         note = NOTES.get(g, '')
         # A one-hand list on a set that wears a two-hander runs each one beside the same partner in the other hand: the
         # card shows the listed hand alone, has no BiS row, and every Δ is against the set's two-hander.
@@ -371,6 +376,8 @@ for lid in IDS:
             if not move:
                 return None
             row = {'move': move, 'd': round(r['d'], 2), 'm': round(r['m'], 2), **flags}
+            if g == 'sets':
+                row['note'] = next((SET_NOTES[items[v[0]].get('setName')] for v in move.values() if items[v[0]].get('setName') in SET_NOTES), '')
             rows.append(row)
             by[json.dumps(r['move'], sort_keys=True)] = row
             return row
