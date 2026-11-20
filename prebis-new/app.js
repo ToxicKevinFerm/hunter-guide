@@ -15,7 +15,10 @@ const SOURCE_KINDS = [['dungeon', 'Dungeon'], ['quest', 'Quest'], ['craft', 'Cra
   ['bg', 'Battleground'], ['world', 'World drop'], ['unknown', 'Unknown']];
 
 // spec: the pick per playstyle that has one (Weave: max or normal rotation; Turret: MM or BM).
-const state = { ps: 'weave', spec: { weave: 'max', turret: 'mm' }, long: false, tier: 'max', rep: 'av', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear' };
+// biome, mob: the biome and creature type the cards are ranked for ('' = none, the sets' own boss).
+const state = { ps: 'weave', spec: { weave: 'max', turret: 'mm' }, long: false, tier: 'max', rep: 'av', topn: 4, q: '', srcs: new Set(SOURCE_KINDS.map(s => s[0])), tab: 'gear', biome: '', mob: '' };
+const CONDS = G.conds || [];
+const condOf = id => CONDS.find(c => c.id === id);
 const fromHash = () => {
   const p = new URLSearchParams(location.hash.slice(1));
   if (G.playstyles.some(x => x.id === p.get('ps'))) state.ps = p.get('ps');
@@ -24,8 +27,9 @@ const fromHash = () => {
   if (['gear', 'all', 'howto', 'method'].includes(p.get('tab'))) state.tab = p.get('tab');
   if ((curPS().specs || []).some(x => x.id === p.get('spec'))) state.spec[state.ps] = p.get('spec');
   state.long = p.get('long') === '1';
+  for (const axis of ['biome', 'mob']) if (CONDS.some(c => c.axis === axis && c.id === p.get(axis))) state[axis] = p.get(axis);
 };
-const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}${state.ps in state.spec ? `&spec=${state.spec[state.ps]}` : ''}&tier=${state.tier}&rep=${state.rep}${state.long ? '&long=1' : ''}`);
+const toHash = () => history.replaceState(null, '', `#tab=${state.tab}&ps=${state.ps}${state.ps in state.spec ? `&spec=${state.spec[state.ps]}` : ''}&tier=${state.tier}&rep=${state.rep}${state.long ? '&long=1' : ''}${state.biome ? `&biome=${state.biome}` : ''}${state.mob ? `&mob=${state.mob}` : ''}`);
 
 const item = id => G.items[id];
 const qc = it => `color:var(--q${it ? it.q : 1})`;
@@ -40,13 +44,14 @@ const enchantName = spec => spec[3] || (spec[1] ? 'Enchant ' + spec[1] : '');
 const fmt = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}`;
 const moveSpecs = move => Object.entries(move).filter(([, v]) => v && v[0]).sort((a, b) => ORDER.indexOf(a[0]) - ORDER.indexOf(b[0]));
 
-function rowPasses(specs) {
+// A Cheap card's Max rows (r.max) are the Max items above the Cheap pick; the Cheap filter keeps them.
+function rowPasses(specs, r) {
   const q = state.q.trim().toLowerCase();
   return specs.every(([, spec]) => {
     const it = item(spec[0]);
     if (!it) return true;
     if (!it.kinds.some(k => state.srcs.has(k))) return false;
-    return state.tier !== 'cheap' || it.tier === 'cheap';
+    return state.tier !== 'cheap' || it.tier === 'cheap' || (r && r.max);
   }) && (!q || specs.some(([, spec]) => {
     const it = item(spec[0]);
     return it && (itemName(spec).toLowerCase().includes(q) || (it.alliance && it.alliance.name.toLowerCase().includes(q)) ||
@@ -77,7 +82,8 @@ function renderDoll() {
   $('doll').innerHTML = `
     <div class="col">${LEFT.map(slot).join('')}</div>
     <div class="center">
-      <div><span class="small">${esc(tierLabel())}</span><h2>${esc(sp ? sp.title : P.name)}</h2></div>
+      <div><span class="small">${esc(tierLabel())}</span><h2>${esc(sp ? sp.title : P.name)}</h2>
+        <p class="target">${esc(G.meta.target || '')}</p></div>
       <div class="dps"><b>${L.dps.toFixed(0)}</b><span>DPS in the sim</span></div>
       <dl class="facts">
         <dt>Build</dt><dd>${esc(L.build)}</dd>
@@ -92,6 +98,37 @@ function renderDoll() {
     </div>
     <div class="col right">${RIGHT.map(slot).join('')}</div>
     <div class="weapons">${WEAPONS.map(slot).join('')}</div>`;
+}
+
+// ---------- Biome and creature type ----------
+// A row whose item has a bonus in a biome or against a creature type carries its Δ there (r.c[cond] = [d, m]), against
+// the same set under the same condition. Rows that only make a card under their condition carry r.x. With a biome and
+// a creature type both picked, an item's two bonuses add up. A worn item with a bonus there moves the card's rows
+// without one by its own gain (g.shift[cond]).
+const picked = () => [state.biome, state.mob].filter(Boolean);
+function ranked(g) {
+  const on = picked();
+  const out = [];
+  for (const r of g.rows) {
+    const hit = on.filter(c => r.c && r.c[c]);
+    if (r.x && !hit.length) continue;
+    let d = r.d, m = r.m;
+    for (const c of on) {
+      if (hit.includes(c)) { d += r.c[c][0] - r.d; m = Math.max(m, r.c[c][1]); }
+      else d -= (g.shift && g.shift[c]) || 0;
+    }
+    out.push({ ...r, d, m, on: hit, base: [r.d, r.m] });
+  }
+  return out.sort((a, b) => b.d - a.d);
+}
+// Under the row: the item's figure with each of its conditions the other way round from the current pick.
+function condLine(r) {
+  if (!r.c) return '';
+  const on = r.on || [];
+  const parts = Object.entries(r.c).filter(([c]) => condOf(c)).map(([c, [d, m]]) => on.includes(c)
+    ? `${condOf(c).off}: ${fmt(r.base[0])} ±${r.base[1].toFixed(1)}`
+    : `${condOf(c).on}: ${fmt(d)} ±${m.toFixed(1)}`);
+  return parts.length ? `<small>${esc([...new Set(parts)].join(' · '))}</small>` : '';
 }
 
 // ---------- The slot table: one table, a heading row per slot, one line per option ----------
@@ -124,7 +161,7 @@ function gapChart(r, x) {
 // Main hand and off hand sit side by side on wider screens, as two half tables with the phone's columns plus Budget.
 const narrow = matchMedia('(max-width: 720px)');
 const wide = matchMedia('(min-width: 1101px)');
-const colsFor = half => ({ where: !narrow.matches && !half, tier: state.tier === 'max' && !narrow.matches });
+const colsFor = half => ({ where: !narrow.matches && !half, tier: !narrow.matches });
 const ncol = c => 3 + c.where + c.tier;
 const colgroup = c => `<colgroup><col>${c.where ? '<col class="w-where">' : ''}<col class="w-d"><col class="w-chart">${c.tier ? '<col class="w-tier">' : ''}</colgroup>`;
 function rowHTML(r, L, x, bestMove, c, enSlots) {
@@ -136,23 +173,27 @@ function rowHTML(r, L, x, bestMove, c, enSlots) {
   const differs = specs.filter(([s, spec]) => !bestMove || !bestMove[s] || bestMove[s][0] !== spec[0]).map(([, spec]) => item(spec[0])).filter(Boolean);
   const srcs = (differs.length ? differs : its).map(it => it.sources[0] || 'No source in the game files');
   const allSrcs = its.flatMap(it => it.sources).join('\n');
-  // An area or creature bonus's other case, against the same set; or a scenario row's note.
-  const alt = r.alt ? `<small title="Against the same set when this item's area or creature bonus is the other way round">${esc(r.alt.when)}: ${fmt(r.alt.d)}${r.alt.m != null ? ` ±${r.alt.m.toFixed(1)}` : ''}</small>`
-    : r.note ? `<small>${esc(r.note)}</small>` : '';
+  // The item's figure with its biome or creature bonus the other way round, against the same set; or a scenario
+  // row's note.
+  const alt = condLine(r) || (r.note ? `<small>${esc(r.note)}</small>` : '');
   const d = r.best ? '<b>Best</b>' : `<b>${fmt(r.d)}</b> <small>±${r.m.toFixed(1)}</small>`;
-  const where = `<span class="w1">${esc(srcs.join(' + '))}</span>${alt}`;
+  const maxRow = r.max || its.some(it => it.tier === 'max');
+  // Phones have no Budget column: a Max row on a Cheap card says so before its source.
+  const where = `<span class="w1">${!c.tier && state.tier === 'cheap' && r.max ? 'Max · ' : ''}${esc(srcs.join(' + '))}</span>${alt}`;
   return `<tr class="${k}"><td class="c-item"><span class="items">${specs.map(([s, spec]) => itemHTML(spec, enSlots && enSlots.has(s))).join('<span class="plus">+</span>')}</span>${c.where ? '' : `<span class="c-where" title="${esc(allSrcs)}">${where}</span>`}</td>
     ${c.where ? `<td class="c-where" title="${esc(allSrcs)}">${where}</td>` : ''}
     <td class="c-d" title="${r.best ? 'The best item in this set' : `${fmt(pct)}% of the set's DPS${k === 'same' ? ': within the margin, the same DPS' : ''}`}">${d}</td>
-    <td class="c-chart">${gapChart(r, x)}</td>${c.tier ? `<td class="c-tier">${its.some(it => it.tier === 'max') ? 'Max' : 'Cheap'}</td>` : ''}</tr>`;
+    <td class="c-chart">${gapChart(r, x)}</td>${c.tier ? `<td class="c-tier"${r.max && !its.some(it => it.tier === 'max') ? ' title="A third Premier piece: Cheap wears two at most"' : ''}>${maxRow ? 'Max' : state.tier === 'cheap' ? '' : 'Cheap'}</td>` : ''}</tr>`;
 }
 // One slot: its heading row, its options, and any raid-condition lists under it.
 function groupHTML(g, L, c) {
   const n = ncol(c);
   // A list with nothing worn in its slot (one-handers on a two-hander set) has no best row; its gaps are against the set.
   const hasBest = Object.keys(g.best).length > 0;
-  const rows = [...(hasBest ? [{ move: g.best, d: 0, m: 0, best: true, alt: g.bestAlt }] : []), ...g.rows];
-  const shown = rows.filter(r => rowPasses(moveSpecs(r.move))).slice(0, state.topn);
+  const rows = [...(hasBest ? [{ move: g.best, d: 0, m: 0, best: true }] : []), ...ranked(g)].sort((a, b) => b.d - a.d);
+  // The card's best options, plus on a Cheap card every Max option above the Cheap pick, all in Δ order.
+  const passing = rows.filter(r => rowPasses(moveSpecs(r.move), r));
+  const shown = [...passing.filter(r => r.max && r.d > 0), ...passing.filter(r => !r.max).slice(0, state.topn)].sort((a, b) => b.d - a.d);
   const x = scaleFor(shown.length ? shown : rows.slice(0, 1));
   const hiddenBest = hasBest && shown.length && !rowPasses(moveSpecs(g.best));
   const head = `<tr class="gh"><th colspan="${n}" scope="rowgroup"><span class="ghn">${esc(SLOT_LABEL[g.id] || g.id)}</span>${g.why ? `<button class="why" type="button" data-why="${g.id}">${esc(g.why.label)}</button>` : ''}${g.note ? `<span class="ghnote">${esc(g.note)}</span>` : ''}</th></tr>`;
@@ -184,7 +225,8 @@ function renderOverview() {
   const L = loadout();
   const lines = L.groups.map(g => {
     const hasBest = Object.keys(g.best).length > 0;
-    return { g, hasBest, rows: g.rows.filter(r => rowPasses(moveSpecs(r.move))) };
+    const rs = ranked(g).filter(r => rowPasses(moveSpecs(r.move), r));
+    return { g, hasBest, rows: [...rs.filter(r => r.max && r.d > 0), ...rs.filter(r => !r.max).slice(0, 6)] };
   }).filter(o => o.rows.length || o.hasBest);
   // One axis for every slot, so a wide spread reads as a slot that matters. Very large gaps are pinned to the edge.
   const ds = lines.flatMap(o => o.rows.map(r => r.d));
@@ -285,7 +327,7 @@ function tipHTML(id, sfx) {
     <div class="m">Item level ${it.ilvl}${it.side ? ' · ' + it.side + ' only' : ''}</div>
     ${it.alliance ? `<div class="m">Alliance: ${esc(it.alliance.name)}, identical</div>` : ''}
     <div class="src">${it.sources.map(s => `<div class="y">${esc(s)}</div>`).join('') || '<div class="m">No source in the game files</div>'}</div>
-    <div class="m">${it.tier === 'cheap' ? 'In the Cheap sets' : 'Max sets only'}</div>`;
+    <div class="m">${it.premier ? 'Premier: Cheap sets wear two at most' : it.tier === 'cheap' ? 'In the Cheap sets' : 'Max sets only'}</div>`;
 }
 const whyOf = s => loadout().groups.find(g => g.id === s).why;
 const tip = $('tip');
@@ -332,6 +374,15 @@ function renderStatic() {
   $('tier').innerHTML = '<button data-tier="max">Max</button><button data-tier="cheap">Cheap</button>';
   $('rep').innerHTML = '<button data-rep="darkspear" title="Darkspear Raiders (Alliance: Theramore)">Darkspear</button><button data-rep="av" title="Frostwolf Clan (Alliance: Stormpike Guard)">AV</button>';
   $('topn').innerHTML = [3, 4, 6].map(n => `<button data-topn="${n}">${n}</button>`).join('');
+  for (const axis of ['biome', 'mob'])
+    $(axis).innerHTML = '<option value="">None</option>' + CONDS.filter(c => c.axis === axis).map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('');
+}
+// The cards' biome and creature type: the pick, and one line saying what moved.
+function renderCond() {
+  for (const axis of ['biome', 'mob']) { $(axis).value = state[axis]; $(axis).classList.toggle('on', !!state[axis]); }
+  const on = picked().map(condOf);
+  $('condnote').hidden = !on.length;
+  $('condnote').textContent = on.length ? `Ranked for ${on.map(c => c.label).join(' and ')}: items with a bonus there move, against the same set.` : '';
 }
 function renderSources() {
   $('srcs').innerHTML = SOURCE_KINDS.map(([k, n]) => `<label><input type="checkbox" data-src="${k}"${state.srcs.has(k) ? ' checked' : ''}> ${n}</label>`).join('')
@@ -356,7 +407,7 @@ function render() {
   document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === state.tab));
   document.querySelectorAll('section[data-panel]').forEach(s => s.hidden = s.dataset.panel !== state.tab);
   $('bar').hidden = state.tab !== 'gear';
-  if (state.tab === 'gear') { renderDoll(); renderCards(); }
+  if (state.tab === 'gear') { renderDoll(); renderCond(); renderCards(); }
   if (state.tab === 'all') renderMatrix();
   toHash();
 }
@@ -394,6 +445,11 @@ document.addEventListener('click', e => {
   render();
 });
 document.addEventListener('change', e => {
+  if (e.target.id === 'biome' || e.target.id === 'mob') {
+    state[e.target.id] = e.target.value;
+    renderCond(); renderCards(); toHash();
+    return;
+  }
   const s = e.target.dataset && e.target.dataset.src;
   if (!s) return;
   e.target.checked ? state.srcs.add(s) : state.srcs.delete(s);

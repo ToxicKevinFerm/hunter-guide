@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2cc41620ff">
+<link rel="stylesheet" href="style.css?v=f501177c98">
 </head>
 <body>
 <header class="top">
@@ -50,6 +50,14 @@
 <main class="wrap">
   <section data-panel="gear">
     <div class="doll" id="doll"></div>
+    <div class="listhead">
+      <h2>Every option, slot by slot</h2>
+      <div class="condpick">
+        <label><span>Biome</span><select id="biome" aria-label="Biome"></select></label>
+        <label><span>Creature type</span><select id="mob" aria-label="Creature type"></select></label>
+      </div>
+    </div>
+    <p class="condnote" id="condnote" hidden></p>
     <div class="key" id="key"></div>
     <details class="ov" id="ovd">
       <summary><span class="ov-t">How much each slot matters</span><span class="small" id="ovteaser"></span></summary>
@@ -76,7 +84,7 @@
 </div>
 <div id="tip" hidden></div>
 
-<script src="../data.js?v=9500306fb8"></script>
-<script src="app.js?v=e4ad02c239"></script>
+<script src="../data.js?v=75248dd88a"></script>
+<script src="app.js?v=0964db2065"></script>
 </body>
 </html>

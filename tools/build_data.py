@@ -68,7 +68,7 @@ BG_VENDORS = {'Samuel Hawke', 'Rutherford Twing', 'Kelm Hargunth', 'Illiyana Moo
 BG_REP = {509, 510}
 BG_QUESTS = ('Korrak', 'Hero of the Frostwolf', 'Hero of the Stormpike')
 # The tier rules the presets were built with (see the guide's Method page).
-CHEAP_CRAFTS = {252605, 15062, 15063, 250619}
+CHEAP_CRAFTS = {15062, 15063, 250619}  # Black Dragonscale Helm 252605 is a crafted epic: Max (2026-11-20)
 MAX_CRAFTS = {252483, 279253, 252484, 12784, 12798, 12783}
 MAX_SOURCELESS = {1728}
 CHEAP_SOURCELESS = {6622, 13023}  # Sword of Zeal, Eaglehorn Long Bow
@@ -84,10 +84,29 @@ SLOT_TYPE = {'head': 1, 'neck': 2, 'shoulder': 3, 'back': 4, 'chest': 5, 'wrist'
              'ranged': 14}
 
 MOB = {1: 'Beasts', 2: 'Demons', 3: 'Dragonkin', 4: 'Elementals', 5: 'Giants', 6: 'Humanoids', 7: 'Mechanicals', 8: 'Undead'}
-# <id>.cond.json holds, for the items whose bonus needs an area or a creature type, their Δ DPS with that condition
-# flipped against the same set: a row's item with it, or the worn item's own loss without it.
-COND_LABEL = {'forest': 'Outside Forest/Grassland', 'dragonkin': 'Not against Dragonkin', 'demon': 'Against Demons',
-              'beast': 'Against Beasts', 'elemental': 'Against Elementals'}
+# The biomes and creature types the cards can be ranked for: (axis, picker label, figure label with it, without it).
+# <id>.cond.json holds, per condition, every item with a bonus there run against the set under that condition, and
+# under 'none' all of them on the sets' own boss (no creature type, no biome).
+MOB_ID = {1: 'beast', 2: 'demon', 3: 'dragonkin', 4: 'elemental', 5: 'giant', 6: 'humanoid', 7: 'mechanical', 8: 'undead'}
+AREA_ID = {1: 'forestgrassland', 2: 'mountainous', 3: 'snowy', 4: 'desert', 5: 'swamp', 6: 'wasteland', 7: 'haunted',
+           8: 'cavernous', 9: 'volcanic', 10: 'strongholdscities'}
+AREA_NAME = {'forestgrassland': 'Forest/Grassland', 'mountainous': 'Mountainous', 'snowy': 'Snowy', 'desert': 'Desert',
+             'swamp': 'Swamp', 'wasteland': 'Wasteland', 'haunted': 'Haunted', 'cavernous': 'Cavernous',
+             'volcanic': 'Volcanic', 'strongholdscities': 'Strongholds and cities'}
+CONDS = {**{MOB_ID[k]: ('mob', MOB[k] if k in (3, 8) else MOB[k][:-1], f'Against {MOB[k]}', f'Not against {MOB[k]}') for k in MOB_ID},
+         **{c: ('biome', n, f'In {n}', f'Outside {n}') for c, n in AREA_NAME.items()}}
+
+
+def item_conds(iid):
+    it = items.get(iid, {})
+    return {MOB_ID[t] for t in it.get('mobTypes') or [] if t in MOB_ID} | {AREA_ID[x] for x in it.get('areaTypes') or [] if x in AREA_ID}
+
+
+# The tier of every item as the runs' pools had it (pools.py dumps, folded: cheap if the Cheap pool allows it, else
+# max), and the Premier pieces, of which a Cheap set wears two at most. Without them the rules below apply.
+TIERS = {int(k): v for k, v in json.load(open(os.path.join(a.runs, 'tiers.json'))).items()} if os.path.exists(os.path.join(a.runs, 'tiers.json')) else {}
+PREMIER = set(json.load(open(os.path.join(a.runs, 'cap.json')))['ids']) if os.path.exists(os.path.join(a.runs, 'cap.json')) else set()
+PREMIER_CAP = json.load(open(os.path.join(a.runs, 'cap.json')))['max'] if PREMIER else 0
 
 # Reputation a vendor asks for that the game files do not carry (the Wowhead tooltip names it).
 VENDOR_REP = {19325: 'Reputation: Frostwolf Clan Exalted'}
@@ -127,6 +146,8 @@ def sources(it):
             kinds.add('craft')
         elif k == 'pvp':
             kinds.add('bg')
+            if it['id'] in PREMIER:
+                out.append('PvP: Premier gear')
     if it['id'] in VENDOR_REP:
         out.insert(1, VENDOR_REP[it['id']])  # second, so the card's two source lines show it
     out = list(dict.fromkeys(out))
@@ -141,6 +162,8 @@ def sources(it):
 
 
 def tier(it):
+    if it['id'] in TIERS:
+        return TIERS[it['id']]
     srcs = it.get('sources', [])
     kinds = set()
     for s in srcs:
@@ -252,7 +275,7 @@ def item_data(iid, used_suffixes):
             'set': it.get('setName', ''), 'unique': bool(it.get('unique')),
             'side': {1: 'Alliance', 2: 'Horde'}.get(side_of(it), ''), 'sources': srcs, 'kinds': kinds,
             'alliance': {'id': tw['id'], 'name': tw['name']} if (tw := alliance_twin(it)) else None,
-            'tier': tier(it), 'suffixStats': sfx}
+            'tier': tier(it), 'suffixStats': sfx, **({'premier': True} if it['id'] in PREMIER else {})}
 
 
 def enchant_label(eid, slot):
@@ -294,7 +317,7 @@ NOTES = {'weapons_ranged': 'Weave: the two-hander and the bow are picked togethe
 # rerun: the build stops if a set's gear wears anything else there. The card shows WHY as a hover on its title.
 BIS_OVERRIDE = {('turret', 'ranged'): {'item': 19107, 'label': 'Why Bloodseeker?', 'why': [
     "A free quest reward that is practically the same as Eaglehorn Long Bow.",
-    "Lone boss: 1.5% behind on this 3 minute fight, practically the same. Only long single-target fights lean toward a "
+    "Lone boss: 1.1% behind on this 3 minute fight, practically the same. Only long single-target fights lean toward a "
     "fast bow (about 6% at 5 minutes).",
     "Trash you Volley: Bloodseeker pulls ahead, about +75 DPS on a pack of four. Volley pauses Auto Shot, so its bigger "
     "shots and Multi-Shots (13% harder) count for more.",
@@ -305,7 +328,7 @@ BIS_OVERRIDE = {('turret', 'ranged'): {'item': 19107, 'label': 'Why Bloodseeker?
 # Beast Mastery turret keeps Bloodseeker too (the ruling covers every turret set); its gap was measured on its own sets.
 BIS_OVERRIDE[('bmturret', 'ranged')] = {'item': 19107, 'label': 'Why Bloodseeker?', 'why': [
     "A free quest reward. Every turret set wears it.",
-    "Lone boss on Beast Mastery: Eaglehorn Long Bow is about 2% ahead on this 3 minute fight (+21 on Max, +18 on Cheap).",
+    "Lone boss on Beast Mastery: Eaglehorn Long Bow is about 2% ahead on this 3 minute fight (+19 on Max, +18 on Cheap).",
     "The trash, cleave and raid night comparisons were run on Marksmanship, where Bloodseeker pulls ahead on trash you "
     "Volley and ends within 1% over a night.",
     "Rather spend gold? Eaglehorn Long Bow or a Hawkeye Bow of Agility."]}
@@ -316,6 +339,8 @@ for lid in IDS:
     runs = json.load(open(os.path.join(a.runs, f'{lid}.guide.json')))
     cond_path = os.path.join(a.runs, f'{lid}.cond.json')
     cond = json.load(open(cond_path)) if os.path.exists(cond_path) else {}
+    maxonly_path = os.path.join(a.runs, f'{lid}.maxonly.json')
+    maxonly = json.load(open(maxonly_path)) if lid.endswith('-cheap') and os.path.exists(maxonly_path) else {}
     scen_path = os.path.join(a.runs, f'{lid}.scenario.json')
     scen = json.load(open(scen_path)) if os.path.exists(scen_path) else {}
     m = meta['loadouts'][lid]
@@ -334,16 +359,78 @@ for lid in IDS:
             partner = items[runs[g]['rows'][0]['move'][other][0]]['name']
             best = {}
             note = f"Beside {partner} in the {other.replace('_', ' ')} · Δ against the set's two-hander"
-        flipped = {json.dumps(c['move'], sort_keys=True): c for c in cond.get(g, {}).get('rows', [])}
-        rows = []
-        for r in runs[g]['rows']:
+        rows, by = [], {}
+
+        def add_row(r, **flags):
             move = {s: spec_with_label(s, v) for s, v in r['move'].items() if v and v[0] and s in slots}
             if not move:
-                continue
-            row = {'move': move, 'd': round(r['d'], 2), 'm': round(r['m'], 2)}
-            if (c := flipped.get(json.dumps(r['move'], sort_keys=True))):
-                row['alt'] = {'when': COND_LABEL[c['cond']], 'd': c['d'], 'm': c['m']}
+                return None
+            row = {'move': move, 'd': round(r['d'], 2), 'm': round(r['m'], 2), **flags}
             rows.append(row)
+            by[json.dumps(r['move'], sort_keys=True)] = row
+            return row
+
+        def max_only(move):
+            """On a Cheap card: the move needs a Max item, or makes a third Premier piece."""
+            worn = {**gear, **move}
+            return (any(tier(items[v[0]]) == 'max' for v in move.values() if v and v[0])
+                    or sum(1 for v in worn.values() if v and v[0] in PREMIER) > PREMIER_CAP)
+
+        for r in runs[g]['rows'] or []:
+            add_row(r)
+        # A Cheap card also lists every Max option above the Cheap pick (<id>.maxonly.json, run against the Cheap set).
+        for r in maxonly.get(g, {}).get('rows') or []:
+            if r['d'] > 0 and json.dumps(r['move'], sort_keys=True) not in by and max_only(r['move']):
+                add_row(r, max=1)
+        # Biome and creature type: each row whose item has a bonus there gets its Δ there; an item with a bonus that
+        # makes no card on the sets' own boss joins as a row shown only under its condition (x), with its Δ on that
+        # boss from the 'none' run. Plain rows run under a condition only where the set wears an item with a bonus
+        # there: their drop is that worn item's own gain, which moves the card's other plain rows (shift).
+        none = {json.dumps(r['move'], sort_keys=True): r for r in cond.get('none', {}).get(g, {}).get('rows') or []}
+        shift = {}
+        worn_conds = {c for s in slots for c in item_conds((gear.get(s) or [0])[0])}
+        for c, crun in sorted(cond.items()):
+            if c == 'none' or c not in CONDS:
+                continue
+            plain = []
+            for r in crun.get(g, {}).get('rows') or []:
+                k = json.dumps(r['move'], sort_keys=True)
+                if c not in {x for v in r['move'].values() if v and v[0] for x in item_conds(v[0])}:
+                    if k in by and not by[k].get('c'):
+                        plain.append(by[k]['d'] - r['d'])
+                    continue
+                if k not in by:
+                    if k not in none:
+                        continue
+                    flags = {'x': 1}
+                    if lid.endswith('-cheap') and max_only(r['move']):
+                        flags['max'] = 1
+                    if not add_row(none[k], **flags):
+                        continue
+                by[k].setdefault('c', {})[c] = [round(r['d'], 2), round(r['m'], 2)]
+            if c in worn_conds and plain:
+                shift[c] = round(sum(plain) / len(plain), 2)
+        # A bonus the sim does not move (under 1 DPS against the same item on the None boss, same seed) is no bonus: the
+        # row stays plain, and a row that was only there for it goes.
+        for k, row in list(by.items()):
+            ref = none[k]['d'] if k in none else row['d']
+            for c, (d, _) in list(row.get('c', {}).items()):
+                if abs(d - ref) < 1:
+                    del row['c'][c]
+            if 'c' in row and not row['c']:
+                del row['c']
+                if row.get('x'):
+                    rows.remove(row)
+        # Two items with the same stats, slot and quality under two names (the Premier Chain and Chainmail pieces) run
+        # the same: the card lists the first.
+        sig_of = lambda move: tuple(sorted((s, twin_sig(items[v[0]]), v[1], v[2]) for s, v in move.items()))
+        twins_seen, kept = {sig_of(best)} if best else set(), []
+        for row in sorted(rows, key=lambda r: -r['d']):
+            sig = sig_of(row['move'])
+            if sig not in twins_seen:
+                twins_seen.add(sig)
+                kept.append(row)
+        rows = kept
         override = BIS_OVERRIDE.get((lid.split('-')[0], g))
         if override and override['item'] not in {spec[0] for spec in best.values()}:
             raise SystemExit(f"{lid} {g}: the set must wear {items[override['item']]['name']} (BIS_OVERRIDE); put it back in "
@@ -356,8 +443,8 @@ for lid in IDS:
         group = {'id': g, 'best': best, 'rows': rows, 'note': note}
         if override:
             group['why'] = {'label': override['label'], 'lines': override['why']}
-        if (c := cond.get(g, {}).get('best')):
-            group['bestAlt'] = {'when': COND_LABEL[c['cond']], 'd': c['d']}
+        if shift:
+            group['shift'] = shift
         if g in scen:
             group['scenarios'] = [dict(sc, rows=[dict(r, move={s: spec_with_label(s, v) for s, v in r['move'].items() if v and v[0]})
                                                  for r in sc['rows']]) for sc in scen[g]]
@@ -381,9 +468,12 @@ for lid in IDS:
             used_items.add(spec[0])
         loadouts[lid]['long'] = lf
 
+# The pickers list the biomes and creature types some card has a bonus row for, in CONDS order.
+present = {c for L in loadouts.values() for g in L['groups'] for r in g['rows'] for c in r.get('c', {})}
 data = {
     'meta': meta['meta'],
     'playstyles': meta['playstyles'],
+    'conds': [{'id': c, 'axis': v[0], 'label': v[1], 'on': v[2], 'off': v[3]} for c, v in CONDS.items() if c in present],
     'loadouts': loadouts,
     'items': {i: item_data(i, used_suffixes.get(i, set())) for i in sorted(used_items)},
     'suffixes': {sid: s['name'] for sid, s in suffixes.items()},

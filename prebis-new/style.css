@@ -114,6 +114,19 @@ main { padding: 20px 24px 56px; }
 .lfbox b { color: var(--text); }
 .blurb { margin: 0; font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
 
+/* The boss the set is simmed on, under its name */
+.center .target { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+
+/* The list's title and its biome and creature type pickers */
+.listhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin: 40px 0 0; }
+.listhead h2 { font-size: 34px; }
+.condpick { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+.condpick label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.condpick select { min-height: 42px; min-width: 170px; padding: 0 34px 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a8adb5'/%3E%3C/svg%3E") no-repeat right 12px center; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; appearance: none; cursor: pointer; }
+.condpick select:focus { outline: none; border-color: var(--line-2); }
+.condpick select.on { border-color: var(--amber); }
+.condnote { margin: 10px 0 0; font-size: 14px; color: var(--text-2); }
+
 /* The key above the cards */
 .key { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px; margin: 22px 0 14px; font-size: 13px; color: var(--muted); }
 .key .k { display: inline-flex; align-items: center; gap: 8px; }
@@ -281,7 +294,7 @@ main { padding: 20px 24px 56px; }
   .slot { min-height: 50px; padding: 5px 6px; }
   .icon { width: 36px; height: 36px; }
   .icon.xs { width: 24px; height: 24px; }
-  .bt .c-where .w1 { white-space: normal; }
+  .bt .c-where .w1, .bt .c-where small { white-space: normal; }
   .bt thead th { top: 0; }
   .bt td, .bt thead th, .bt tr.gh th { padding-left: 4px; padding-right: 4px; }
   .bt col.w-d { width: 66px; }

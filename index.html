@@ -231,7 +231,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 <footer class="wrap" id="foot"></footer>
 <div id="tip" hidden></div>
 
-<script src="data.js?v=f988ee9551"></script>
+<script src="data.js?v=af95eb8473"></script>
 <script>
 const G = window.GUIDE;
 const ICON = n => `https://wow.zamimg.com/images/wow/icons/medium/${n || 'inv_misc_questionmark'}.jpg`;
@@ -350,7 +350,8 @@ function renderCards() {
   for (const g of L.groups) {
     // A list with nothing worn in its slot (one-handers on a two-hander set) has no BiS row; its Δ is against the set.
     const hasBest = Object.keys(g.best).length > 0;
-    const rows = [...(hasBest ? [{ move: g.best, d: 0, m: 0, best: true, alt: g.bestAlt }] : []), ...g.rows];
+    // Rows shown only under a biome or creature type (x) and a Cheap card's Max rows (max) belong to prebis-new/.
+    const rows = [...(hasBest ? [{ move: g.best, d: 0, m: 0, best: true }] : []), ...g.rows.filter(r => !r.x && !r.max)];
     const shown = rows.filter(r => rowPasses(moveSpecs(r.move))).slice(0, state.topn);
     const maxLoss = Math.max(1, ...rows.slice(0, state.topn + 2).map(r => -r.d));
     const tr = shown.map((r, i) => {
