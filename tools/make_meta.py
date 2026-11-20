@@ -336,7 +336,7 @@ meta = {
     'meta': {'lede': 'WoW Forever · Phase 1 · simmed pre-raid gear for weave, turret and melee hunters',
              # Under the set's name in the character window: the boss every number is simmed on.
              'target': 'Simmed on a boss with no creature type (None) and no biome. Improved Tracking counts.',
-             'footer': 'Simmed with WoWSims Forever on 2026-11-20 (master 38786d6412, Improved Tracking also on a boss with no creature type). Item data from the game files; links go to Wowhead.'},
+             'footer': 'Simmed with WoWSims Forever on 2026-11-20 (master 38786d6412 with The Blackrock Slicer at 1.9 PPM from a4121e129c, Improved Tracking also on a boss with no creature type). Item data from the game files; links go to Wowhead.'},
     'playstyles': playstyles, 'loadouts': loadouts, 'howto': howto, 'method': method,
 }
 json.dump(meta, open(os.path.join(R, 'meta.json'), 'w'), indent=1)
