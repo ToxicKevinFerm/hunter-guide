@@ -24,12 +24,17 @@ db = json.load(open(os.path.join(a.forever, 'assets/database/db.json')))
 items = {it['id']: it for it in db['items']}
 
 
+# Quests the item database marks Alliance that both factions can do (user, 2026-11-20): Mapping the Way Forward.
+BOTH_FACTIONS_QUESTS = {95925}
+
+
 def side_of(it):
     """1 Alliance, 2 Horde, 0 both: the item's faction, or else the one faction all its sources name. A source that
     names no faction is open to both."""
     if it.get('factionRestriction'):
         return it['factionRestriction']
-    fs = {v.get('faction') or v.get('factionId') or 0 for src in it.get('sources') or [] for v in src.values() if v}
+    fs = {0 if v.get('id') in BOTH_FACTIONS_QUESTS else v.get('faction') or v.get('factionId') or 0
+          for src in it.get('sources') or [] for v in src.values() if v}
     return fs.pop() if len(fs) == 1 else 0
 
 
@@ -129,7 +134,7 @@ def sources(it):
                 out.append(f"Drop: {who.strip()}{where}" if who.strip() else f"Drop{where}")
                 kinds.add('dungeon' if zid in DUNGEONS else 'world')
         elif k == 'quest':
-            if v.get('faction') == 1:
+            if v.get('faction') == 1 and v.get('id') not in BOTH_FACTIONS_QUESTS:
                 continue
             out.append(f"Quest: {v.get('name')}")
             kinds.add('bg' if any(q in v.get('name', '') for q in BG_QUESTS) else 'quest')
